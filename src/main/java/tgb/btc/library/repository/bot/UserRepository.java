@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.constants.enums.bot.Command;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
@@ -27,7 +26,7 @@ public interface UserRepository extends BaseRepository<User> {
     Integer getStepByChatId(Long chatId);
 
     @Query("select command from User where chatId=:chatId")
-    Command getCommandByChatId(Long chatId);
+    String getCommandByChatId(Long chatId);
 
     boolean existsByChatId(Long chatId);
 
@@ -48,7 +47,7 @@ public interface UserRepository extends BaseRepository<User> {
 
     @Modifying
     @Query("update User set step=step + 1, command=:command where chatId=:chatId")
-    void nextStep(Long chatId, Command command);
+    void nextStep(Long chatId, String command);
 
     @Modifying
     @Query("update User set step=step + 1 where chatId=:chatId")
@@ -97,7 +96,7 @@ public interface UserRepository extends BaseRepository<User> {
 
     @Modifying
     @Query("update User set command=:command where chatId=:chatId")
-    void updateCommandByChatId(Command command, @Param("chatId") Long chatId);
+    void updateCommandByChatId(String command, @Param("chatId") Long chatId);
 
     @Modifying
     @Query("update User set referralBalance=:referralBalance where chatId=:chatId")
@@ -122,7 +121,7 @@ public interface UserRepository extends BaseRepository<User> {
 
     @Modifying
     @Query("update User set step=:step, command=:command where chatId=:chatId")
-    void updateStepAndCommandByChatId(Long chatId, Command command, Integer step);
+    void updateStepAndCommandByChatId(Long chatId, String command, Integer step);
 
     @Modifying
     @Query("update User set step=:step where chatId=:chatId")

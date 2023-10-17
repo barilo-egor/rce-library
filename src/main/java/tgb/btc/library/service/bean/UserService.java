@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.constants.enums.bot.Command;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserRepository;
@@ -38,10 +37,6 @@ public class UserService extends BasePersistService<User> {
         return User.DEFAULT_STEP == getStepByChatId(chatId);
     }
 
-    public Command getCommandByChatId(Long chatId) {
-        return userRepository.getCommandByChatId(chatId);
-    }
-
     public boolean existByChatId(Long chatId) {
         return userRepository.existsByChatId(chatId);
     }
@@ -64,10 +59,6 @@ public class UserService extends BasePersistService<User> {
 
     public List<ReferralUser> getUserReferralsByChatId(@Param("chatId") Long chatId) {
         return userRepository.getUserReferralsByChatId(chatId);
-    }
-
-    public void nextStep(Long chatId, Command command) {
-        userRepository.nextStep(chatId, command);
     }
 
     public void nextStep(Long chatId) {

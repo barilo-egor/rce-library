@@ -3,9 +3,7 @@ package tgb.btc.library.bean.bot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.sql.Update;
 import tgb.btc.library.bean.BasePersist;
-import tgb.btc.library.constants.enums.bot.Command;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -30,9 +28,8 @@ public class User extends BasePersist {
     @Column(name = "STEP", columnDefinition = "int default 0")
     private Integer step;
 
-    @Enumerated(value = EnumType.STRING)
     @Column(name = "COMMAND", columnDefinition = "varchar(255) default 'START'")
-    private Command command;
+    private String command;
 
     @Column(name = "REGISTRATION_DATE", nullable = false)
     private LocalDateTime registrationDate;
@@ -98,11 +95,11 @@ public class User extends BasePersist {
         this.step = step;
     }
 
-    public Command getCommand() {
+    public String getCommand() {
         return command;
     }
 
-    public void setCommand(Command command) {
+    public void setCommand(String command) {
         this.command = command;
     }
 
