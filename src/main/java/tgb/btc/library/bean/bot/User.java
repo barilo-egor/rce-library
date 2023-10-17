@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.interfaces.ICommand;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -97,6 +98,10 @@ public class User extends BasePersist {
 
     public String getCommand() {
         return command;
+    }
+
+    public void setCommand(ICommand command) {
+        this.command = command.name();
     }
 
     public void setCommand(String command) {
