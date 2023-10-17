@@ -104,7 +104,7 @@ public class User extends BasePersist {
         this.command = command.name();
     }
 
-    public void setCommand(String command) {
+    void setCommand(String command) {
         this.command = command;
     }
 
