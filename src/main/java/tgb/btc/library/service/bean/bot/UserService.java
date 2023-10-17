@@ -1,4 +1,4 @@
-package tgb.btc.library.service.bean;
+package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +9,7 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.List;
 import java.util.Objects;

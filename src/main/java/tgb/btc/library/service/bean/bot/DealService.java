@@ -1,4 +1,4 @@
-package tgb.btc.library.service.bean;
+package tgb.btc.library.service.bean.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.UserRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package tgb.btc.library.service.bean;
+package tgb.btc.library.service.bean.bot;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

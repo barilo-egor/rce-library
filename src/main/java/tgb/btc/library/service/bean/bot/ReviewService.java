@@ -1,10 +1,11 @@
-package tgb.btc.library.service.bean;
+package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Review;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.ReviewRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.List;
 

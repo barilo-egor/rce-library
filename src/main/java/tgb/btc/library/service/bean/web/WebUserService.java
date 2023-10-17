@@ -1,4 +1,4 @@
-package tgb.btc.library.service.bean;
+package tgb.btc.library.service.bean.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
