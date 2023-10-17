@@ -4,15 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.Command;
-import tgb.btc.library.constants.enums.system.BotProperties;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.BaseRepository;
-import tgb.btc.library.repository.bot.UserDataRepository;
-import tgb.btc.library.repository.bot.UserDiscountRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 
 import java.util.List;
@@ -22,29 +18,16 @@ import java.util.Objects;
 @Transactional
 public class UserService extends BasePersistService<User> {
 
-    private final UserRepository userRepository;
-    private final ReferralUserService referralUserService;
-
-    private UserDiscountRepository userDiscountRepository;
-
-    private UserDataRepository userDataRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public void setUserDataRepository(UserDataRepository userDataRepository) {
-        this.userDataRepository = userDataRepository;
-    }
-
-    @Autowired
-    public void setUserDiscountRepository(UserDiscountRepository userDiscountRepository) {
-        this.userDiscountRepository = userDiscountRepository;
-    }
-
-    @Autowired
-    public UserService(BaseRepository<User> baseRepository, UserRepository userRepository,
-                       ReferralUserService referralUserService) {
+    public UserService(BaseRepository<User> baseRepository) {
         super(baseRepository);
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.referralUserService = referralUserService;
     }
 
     public Integer getStepByChatId(Long chatId) {
