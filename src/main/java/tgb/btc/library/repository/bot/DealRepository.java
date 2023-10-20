@@ -77,6 +77,10 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query(value = "update Deal set isPersonalApplied=:isPersonalApplied where pid=:pid")
     void updateIsPersonalAppliedByPid(Long pid, Boolean isPersonalApplied);
 
+    @Modifying
+    @Query(value = "update Deal set paymentType=null where paymentType.pid=:paymentTypePid")
+    void updatePaymentTypeToNullByPaymentTypePid(Long paymentType);
+
     /**
      * DELETE
      */

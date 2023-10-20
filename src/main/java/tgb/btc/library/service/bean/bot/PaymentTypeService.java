@@ -72,6 +72,7 @@ public class PaymentTypeService {
 
     @Transactional
     public void remove(Long paymentTypePid) {
+        dealRepository.updatePaymentTypeToNullByPaymentTypePid(paymentTypePid);
         paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
         paymentTypeRepository.deleteById(paymentTypePid);
     }
