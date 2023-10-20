@@ -1,7 +1,6 @@
 package tgb.btc.library.bean.bot;
 
 import lombok.Builder;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.WithdrawalRequestStatus;
 
@@ -32,15 +31,6 @@ public class WithdrawalRequest extends BasePersist {
         this.phoneNumber = phoneNumber;
         this.status = status;
         this.isActive = isActive;
-    }
-
-    public static WithdrawalRequest buildFromUpdate(User user, Update update) {
-        WithdrawalRequest withdrawalRequest = new WithdrawalRequest();
-        withdrawalRequest.setUser(user);
-        withdrawalRequest.setStatus(WithdrawalRequestStatus.CREATED);
-        withdrawalRequest.setPhoneNumber(update.getMessage().getContact().getPhoneNumber());
-        withdrawalRequest.setActive(true);
-        return withdrawalRequest;
     }
 
     public User getUser() {
