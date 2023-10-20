@@ -14,6 +14,10 @@ public interface FilePaths {
 
     String VARIABLE_PROPERTIES = "config/variables.properties";
 
+    String BOT_VARIABLE_PROPERTIES = "config/bot_variables.properties";
+
+    String COMMON_VARIABLE_PROPERTIES = "config/common_variables.properties";
+
     String BOT_VARIABLE_BUFFER_PROPERTIES = "config/buffer/variables.properties";
 
     String CURRENCIES_TURNING_PROPERTIES = "config/currencies_turning.properties";
