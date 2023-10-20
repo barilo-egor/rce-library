@@ -6,6 +6,8 @@ public interface FilePaths {
      * properties
      */
 
+    String CONFIG_PROPERTIES = "config/system/config.properties";
+
     String BOT_PROPERTIES = "config/bot/bot.properties";
 
     String MESSAGE_PROPERTIES = "config/message.properties";
