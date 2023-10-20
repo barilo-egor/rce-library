@@ -6,8 +6,6 @@ public interface FilePaths {
      * properties
      */
 
-    String CONFIG_PROPERTIES = "config/system/config.properties";
-
     String BOT_PROPERTIES = "config/bot/bot.properties";
 
     String MESSAGE_PROPERTIES = "config/message.properties";
@@ -17,14 +15,6 @@ public interface FilePaths {
     String VARIABLE_PROPERTIES = "config/variables.properties";
 
     String VARIABLE_BUFFER_PROPERTIES = "config/buffer/variables.properties";
-
-    String BOT_VARIABLE_PROPERTIES = "config/variables/bot_variables.properties";
-
-    String BOT_VARIABLE_BUFFER_PROPERTIES = "config/buffer/bot_variables.properties";
-
-    String COMMON_VARIABLE_PROPERTIES = "config/variables/common_variables.properties";
-
-    String COMMON_VARIABLE_BUFFER_PROPERTIES = "config/buffer/common_variables.properties";
 
     String CURRENCIES_TURNING_PROPERTIES = "config/currencies_turning.properties";
 
