@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Slf4j
-public class BotVariablePropertiesUtil {
+public class VariablePropertiesUtil {
 
     private final static String wrongFormat = "Неверный формат переменной по ключу %s";
 
