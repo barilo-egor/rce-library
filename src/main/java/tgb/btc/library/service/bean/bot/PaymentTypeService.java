@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -67,5 +68,11 @@ public class PaymentTypeService {
 
     public PaymentType getByPid(Long pid) {
         return paymentTypeRepository.getByPid(pid);
+    }
+
+    @Transactional
+    public void remove(Long paymentTypePid) {
+        paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
+        paymentTypeRepository.deleteById(paymentTypePid);
     }
 }
