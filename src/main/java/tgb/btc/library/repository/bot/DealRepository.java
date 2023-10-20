@@ -79,7 +79,7 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Modifying
     @Query(value = "update Deal set paymentType=null where paymentType.pid=:paymentTypePid")
-    void updatePaymentTypeToNullByPaymentTypePid(Long paymentType);
+    void updatePaymentTypeToNullByPaymentTypePid(Long paymentTypePid);
 
     /**
      * DELETE
