@@ -9,6 +9,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
@@ -95,6 +96,7 @@ public class DealService extends BasePersistService<Deal> {
 
     public Deal createNewDeal(DealType dealType, Long chatId) {
         Deal deal = new Deal();
+        deal.setDealStatus(DealStatus.NEW);
         deal.setActive(false);
         deal.setPassed(false);
         deal.setDateTime(LocalDateTime.now());

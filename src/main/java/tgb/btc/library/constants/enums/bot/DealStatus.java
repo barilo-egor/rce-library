@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 public enum DealStatus implements ObjectNodeConvertable<DealStatus> {
     NEW("Новая"),
+    PAID("Оплачено"),
     AWAITING_VERIFICATION("Ожидает верификацию"),
     VERIFICATION_REJECTED("Верификация отклонена"),
     VERIFICATION_RECEIVED("Верификация получена"),
