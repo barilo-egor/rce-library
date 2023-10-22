@@ -7,10 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public interface PagingDealRepository extends PagingAndSortingRepository<Deal, Long> {
 
-    void findAllByDealStatusNot(DealStatus dealStatus, Pageable pageable);
+    List<Deal> findAllByDealStatusNot(DealStatus dealStatus, Pageable pageable);
 
 }
