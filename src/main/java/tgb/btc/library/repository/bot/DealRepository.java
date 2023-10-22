@@ -143,7 +143,7 @@ public interface DealRepository extends BaseRepository<Deal> {
     Long getUserChatIdByDealPid(Long pid);
 
     @Query("select d.user.username from Deal d where d.pid=:pid")
-    Long getUserUsernameByDealPid(Long pid);
+    String getUserUsernameByDealPid(Long pid);
 
     @Query("from Deal d where (d.date BETWEEN :startDate AND :endDate) and d.isPassed=true")
     List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate);
