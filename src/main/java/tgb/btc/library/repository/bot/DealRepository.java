@@ -81,6 +81,8 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query(value = "update Deal set paymentType=null where paymentType.pid=:paymentTypePid")
     void updatePaymentTypeToNullByPaymentTypePid(Long paymentTypePid);
 
+    void findAllByDealStatusNot(DealStatus dealStatus);
+
     /**
      * DELETE
      */
