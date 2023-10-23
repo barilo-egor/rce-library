@@ -17,6 +17,7 @@ import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
+import tgb.btc.library.service.schedule.DealDeleteScheduler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -127,5 +128,11 @@ public class DealService extends BasePersistService<Deal> {
         deleteById(dealPid);
         userRepository.updateCurrentDealByChatId(null, userChatId);
         if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
+        DealDeleteScheduler.deleteCryptoDeal(dealPid);
+    }
+
+    @Transactional
+    public void confirm(Long dealPid) {
+
     }
 }
