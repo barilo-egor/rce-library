@@ -1,6 +1,7 @@
 package tgb.btc.library.service.bean.bot;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
+import tgb.btc.library.service.process.BanningUserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +30,13 @@ public class DealService extends BasePersistService<Deal> {
     private final DealRepository dealRepository;
 
     private UserRepository userRepository;
+
+    private BanningUserService banningUserService;
+
+    @Autowired
+    public void setBanningUserService(BanningUserService banningUserService) {
+        this.banningUserService = banningUserService;
+    }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -110,5 +119,12 @@ public class DealService extends BasePersistService<Deal> {
 
     public boolean isFirstDeal(Long chatId) {
         return getDealsCountByUserChatId(chatId) < 1;
+    }
+
+    public void deleteDeal(Long dealPid, Boolean isBanUser) {
+        Long userChatId = getUserChatIdByDealPid(dealPid);
+        deleteById(dealPid);
+        userRepository.updateCurrentDealByChatId(null, userChatId);
+        if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
     }
 }
