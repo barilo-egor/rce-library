@@ -121,6 +121,7 @@ public class DealService extends BasePersistService<Deal> {
         return getDealsCountByUserChatId(chatId) < 1;
     }
 
+    @Transactional
     public void deleteDeal(Long dealPid, Boolean isBanUser) {
         Long userChatId = getUserChatIdByDealPid(dealPid);
         deleteById(dealPid);
