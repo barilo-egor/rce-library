@@ -181,7 +181,7 @@ public class DealService extends BasePersistService<Deal> {
     }
 
     @Transactional
-    public void confirm(Long dealPid, Long chatId) {
+    public void confirm(Long dealPid) {
         Deal deal = getByPid(dealPid);
         User user = deal.getUser();
 
