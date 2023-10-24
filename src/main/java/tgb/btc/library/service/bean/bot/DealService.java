@@ -58,7 +58,7 @@ public class DealService extends BasePersistService<Deal> {
 
     private INotifier notifier;
 
-    @Autowired
+    @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
     }
@@ -232,7 +232,7 @@ public class DealService extends BasePersistService<Deal> {
             }
             Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
             userService.updateReferralBalanceByChatId(total, refUser.getChatId());
-            if (BigDecimal.ZERO.compareTo(sumToAdd) != 0)
+            if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
                 notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
             userService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
         }
@@ -257,7 +257,7 @@ public class DealService extends BasePersistService<Deal> {
                     throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
             }
         }
-        notifier.sendNotify(deal.getUser().getChatId(), message);
+        if (Objects.nonNull(notifier)) notifier.sendNotify(deal.getUser().getChatId(), message);
 
         if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
     }
