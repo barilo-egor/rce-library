@@ -46,4 +46,6 @@ public interface FilePaths {
     String INFO_MESSAGE_PROPERTIES = "config/message/info_message.properties";
 
     String LOGIN_PROPERTIES = "config/system/login.properties";
+
+    String DEALS_RECEIPTS = "config/receipts";
 }
