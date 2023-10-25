@@ -3,6 +3,8 @@ package tgb.btc.library.bean.bot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -77,6 +79,7 @@ public class Deal extends BasePersist {
     private BigDecimal commission;
 
     @OneToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<PaymentReceipt> paymentReceipts;
 
     @Column(name = "DISCOUNT")
