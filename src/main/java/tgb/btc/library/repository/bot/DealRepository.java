@@ -83,7 +83,7 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Modifying
     @Query(value = "update Deal set additionalVerificationImageId=:additionalVerificationImageId where pid=:pid")
-    void updateAdditionalVerificationImageIdByPid(Long pid);
+    void updateAdditionalVerificationImageIdByPid(Long pid, String additionalVerificationImageId);
 
     void findAllByDealStatusNot(DealStatus dealStatus);
 
