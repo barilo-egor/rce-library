@@ -102,6 +102,9 @@ public class Deal extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private DealStatus dealStatus;
 
+    @Column(name = "ADDITIONAL_VERIFICATION_IMAGE_ID")
+    private String additionalVerificationImageId;
+
     public Boolean getCurrent() {
         return isCurrent;
     }
@@ -292,5 +295,13 @@ public class Deal extends BasePersist {
 
     public void setDealStatus(DealStatus dealStatus) {
         this.dealStatus = dealStatus;
+    }
+
+    public String getAdditionalVerificationImageId() {
+        return additionalVerificationImageId;
+    }
+
+    public void setAdditionalVerificationImageId(String additionalVerificationImageId) {
+        this.additionalVerificationImageId = additionalVerificationImageId;
     }
 }
