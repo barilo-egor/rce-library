@@ -81,6 +81,10 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query(value = "update Deal set paymentType=null where paymentType.pid=:paymentTypePid")
     void updatePaymentTypeToNullByPaymentTypePid(Long paymentTypePid);
 
+    @Modifying
+    @Query(value = "update Deal set additionalVerificationImageId=:additionalVerificationImageId where pid=:pid")
+    void updateAdditionalVerificationImageIdByPid(Long pid);
+
     void findAllByDealStatusNot(DealStatus dealStatus);
 
     /**
@@ -159,6 +163,9 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Query(value = "select fiatCurrency from Deal where pid=:pid")
     FiatCurrency getFiatCurrencyByPid(Long pid);
+
+    @Query(value = "select additionalVerificationImageId from Deal where pid=:pid")
+    String getAdditionalVerificationImageIdByPid(Long pid);
 
     /**
      * Reports
