@@ -1,6 +1,6 @@
 package tgb.btc.library.constants.enums.bot;
 
-public enum DeliveryMethod {
+public enum DeliveryType {
     VIP,
     STANDARD;
 }

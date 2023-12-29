@@ -102,8 +102,8 @@ public class Deal extends BasePersist {
     @Column(name = "ADDITIONAL_VERIFICATION_IMAGE_ID")
     private String additionalVerificationImageId;
 
-    @Column(name = "DELIVERY_METHOD")
-    private DeliveryMethod deliveryMethod;
+    @Column(name = "DELIVERY_TYPE")
+    private DeliveryType deliveryType;
 
     public Boolean getCurrent() {
         return isCurrent;
@@ -303,5 +303,13 @@ public class Deal extends BasePersist {
 
     public void setAdditionalVerificationImageId(String additionalVerificationImageId) {
         this.additionalVerificationImageId = additionalVerificationImageId;
+    }
+
+    public DeliveryType getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(DeliveryType deliveryType) {
+        this.deliveryType = deliveryType;
     }
 }
