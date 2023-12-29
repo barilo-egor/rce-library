@@ -6,10 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
-import tgb.btc.library.constants.enums.bot.CryptoCurrency;
-import tgb.btc.library.constants.enums.bot.DealStatus;
-import tgb.btc.library.constants.enums.bot.DealType;
-import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.bot.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -104,6 +101,9 @@ public class Deal extends BasePersist {
 
     @Column(name = "ADDITIONAL_VERIFICATION_IMAGE_ID")
     private String additionalVerificationImageId;
+
+    @Column(name = "DELIVERY_METHOD")
+    private DeliveryMethod deliveryMethod;
 
     public Boolean getCurrent() {
         return isCurrent;
