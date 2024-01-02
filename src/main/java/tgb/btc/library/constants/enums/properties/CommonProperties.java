@@ -10,7 +10,8 @@ public enum CommonProperties implements PropertiesReader {
     BULK_DISCOUNT_BUFFER(FilePaths.BULK_DISCOUNT_BUFFER_PROPERTIES, ','),
     TURNING_CURRENCIES(FilePaths.CURRENCIES_TURNING_PROPERTIES, ','),
     CONFIG(FilePaths.CONFIG_PROPERTIES, ','),
-    MODULES(FilePaths.MODULES_PROPERTIES, ',');
+    MODULES(FilePaths.MODULES_PROPERTIES, ','),
+    BACKUP_MAILS(FilePaths.BACKUP_MAILS, ',');
 
     private final String fileName;
     private final char listDelimiter;

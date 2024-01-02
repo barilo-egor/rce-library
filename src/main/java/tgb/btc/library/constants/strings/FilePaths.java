@@ -48,4 +48,6 @@ public interface FilePaths {
     String LOGIN_PROPERTIES = "config/system/login.properties";
 
     String DEALS_RECEIPTS = "config/receipts";
+
+    String BACKUP_MAILS = "config/system/backupmails.properties";
 }
