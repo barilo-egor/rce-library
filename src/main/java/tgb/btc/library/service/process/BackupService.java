@@ -29,7 +29,7 @@ public class BackupService {
 
     private JavaMailSender javaMailSender;
 
-    @Autowired
+    @Autowired(required = false)
     public void setJavaMailSender(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }

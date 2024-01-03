@@ -16,7 +16,7 @@ public class BackupScheduler {
         this.backupService = backupService;
     }
 
-    @Scheduled(cron = "0 0 03 * * *")
+//    @Scheduled(cron = "0 0 03 * * *")
     public void runBackup() {
         backupService.backup();
     }
