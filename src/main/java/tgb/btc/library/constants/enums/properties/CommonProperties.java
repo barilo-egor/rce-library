@@ -11,7 +11,8 @@ public enum CommonProperties implements PropertiesReader {
     TURNING_CURRENCIES(FilePaths.CURRENCIES_TURNING_PROPERTIES, ','),
     CONFIG(FilePaths.CONFIG_PROPERTIES, ','),
     MODULES(FilePaths.MODULES_PROPERTIES, ','),
-    BACKUP_MAILS(FilePaths.BACKUP_MAILS, ',');
+    BACKUP_MAILS(FilePaths.BACKUP_MAILS, ','),
+    FUNCTIONS_PROPERTIES(FilePaths.FUNCTIONS_PROPERTIES, ',');
 
     private final String fileName;
     private final char listDelimiter;
