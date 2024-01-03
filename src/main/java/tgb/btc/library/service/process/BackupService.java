@@ -36,6 +36,10 @@ public class BackupService {
 
     @Async
     public void backup() {
+        if (!CommonProperties.FUNCTIONS_PROPERTIES.getBoolean("auto.backup", Boolean.FALSE)) {
+            log.info("Резервное копирование отключено");
+            return;
+        }
         log.info("Запуск процесса резервного копирования");
         final String database = "rce";
         File backupFile = null;
