@@ -12,7 +12,6 @@ public enum CommonProperties implements PropertiesReader {
     CONFIG(FilePaths.CONFIG_PROPERTIES, ','),
     MODULES(FilePaths.MODULES_PROPERTIES, ','),
     BACKUP_MAILS(FilePaths.BACKUP_MAILS, ','),
-
     FUNCTIONS_PROPERTIES(FilePaths.FUNCTIONS_PROPERTIES, ',');
 
     private final String fileName;
