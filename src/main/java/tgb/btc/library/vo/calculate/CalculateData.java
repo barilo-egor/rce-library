@@ -2,6 +2,7 @@ package tgb.btc.library.vo.calculate;
 
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.util.properties.VariablePropertiesUtil;
@@ -25,11 +26,12 @@ public class CalculateData {
 
     private BigDecimal bulkDiscount;
 
-    public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse) {
-        this.fix = VariablePropertiesUtil.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
+    public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency,
+                         BigDecimal cryptoCourse, DeliveryType deliveryType) {
+        this.fix = VariablePropertiesUtil.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency, deliveryType);
         this.usdCourse = VariablePropertiesUtil.getBigDecimal(VariableType.USD_COURSE, fiatCurrency, dealType, cryptoCurrency);
-        this.commission = VariablePropertiesUtil.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
-        this.fixCommission = VariablePropertiesUtil.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.commission = VariablePropertiesUtil.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency, deliveryType);
+        this.fixCommission = VariablePropertiesUtil.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency, deliveryType);
         this.transactionalCommission = VariablePropertiesUtil.getTransactionCommission(cryptoCurrency);
         this.cryptoCourse = cryptoCourse;
     }

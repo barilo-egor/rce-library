@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.util.BigDecimalUtil;
@@ -34,9 +35,9 @@ public class CalculateService {
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-                                DealType dealType, Boolean isEnteredInCrypto) {
+                                DealType dealType, Boolean isEnteredInCrypto, DeliveryType deliveryType) {
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency), deliveryType);
 
         DealAmount dealAmount = new DealAmount();
         dealAmount.setChatId(chatId);
@@ -82,8 +83,8 @@ public class CalculateService {
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-                                DealType dealType) {
-        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null);
+                                DealType dealType, DeliveryType deliveryType) {
+        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null, deliveryType);
     }
 
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {

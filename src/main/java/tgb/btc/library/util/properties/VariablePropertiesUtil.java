@@ -3,6 +3,7 @@ package tgb.btc.library.util.properties;
 import lombok.extern.slf4j.Slf4j;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.CommonProperties;
 import tgb.btc.library.constants.enums.properties.VariableType;
@@ -48,6 +49,29 @@ public class VariablePropertiesUtil {
         return text;
     }
 
+    public static String getVariable(VariableType variableType, FiatCurrency fiatCurrency,
+                                     DealType dealType, CryptoCurrency cryptoCurrency, DeliveryType deliveryType) {
+        String text;
+        String key = DeliveryType.VIP.equals(deliveryType)
+                ? variableType.getKey() + "."
+                + DeliveryType.VIP.name().toLowerCase() + "."
+                + fiatCurrency.getCode() + "."
+                + dealType.getKey() + "."
+                + cryptoCurrency.getShortName()
+                : variableType.getKey() + "."
+                + fiatCurrency.getCode() + "."
+                + dealType.getKey() + "."
+                + cryptoCurrency.getShortName();
+        try {
+            text = CommonProperties.VARIABLE.getString(key);
+        } catch (Exception e) {
+            throw new BaseException("Переменная по ключу " + key + " не найдена.");
+        }
+        if (Objects.isNull(text))
+            throw new BaseException("Переменная по ключу " + variableType.getKey() + " не найдена.");
+        return text;
+    }
+
     public static String getVariable(VariableType variableType, DealType dealType, CryptoCurrency cryptoCurrency) {
         String text;
         String key = variableType.getKey() + "."
@@ -66,6 +90,12 @@ public class VariablePropertiesUtil {
     public static BigDecimal getBigDecimal(VariableType variableType, FiatCurrency fiatCurrency, DealType dealType,
                                            CryptoCurrency cryptoCurrency) {
         return BigDecimal.valueOf(Double.parseDouble(getVariable(variableType, fiatCurrency, dealType, cryptoCurrency)));
+    }
+
+    public static BigDecimal getBigDecimal(VariableType variableType, FiatCurrency fiatCurrency, DealType dealType,
+                                           CryptoCurrency cryptoCurrency, DeliveryType deliveryType) {
+        return BigDecimal.valueOf(Double.parseDouble(getVariable(variableType, fiatCurrency, dealType, cryptoCurrency,
+                deliveryType)));
     }
 
     public static BigDecimal getBigDecimal(VariableType variableType, DealType dealType, CryptoCurrency cryptoCurrency) {
