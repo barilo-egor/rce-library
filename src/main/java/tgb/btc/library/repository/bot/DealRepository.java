@@ -6,10 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
-import tgb.btc.library.constants.enums.bot.CryptoCurrency;
-import tgb.btc.library.constants.enums.bot.DealStatus;
-import tgb.btc.library.constants.enums.bot.DealType;
-import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
@@ -86,6 +83,10 @@ public interface DealRepository extends BaseRepository<Deal> {
     void updateAdditionalVerificationImageIdByPid(Long pid, String additionalVerificationImageId);
 
     void findAllByDealStatusNot(DealStatus dealStatus);
+
+    @Modifying
+    @Query("update Deal set deliveryType=:deliveryType where pid=:pid")
+    void updateDeliveryTypeByPid(Long pid, DeliveryType deliveryType);
 
     /**
      * DELETE
@@ -166,6 +167,9 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Query(value = "select additionalVerificationImageId from Deal where pid=:pid")
     String getAdditionalVerificationImageIdByPid(Long pid);
+
+    @Query(value = "select deliveryType from Deal where pid=:pid")
+    DeliveryType getDeliveryTypeByPid(Long pid);
 
     /**
      * Reports
