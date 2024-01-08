@@ -1,8 +1,10 @@
 package tgb.btc.library.constants.enums.bot;
 
+import tgb.btc.library.constants.enums.CommonDesignProperties;
+
 public enum DeliveryType {
-    VIP("Вип"),
-    STANDARD("Обычный");
+    VIP(CommonDesignProperties.DESIGN.getString("VIP")),
+    STANDARD(CommonDesignProperties.DESIGN.getString("STANDARD"));
 
     final String displayName;
 
