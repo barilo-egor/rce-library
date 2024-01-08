@@ -76,4 +76,9 @@ public class PaymentTypeService {
         paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
         paymentTypeRepository.deleteById(paymentTypePid);
     }
+
+    @Transactional
+    public boolean isNameFree(String name) {
+        return paymentTypeRepository.countByNameLike(name) == 0;
+    }
 }
