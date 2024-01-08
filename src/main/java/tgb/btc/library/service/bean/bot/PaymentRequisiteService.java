@@ -46,7 +46,8 @@ public class PaymentRequisiteService {
                 PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order);
             } else {
                 Integer paymentTypeRequisitesSize = paymentRequisiteRepository.countByPaymentTypePid(paymentTypePid);
-                if (Objects.isNull(paymentTypeRequisitesSize) || paymentTypeRequisitesSize.equals(order + 1)) PAYMENT_REQUISITE_ORDER.put(paymentTypePid, 1);
+                if (Objects.isNull(paymentTypeRequisitesSize) || paymentTypeRequisitesSize.equals(order + 1))
+                    PAYMENT_REQUISITE_ORDER.put(paymentTypePid, 0);
                 else PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order + 1);
             }
         }
