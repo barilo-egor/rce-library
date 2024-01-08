@@ -31,7 +31,7 @@ public class PaymentRequisiteService {
         synchronized (this) {
             Integer order = PAYMENT_REQUISITE_ORDER.get(paymentTypePid);
             if (Objects.isNull(order)) {
-                order = 1;
+                order = 0;
                 PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order);
             }
             return order;
@@ -42,7 +42,7 @@ public class PaymentRequisiteService {
         synchronized (this) {
             Integer order = PAYMENT_REQUISITE_ORDER.get(paymentTypePid);
             if (Objects.isNull(order)) {
-                order = 1;
+                order = 0;
                 PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order);
             } else {
                 Integer paymentTypeRequisitesSize = paymentRequisiteRepository.countByPaymentTypePid(paymentTypePid);
