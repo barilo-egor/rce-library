@@ -53,6 +53,12 @@ public class PaymentRequisiteService {
         }
     }
 
+    public void removeOrder(Long paymentTypePid) {
+        synchronized (this) {
+            PAYMENT_REQUISITE_ORDER.remove(paymentTypePid);
+        }
+    }
+
     public String getRequisite(PaymentType paymentType) {
         List<PaymentRequisite> paymentRequisite = paymentRequisiteRepository.getByPaymentType_Pid(paymentType.getPid());
         if (CollectionUtils.isEmpty(paymentRequisite)) {
