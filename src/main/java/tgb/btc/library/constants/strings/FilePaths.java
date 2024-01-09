@@ -38,6 +38,8 @@ public interface FilePaths {
 
     String REVIEW_PRISE_PROPERTIES = "config/review_prise.properties";
 
+    String DESIGN_PROPERTIES = "config/design/design.properties";
+
     /**
      * PICTURES
      */
