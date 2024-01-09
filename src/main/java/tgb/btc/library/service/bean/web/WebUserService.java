@@ -42,11 +42,12 @@ public class WebUserService implements UserDetailsService {
         return webUserRepository.save(webUser);
     }
 
-    public WebUser save(String username, String password, RoleConstants role) {
+    public WebUser save(String username, String password, RoleConstants role, Long chatId) {
         WebUser webUser = new WebUser();
         webUser.setUsername(username);
         webUser.setPassword(passwordEncoder.encode(password));
         webUser.setEnabled(true);
+        webUser.setChatId(chatId);
         if (Objects.isNull(role)) {
             role = RoleConstants.ROLE_USER;
         }
