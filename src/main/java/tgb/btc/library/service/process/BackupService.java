@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import tgb.btc.library.conditional.BackupCondition;
 import tgb.btc.library.constants.enums.properties.CommonProperties;
 import tgb.btc.library.exception.BackupException;
 
@@ -19,6 +21,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
+@Conditional(BackupCondition.class)
 public class BackupService {
 
     @Value("${spring.datasource.username}")
