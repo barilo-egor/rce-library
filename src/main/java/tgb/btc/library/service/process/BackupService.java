@@ -11,7 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.conditional.BackupCondition;
-import tgb.btc.library.constants.enums.properties.CommonProperties;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.BackupException;
 
 import javax.mail.internet.MimeMessage;
@@ -39,7 +39,7 @@ public class BackupService {
 
     @Async
     public void backup() {
-        if (!CommonProperties.FUNCTIONS_PROPERTIES.getBoolean("auto.backup", Boolean.FALSE)) {
+        if (!PropertiesPath.FUNCTIONS_PROPERTIES.getBoolean("auto.backup", Boolean.FALSE)) {
             log.info("Резервное копирование отключено");
             return;
         }
@@ -66,7 +66,7 @@ public class BackupService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE);
-            helper.setTo(CommonProperties.BACKUP_MAILS.getString("backup.mails").split(";"));
+            helper.setTo(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";"));
             helper.setSubject("Резервная копия БД");
             helper.setText(StringUtils.EMPTY);
             if (exitCode != 0) {

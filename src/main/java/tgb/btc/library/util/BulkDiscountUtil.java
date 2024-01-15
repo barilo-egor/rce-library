@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.CommonProperties;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.PropertyValueNotFoundException;
 import tgb.btc.library.vo.BulkDiscount;
 
@@ -35,7 +35,7 @@ public final class BulkDiscountUtil {
     }
 
     static {
-        for (String key : CommonProperties.BULK_DISCOUNT.getKeys()) {
+        for (String key : PropertiesPath.BULK_DISCOUNT_PROPERTIES.getKeys()) {
             int sum;
             if (StringUtils.isBlank(key)) {
                 throw new PropertyValueNotFoundException("Не указано название для одного из ключей" + key + ".");
@@ -45,7 +45,7 @@ public final class BulkDiscountUtil {
             } catch (NumberFormatException e) {
                 throw new PropertyValueNotFoundException("Не корректное название для ключа " + key + ".");
             }
-            String value =  CommonProperties.BULK_DISCOUNT.getString(key);
+            String value = PropertiesPath.BULK_DISCOUNT_PROPERTIES.getString(key);
             if (StringUtils.isBlank(value)) {
                 throw new PropertyValueNotFoundException("Не указано значение для ключа " + key + ".");
             }
