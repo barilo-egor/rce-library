@@ -6,7 +6,7 @@ import tgb.btc.library.constants.enums.CryptoApi;
 import tgb.btc.library.constants.enums.ManualBTCApi;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.CommonProperties;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.exception.ReadFromUrlException;
@@ -24,7 +24,7 @@ public class CryptoCurrencyService {
     private static final boolean IS_BTC_USD_API_MANUAL;
 
     static {
-        String propertyApi = CommonProperties.CONFIG.getString("bot.btc.api");
+        String propertyApi = PropertiesPath.CONFIG_PROPERTIES.getString("bot.btc.api");
         if (Objects.isNull(propertyApi)) {
             CURRENT_BTC_USD_API = getAvailable();
             IS_BTC_USD_API_MANUAL = false;
