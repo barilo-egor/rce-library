@@ -95,6 +95,9 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Modifying
     void deleteByUser_ChatId(Long chatId);
 
+    @Modifying
+    void deleteByPidIn(List<Long> pidList);
+
     /**
      * SELECT
      */
@@ -104,6 +107,12 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Query("select commission from Deal where pid=:pid")
     BigDecimal getCommissionByPid(Long pid);
+
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus not in :dealStatus")
+    Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus);
+
+    @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
+    List<Long> getListNewDeal(Long chatId, DealStatus dealStatus);
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.isActive=false")
     Long getPassedDealsCountByUserChatId(Long chatId);
@@ -131,9 +140,6 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Query("select discount from Deal where pid=:pid")
     BigDecimal getDiscountByPid(Long pid);
-
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isActive=true")
-    Long getActiveDealsCountByUserChatId(Long chatId);
 
     @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.isActive=true")
     Long getPidActiveDealByChatId(Long chatId);
@@ -193,7 +199,7 @@ public interface DealRepository extends BaseRepository<Deal> {
 
     @Query(value = "select sum(amount) from Deal where isPassed=:isPassed and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
     BigDecimal getTotalAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
-    
+
     @Query(value = "select count(pid) from Deal where user.chatId=:chatId and isPassed=true")
     Integer getCountPassedByChatId(Long chatId);
 
@@ -201,7 +207,7 @@ public interface DealRepository extends BaseRepository<Deal> {
     Integer getCountByPeriod(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     @Query(value = "select sum(cryptoAmount) from Deal where user.chatId=:chatId and isPassed=true and cryptoCurrency=:cryptoCurrency and dealType=:dealType")
-    BigDecimal getUserCryptoAmountSum(Long chatId,CryptoCurrency cryptoCurrency, DealType dealType);
+    BigDecimal getUserCryptoAmountSum(Long chatId, CryptoCurrency cryptoCurrency, DealType dealType);
 
     @Query(value = "select sum(amount) from Deal where user.chatId=:chatId and isPassed=true and dealType=:dealType")
     BigDecimal getUserAmountSum(Long chatId, DealType dealType);
