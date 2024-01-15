@@ -9,7 +9,7 @@ public enum DeliveryKind implements Module {
 
     @Override
     public boolean isCurrent() {
-        return this.equals(DeliveryKind.valueOf(CommonProperties.MODULES.getString("delivery.kind")));
+        return this.equals(DeliveryKind.valueOf(CommonProperties.MODULES.getString("delivery.kind", "NONE")));
     }
 
 }
