@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -67,17 +68,21 @@ public class BackupService {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE);
             helper.setTo(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";"));
-            helper.setSubject("Резервная копия БД");
+            helper.setFrom(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";"));
+            String botUsername = PropertiesPath.BOT_PROPERTIES.getString("bot.username");
+            helper.setSubject("Резервная копия БД " + botUsername);
             helper.setText(StringUtils.EMPTY);
             if (exitCode != 0) {
                 helper.setText("Во время резервного копирования произошла ошибка. Код ответа " + exitCode);
             } else {
                 FileSystemResource resource = new FileSystemResource(file);
                 String timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-                helper.addAttachment("backup_" + timeStamp + ".sql", resource);
+                helper.addAttachment(botUsername + "_backup_" + timeStamp + ".sql", resource);
             }
+            log.info("Mail back up FROM: " + ((JavaMailSenderImpl) javaMailSender).getUsername());
             javaMailSender.send(message);
         } catch (Exception e) {
+            log.error("Ошибка отправки бэк апа.", e);
             throw new BackupException(e.getMessage());
         }
     }
