@@ -97,6 +97,11 @@ public class VariablePropertiesUtil {
         return Boolean.parseBoolean(getVariable(variableType));
     }
 
+    public static Integer getInt(VariableType variableType, FiatCurrency fiatCurrency, DealType dealType,
+                                 CryptoCurrency cryptoCurrency) {
+        return Integer.parseInt(getVariable(variableType, fiatCurrency, dealType, cryptoCurrency));
+    }
+
     public static Integer getInt(VariableType variableType) {
         try {
             return Integer.parseInt(getVariable(variableType));
