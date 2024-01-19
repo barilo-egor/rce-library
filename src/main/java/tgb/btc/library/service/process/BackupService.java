@@ -68,7 +68,7 @@ public class BackupService {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, Boolean.TRUE);
             helper.setTo(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";"));
-            helper.setFrom(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";"));
+            helper.setFrom(PropertiesPath.BACKUP_MAILS.getString("backup.mails").split(";")[0]);
             String botUsername = PropertiesPath.BOT_PROPERTIES.getString("bot.username");
             helper.setSubject("Резервная копия БД " + botUsername);
             helper.setText(StringUtils.EMPTY);
