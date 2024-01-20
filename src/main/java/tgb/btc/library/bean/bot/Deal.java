@@ -103,6 +103,7 @@ public class Deal extends BasePersist {
     private String additionalVerificationImageId;
 
     @Column(name = "DELIVERY_TYPE")
+    @Enumerated(value = EnumType.STRING)
     private DeliveryType deliveryType;
 
     public Boolean getCurrent() {
