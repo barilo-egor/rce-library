@@ -30,6 +30,10 @@ public class Role extends BasePersist implements GrantedAuthority, ObjectNodeCon
         super(pid);
     }
 
+    public Role(String name) {
+        this.name = name;
+    }
+
     public Role(Long pid, String name) {
         super(pid);
         this.name = name;
