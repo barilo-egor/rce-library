@@ -80,7 +80,7 @@ public class CryptoCurrencyService {
             case BITCOIN:
                 return CryptoApi.BTC_RUB_BINANCE.getCourse();
             case LITECOIN:
-                return CryptoApi.LTC_RUB_BINANCE.getCourse();
+                return CryptoApi.LTC_RUB_COINREMITTER.getCourse();
             default:
                 throw new BaseException("Для данной криптовалюты не предусмотрена реализация.");
         }
