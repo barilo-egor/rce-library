@@ -24,6 +24,8 @@ public enum CryptoApi {
             jsonObject -> jsonObject.get("price")),
     LTC_RUB_BINANCE("https://api1.binance.com/api/v3/avgPrice?symbol=LTCRUB",
             jsonObject -> jsonObject.get("price")),
+    LTC_RUB_COINREMITTER("https://min-api.cryptocompare.com/data/price?fsym=LTC&tsyms=RUB",
+            jsonObject -> jsonObject.get("RUB")),
     XMR_USD_COINREMITTER("https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=BTC,USD,EUR",
             jsonObject -> jsonObject.get("USD"))
     //    XMR_USD_COINREMITTER("https://coinremitter.com/api/v3/get-coin-rate",
