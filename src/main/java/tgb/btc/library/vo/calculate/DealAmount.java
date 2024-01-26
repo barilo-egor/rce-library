@@ -27,6 +27,8 @@ public class DealAmount {
 
     private Long chatId;
 
+    private BigDecimal creditedAmount;
+
     public DealType getDealType() {
         return dealType;
     }
@@ -83,11 +85,20 @@ public class DealAmount {
         this.dealType = dealType;
     }
 
+    public BigDecimal getCreditedAmount() {
+        return creditedAmount;
+    }
+
+    public void setCreditedAmount(BigDecimal creditedAmount) {
+        this.creditedAmount = creditedAmount;
+    }
+
     public void updateDeal(Deal deal) {
         deal.setAmount(amount);
         deal.setCryptoAmount(cryptoAmount);
         deal.setCommission(commission);
         deal.setOriginalPrice(amount);
+        deal.setCreditedAmount(creditedAmount);
     }
 
     public BigDecimal getAmountWithoutCommission() {
