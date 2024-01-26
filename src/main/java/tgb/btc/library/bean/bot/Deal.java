@@ -106,6 +106,9 @@ public class Deal extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private DeliveryType deliveryType;
 
+    @Column(name = "CREDITED_AMOUNT")
+    private BigDecimal creditedAmount;
+
     public Boolean getCurrent() {
         return isCurrent;
     }
@@ -312,5 +315,13 @@ public class Deal extends BasePersist {
 
     public void setDeliveryType(DeliveryType deliveryType) {
         this.deliveryType = deliveryType;
+    }
+
+    public BigDecimal getCreditedAmount() {
+        return creditedAmount;
+    }
+
+    public void setCreditedAmount(BigDecimal creditedAmount) {
+        this.creditedAmount = creditedAmount;
     }
 }
