@@ -27,9 +27,11 @@ public enum CryptoApi {
     LTC_RUB_COINREMITTER("https://min-api.cryptocompare.com/data/price?fsym=LTC&tsyms=RUB",
             jsonObject -> jsonObject.get("RUB")),
     XMR_USD_COINREMITTER("https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=BTC,USD,EUR",
-            jsonObject -> jsonObject.get("USD"))
+            jsonObject -> jsonObject.get("USD")),
     //    XMR_USD_COINREMITTER("https://coinremitter.com/api/v3/get-coin-rate",
     //                         jsonObject -> ((JSONObject) ((JSONObject) jsonObject.get("data")).get("XMR")).get("price"))
+    USD_RUB_EXCHANGERATE("https://v6.exchangerate-api.com/v6/8ae628548cbe656cdc6f0a9e/latest/USD",
+            jsonObject -> ((JSONObject) jsonObject.get("conversion_rates")).get("RUB"))
     ;
 
     final String url;

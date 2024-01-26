@@ -177,6 +177,9 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query(value = "select deliveryType from Deal where pid=:pid")
     DeliveryType getDeliveryTypeByPid(Long pid);
 
+    @Query("select creditedAmount from Deal where pid=:pid")
+    BigDecimal getCreditedAmountByPid(Long pid);
+
     /**
      * Reports
      */
