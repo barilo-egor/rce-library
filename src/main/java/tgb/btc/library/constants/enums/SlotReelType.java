@@ -14,15 +14,15 @@ public enum SlotReelType implements Module {
     private static boolean isPropertiesFilesExist() {
         boolean returnValue = true;
         if (!PropertiesPath.GAMES_PROPERTIES.isExist() || PropertiesPath.GAMES_PROPERTIES.getString("slot.reel") == null) {
-            log.warn("Отсутствует файл " + PropertiesPath.GAMES_PROPERTIES.getFileName());
+            log.trace("Отсутствует файл " + PropertiesPath.GAMES_PROPERTIES.getFileName());
             returnValue = false;
         }
         if (!PropertiesPath.SLOT_REEL_PROPERTIES.isExist()) {
-            log.warn("Отсутствует файл " + PropertiesPath.SLOT_REEL_PROPERTIES.getFileName());
+            log.trace("Отсутствует файл " + PropertiesPath.SLOT_REEL_PROPERTIES.getFileName());
             returnValue = false;
         }
         if (!PropertiesPath.SLOT_REEL_MESSAGE.isExist()) {
-            log.warn("Отсутствует файл " + PropertiesPath.SLOT_REEL_MESSAGE.getFileName());
+            log.trace("Отсутствует файл " + PropertiesPath.SLOT_REEL_MESSAGE.getFileName());
             returnValue = false;
         }
         return returnValue;

@@ -1,8 +1,8 @@
 package tgb.btc.library.service.process;
 
-import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.SlotValue;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
@@ -28,6 +28,18 @@ public class SlotReelService {
             result[i] = values[ii];
         }
 
+        Map<SlotValue[], String> winCondition = getWinCondition();
+        Optional<SlotValue[]> str = winCondition.keySet().stream().filter(key ->
+                        Arrays.compare(key, result) == 0 ||
+                                Arrays.compare(key, Arrays.copyOf(result, result.length - 1)) == 0)
+                .findFirst();
+        return str.map(value -> ScrollResult.builder()
+                        .winAmount(winCondition.get(value)).slotValues(result).build())
+                .orElse(ScrollResult.builder().slotValues(result).build());
+    }
+
+    @Cacheable("slotReelWinCondition")
+    public Map<SlotValue[], String> getWinCondition() {
         Map<SlotValue[], String> winCondition = new LinkedHashMap<>();
         winCondition.put(SlotValue.BAR.getThree(), SlotValue.BAR.getTripleAmount());
         winCondition.put(SlotValue.CHERRY.getThree(), SlotValue.CHERRY.getTripleAmount());
@@ -37,22 +49,15 @@ public class SlotReelService {
         winCondition.put(SlotValue.CHERRY.getTwo(), SlotValue.CHERRY.getDoubleAmount());
         winCondition.put(SlotValue.LEMON.getTwo(), SlotValue.LEMON.getDoubleAmount());
         winCondition.put(SlotValue.SEVEN.getTwo(), SlotValue.SEVEN.getDoubleAmount());
-
-        Optional<SlotValue[]> str = winCondition.keySet().stream().filter(key ->
-                        Arrays.compare(key, result) == 0 ||
-                                Arrays.compare(key, Arrays.copyOf(result, result.length - 1)) == 0)
-                .findFirst();
-
-        return str.map(value -> ScrollResult.builder()
-                        .winAmount(winCondition.get(value)).slotValues(result).build())
-                .orElse(ScrollResult.builder().slotValues(result).build());
+        return winCondition;
     }
 
     public String slotCombinationToText(SlotValue[] values, String delimiter) {
-        return Arrays.stream(values).map(value -> EmojiParser.parseToUnicode(value.getEmojiValue()))
+        return Arrays.stream(values).map(SlotValue::getEmojiValue)
                 .collect(Collectors.joining(delimiter));
     }
 
+    @Cacheable("slotReelStartMessage")
     public String startMessage() {
         return PropertiesPath.SLOT_REEL_MESSAGE.getString("start") + System.lineSeparator() + System.lineSeparator() +
                 getStartMessageRow(SlotValue.SEVEN.getThree(), SlotValue.SEVEN.getTripleAmount()) +

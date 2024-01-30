@@ -1,14 +1,13 @@
 package tgb.btc.library.constants.enums;
 
-import com.vdurmont.emoji.EmojiParser;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 
 public enum SlotValue {
 
     BAR("BAR"),
-    CHERRY(EmojiParser.parseToUnicode(":cherries:")),
-    LEMON(EmojiParser.parseToUnicode(":lemon:")),
-    SEVEN(EmojiParser.parseToUnicode(":seven:"));
+    CHERRY("\uD83C\uDF52"),
+    LEMON("🍋"),
+    SEVEN("7⃣");
 
     private final String emojiValue;
 
