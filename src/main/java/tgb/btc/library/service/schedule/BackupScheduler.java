@@ -24,4 +24,9 @@ public class BackupScheduler {
         backupService.backup();
     }
 
+    @Scheduled(cron = "0 0 00 * * 1")
+    public void removeOldBackup() {
+        backupService.removeOldBackup();
+    }
+
 }
