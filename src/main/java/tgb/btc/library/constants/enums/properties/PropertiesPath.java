@@ -22,7 +22,10 @@ public enum PropertiesPath implements PropertiesReader {
     DESIGN_PROPERTIES("config/design/design.properties", ','),
     INFO_MESSAGE_PROPERTIES("config/message/info_message.properties", ','),
     LOGIN_PROPERTIES("config/system/login.properties", ','),
-    BACKUP_MAILS("config/system/backupmails.properties", ',');
+    BACKUP_MAILS("config/system/backupmails.properties", ','),
+    GAMES_PROPERTIES("config/bot/games/games.properties", ','),
+    SLOT_REEL_PROPERTIES("config/bot/games/slotreel/config.properties", ','),
+    SLOT_REEL_MESSAGE("config/bot/games/slotreel/message.properties", ',');
 
     private final String fileName;
 

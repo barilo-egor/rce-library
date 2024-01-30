@@ -121,6 +121,10 @@ public interface PropertiesReader {
         ReaderSupport.getInstance(this);
     }
 
+    default boolean isExist() {
+        return new File(this.getFileName()).exists();
+    }
+
     class ReaderSupport {
         private static final Map<PropertiesReader, PropertiesConfiguration> properties = new HashMap<>();
 
