@@ -29,6 +29,11 @@ public class DealDeleteScheduler {
 
     private INotifier notifier;
 
+    @Autowired(required = false)
+    public void setNotifier(INotifier notifier) {
+        this.notifier = notifier;
+    }
+
     @PostConstruct
     public void post() {
         log.info("Автоматическое удаление недействительных заявок загружено в контекст.");
@@ -71,7 +76,7 @@ public class DealDeleteScheduler {
                 dealRepository.deleteById(dealPid);
                 userService.updateCurrentDealByChatId(null, chatId);
                 deleteCryptoDeal(dealPid);
-                notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
+                if (Objects.nonNull(notifier)) notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
                 log.debug("Автоматически удалена заявка №" + dealPid + " по истечению " + dealActiveTime + " минут.");
             }
         }
