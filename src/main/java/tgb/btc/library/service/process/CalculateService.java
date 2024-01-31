@@ -1,5 +1,6 @@
 package tgb.btc.library.service.process;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.CryptoApi;
@@ -36,7 +37,12 @@ public class CalculateService {
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-                                DealType dealType, Boolean isEnteredInCrypto) {
+            DealType dealType, Boolean isEnteredInCrypto) {
+        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, isEnteredInCrypto, false);
+    }
+
+    public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
+                                DealType dealType, Boolean isEnteredInCrypto, boolean withCredited) {
         CalculateData calculateData =
                 new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
 
@@ -48,17 +54,21 @@ public class CalculateService {
         dealAmount.setCalculateData(calculateData);
         if (dealAmount.isEnteredInCrypto()) {
             dealAmount.setCryptoAmount(enteredAmount);
-            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
+            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, withCredited);
             else calculateAmountForSell(dealAmount, calculateData, fiatCurrency);
         } else {
             dealAmount.setAmount(enteredAmount);
-            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
+            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, withCredited);
             else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
         }
         return dealAmount;
     }
 
     public DealAmount calculate(CalculateDataForm calculateDataForm) {
+        return calculate(calculateDataForm, false);
+    }
+
+    public DealAmount calculate(CalculateDataForm calculateDataForm, boolean withCredited) {
         FiatCurrency fiatCurrency = calculateDataForm.getFiatCurrency();
         CryptoCurrency cryptoCurrency = calculateDataForm.getCryptoCurrency();
         DealType dealType = calculateDataForm.getDealType();
@@ -74,10 +84,10 @@ public class CalculateService {
         else dealAmount.setAmount(calculateDataForm.getAmount());
 
         if (dealAmount.isEnteredInCrypto()) {
-            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency());
+            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency(), withCredited);
             else calculateAmountForSell(dealAmount, calculateData, fiatCurrency);
         } else {
-            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency());
+            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency(), withCredited);
             else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
         }
         return dealAmount;
@@ -93,7 +103,7 @@ public class CalculateService {
                 || enteredAmount.compareTo(VariablePropertiesUtil.getBigDecimal(VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey())) < 0;
     }
 
-    private void calculateCryptoAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency) {
+    private void calculateCryptoAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency, boolean withCredited) {
         BigDecimal amount = dealAmount.getAmount();
         BigDecimal commission = amount.compareTo(calculateData.getFix()) < 0
                 ? calculateData.getFixCommission()
@@ -116,10 +126,10 @@ public class CalculateService {
         BigDecimal usd = BigDecimalUtil.divideHalfUp(amount, usdCourse);
         BigDecimal cryptoAmount = BigDecimalUtil.round(BigDecimalUtil.divideHalfUp(usd, calculateData.getCryptoCourse()), 5);
         dealAmount.setCryptoAmount(cryptoAmount);
-        dealAmount.setCreditedAmount(convertToFiat(fiatCurrency, cryptoAmount, calculateData.getCryptoCourse()));
+        if (withCredited) dealAmount.setCreditedAmount(convertToFiat(fiatCurrency, cryptoAmount, calculateData.getCryptoCourse()));
     }
 
-    private void calculateAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency) {
+    private void calculateAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency, boolean withCredited) {
         BigDecimal amount;
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
@@ -167,7 +177,7 @@ public class CalculateService {
             amount = BigDecimalUtil.addHalfUp(amount, BigDecimalUtil.multiplyHalfUp(transactionCommission, course));
         }
         dealAmount.setAmount(amount);
-        dealAmount.setCreditedAmount(convertToFiat(fiatCurrency, cryptoAmount, calculateData.getCryptoCourse()));
+        if (withCredited) dealAmount.setCreditedAmount(convertToFiat(fiatCurrency, cryptoAmount, calculateData.getCryptoCourse()));
     }
 
     private BigDecimal convertToFiat(BigDecimal cryptoAmount, BigDecimal cryptoCourse, BigDecimal usdCourse) {
