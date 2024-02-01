@@ -1,14 +1,23 @@
 package tgb.btc.library.service.process;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.RPSElement;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.service.bean.bot.UserService;
 
 import java.util.Objects;
 
 @Service
 public class RPSService {
+
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     private Boolean getResult(String name, RPSElement userElement, RPSElement element) {
         switch (userElement) {
@@ -43,7 +52,7 @@ public class RPSService {
         return null;
     }
 
-    public String getResultMessage(String name) {
+    public String getResultMessageText(String name, String sum, Long chatId) {
         RPSElement userElement = RPSElement.valueOf(name);
         RPSElement element = RPSElement.getRandomElement();
         Boolean result = getResult(name, userElement, element);
@@ -51,8 +60,11 @@ public class RPSService {
         sb.append("Вы выбрали: ").append(userElement.getSymbol()).append(System.lineSeparator());
         sb.append("Против: ").append(element.getSymbol()).append(System.lineSeparator());
         if (Boolean.TRUE.equals(result)) {
-            sb.append(PropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator());
+            userService.updateReferralBalanceByChatId(userService.getReferralBalanceByChatId(chatId) + Integer.parseInt(sum), chatId);
+            sb.append(PropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator())
+                    .append(PropertiesPath.RPS_MESSAGE.getString("win.sum")).append(" ").append(sum);
         } else if (Objects.nonNull(result)) {
+            userService.updateReferralBalanceByChatId(userService.getReferralBalanceByChatId(chatId) - Integer.parseInt(sum), chatId);
             sb.append(PropertiesPath.RPS_MESSAGE.getString("lose")).append(System.lineSeparator());
         } else {
             sb.append(PropertiesPath.RPS_MESSAGE.getString("draw"));

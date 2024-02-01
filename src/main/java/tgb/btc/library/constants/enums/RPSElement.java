@@ -19,8 +19,9 @@ public enum RPSElement {
     }
 
     public static RPSElement getRandomElement() {
-        int x = (int) (Math.random() * 3);
-        return RPSElement.values()[x];
+        RPSElement[] elements = RPSElement.values();
+        int x = (int) (Math.random() * elements.length);
+        return elements[x];
     }
 
 }
