@@ -27,8 +27,6 @@ public class CalculateService {
 
     private PersonalDiscountsCache personalDiscountsCache;
 
-    public static final BigDecimal USD_RUB_MANUAL_COURSE = PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("usd.rub.course");
-
     @Autowired
     public void setPersonalDiscountsCache(PersonalDiscountsCache personalDiscountsCache) {
         this.personalDiscountsCache = personalDiscountsCache;
@@ -277,8 +275,9 @@ public class CalculateService {
     public BigDecimal getUSDToFiat(FiatCurrency fiatCurrency) {
         if (!FiatCurrency.RUB.equals(fiatCurrency))
             throw new BaseException("Реализация предусмотрена только для " + FiatCurrency.RUB.name());
-        if (Objects.nonNull(USD_RUB_MANUAL_COURSE)) {
-            return USD_RUB_MANUAL_COURSE;
+        BigDecimal usdRubManualCourse = PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("usd.rub.course");
+        if (Objects.nonNull(usdRubManualCourse)) {
+            return usdRubManualCourse;
         }
         return CryptoApi.USD_RUB_EXCHANGERATE.getCourse();
     }
