@@ -1,6 +1,5 @@
 package tgb.btc.library.service.process;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.CryptoApi;
@@ -37,8 +36,8 @@ public class CalculateService {
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-            DealType dealType, Boolean isEnteredInCrypto) {
-        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, isEnteredInCrypto, false);
+            DealType dealType, boolean withCredited) {
+        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null, withCredited);
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
@@ -91,11 +90,6 @@ public class CalculateService {
             else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
         }
         return dealAmount;
-    }
-
-    public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-                                DealType dealType) {
-        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null);
     }
 
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {
