@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public interface PropertiesReader {
@@ -105,6 +102,7 @@ public interface PropertiesReader {
     }
 
     default void setProperty(String key, Object value) {
+        value = Objects.isNull(value) ? null : String.valueOf(value);
         ReaderSupport.getInstance(this).setProperty(key, value);
     }
 
