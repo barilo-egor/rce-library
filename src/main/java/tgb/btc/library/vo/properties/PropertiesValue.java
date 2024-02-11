@@ -27,9 +27,10 @@ public class PropertiesValue implements ObjectNodeConvertable<PropertiesValue> {
 
     @Override
     public Function<PropertiesValue, ObjectNode> mapFunction() {
-        return apiResponse -> JacksonUtil.getEmpty()
-                .put("key", this.key)
-                .put("value", String.valueOf(this.value));
+        ObjectNode objectNode = JacksonUtil.getEmpty();
+        objectNode.put("key", this.key);
+        JacksonUtil.put(objectNode, "value", value);
+        return apiResponse -> objectNode;
     }
 
     @Override

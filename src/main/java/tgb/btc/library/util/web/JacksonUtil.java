@@ -1,12 +1,17 @@
 package tgb.btc.library.util.web;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.ObjectUtils;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,6 +52,19 @@ public class JacksonUtil {
 
     public static <T> ObjectNode toObjectNode(T t, ObjectNodeConvertable<T> mapper) {
         return mapper.mapFunction().apply(t);
+    }
+
+    public static void put(ObjectNode node, String key, Object object){
+        if (object instanceof Integer) node.put(key, ((Integer) object));
+        if (object instanceof Long) node.put(key, ((Long) object));
+        if (object instanceof Double) node.put(key, ((Double) object));
+        if (object instanceof Float) node.put(key, ((Float) object));
+        if (object instanceof BigInteger) node.put(key, ((BigInteger) object));
+        if (object instanceof BigDecimal){
+            node.put(key, ((BigDecimal) object));
+        } else{
+            throw new RuntimeException(String.format("Для %s не определен формат.", object));
+        }
     }
 
     public static ObjectNode getEmpty() {
