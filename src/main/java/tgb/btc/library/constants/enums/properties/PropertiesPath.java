@@ -25,7 +25,9 @@ public enum PropertiesPath implements PropertiesReader {
     BACKUP_DRIVE("config/system/backupdrive.properties", ','),
     GAMES_PROPERTIES("config/bot/games/games.properties", ','),
     SLOT_REEL_PROPERTIES("config/bot/games/slotreel/config.properties", ','),
-    SLOT_REEL_MESSAGE("config/bot/games/slotreel/message.properties", ',');
+    SLOT_REEL_MESSAGE("config/bot/games/slotreel/message.properties", ','),
+    DICE_PROPERTIES("config/bot/games/dice/config.properties", ','),
+    DICE_MESSAGE("config/bot/games/dice/message.properties", ',');
 
     private final String fileName;
 
