@@ -60,7 +60,11 @@ public class JacksonUtil {
         if (object instanceof Double) node.put(key, ((Double) object));
         if (object instanceof Float) node.put(key, ((Float) object));
         if (object instanceof BigInteger) node.put(key, ((BigInteger) object));
-        if (object instanceof BigDecimal) node.put(key, ((BigDecimal) object));
+        if (object instanceof BigDecimal){
+            node.put(key, ((BigDecimal) object));
+        } else{
+            throw new RuntimeException(String.format("Для %s не определен формат.", object));
+        }
     }
 
     public static ObjectNode getEmpty() {
