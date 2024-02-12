@@ -1,6 +1,5 @@
 package tgb.btc.library.service.process;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.RPSElement;
@@ -62,7 +61,7 @@ public class RPSService {
         if (Boolean.TRUE.equals(result)) {
             userService.updateReferralBalanceByChatId(userService.getReferralBalanceByChatId(chatId) + Integer.parseInt(sum), chatId);
             sb.append(PropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator())
-                    .append(PropertiesPath.RPS_MESSAGE.getString("win.sum")).append(" ").append(sum);
+                    .append(PropertiesPath.RPS_MESSAGE.getString("win.sum")).append(" ").append(sum).append("₽");
         } else if (Objects.nonNull(result)) {
             userService.updateReferralBalanceByChatId(userService.getReferralBalanceByChatId(chatId) - Integer.parseInt(sum), chatId);
             sb.append(PropertiesPath.RPS_MESSAGE.getString("lose")).append(System.lineSeparator());
