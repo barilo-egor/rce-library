@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
+import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.service.bean.bot.UserService;
@@ -70,7 +71,10 @@ public class DealDeleteScheduler {
         Map<Long, Integer> bufferDealsPids = new HashMap<>(NEW_CRYPTO_DEALS_PIDS);
         for (Map.Entry<Long, Integer> dealData : bufferDealsPids.entrySet()) {
             Long dealPid = dealData.getKey();
-            if (!dealRepository.existsById(dealPid)) deleteCryptoDeal(dealPid);
+            if (!dealRepository.existsById(dealPid) || !DealStatus.NEW.equals(dealRepository.getDealStatusByPid(dealPid))) {
+                deleteCryptoDeal(dealPid);
+                continue;
+            }
             if (isDealNotActive(dealPid, dealActiveTime)) {
                 Long chatId = dealRepository.getUserChatIdByDealPid(dealPid);
                 dealRepository.deleteById(dealPid);

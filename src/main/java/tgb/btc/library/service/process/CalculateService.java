@@ -1,12 +1,12 @@
 package tgb.btc.library.service.process;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.CryptoApi;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.util.BigDecimalUtil;
@@ -37,8 +37,8 @@ public class CalculateService {
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-            DealType dealType, Boolean isEnteredInCrypto) {
-        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, isEnteredInCrypto, false);
+            DealType dealType, boolean withCredited) {
+        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null, withCredited);
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
@@ -91,11 +91,6 @@ public class CalculateService {
             else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
         }
         return dealAmount;
-    }
-
-    public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-                                DealType dealType) {
-        return calculate(chatId, enteredAmount, cryptoCurrency, fiatCurrency, dealType, null);
     }
 
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {
@@ -274,6 +269,10 @@ public class CalculateService {
     public BigDecimal getUSDToFiat(FiatCurrency fiatCurrency) {
         if (!FiatCurrency.RUB.equals(fiatCurrency))
             throw new BaseException("Реализация предусмотрена только для " + FiatCurrency.RUB.name());
+        BigDecimal usdRubManualCourse = PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("usd.rub.course");
+        if (Objects.nonNull(usdRubManualCourse)) {
+            return usdRubManualCourse;
+        }
         return CryptoApi.USD_RUB_EXCHANGERATE.getCourse();
     }
 
