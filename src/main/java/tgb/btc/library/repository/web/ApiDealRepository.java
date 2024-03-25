@@ -7,6 +7,7 @@ import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -27,4 +28,7 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
 
     @Query("select pid from ApiDeal where apiDealStatus='PAID'")
     List<Long> getActiveDealsPids();
+
+    @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus=:apiDealStatus")
+    List<ApiDeal> getByDateBetween(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 }
