@@ -3,6 +3,7 @@ package tgb.btc.library.vo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
@@ -18,6 +19,8 @@ public class BulkDiscount {
     private FiatCurrency fiatCurrency;
 
     private DealType dealType;
+
+    private CryptoCurrency cryptoCurrency;
 
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
@@ -51,4 +54,11 @@ public class BulkDiscount {
         this.dealType = dealType;
     }
 
+    public CryptoCurrency getCryptoCurrency() {
+        return cryptoCurrency;
+    }
+
+    public void setCryptoCurrency(CryptoCurrency cryptoCurrency) {
+        this.cryptoCurrency = cryptoCurrency;
+    }
 }

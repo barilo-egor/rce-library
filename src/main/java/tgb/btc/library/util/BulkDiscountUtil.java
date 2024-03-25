@@ -2,6 +2,7 @@ package tgb.btc.library.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
@@ -41,7 +42,7 @@ public final class BulkDiscountUtil {
                 throw new PropertyValueNotFoundException("Не указано название для одного из ключей" + key + ".");
             }
             try {
-                sum = Integer.parseInt(key.split("\\.")[2]);
+                sum = Integer.parseInt(key.split("\\.")[3]);
             } catch (NumberFormatException e) {
                 throw new PropertyValueNotFoundException("Не корректное название для ключа " + key + ".");
             }
@@ -60,6 +61,7 @@ public final class BulkDiscountUtil {
                     .sum(sum)
                     .fiatCurrency(FiatCurrency.getByCode(key.split("\\.")[0]))
                     .dealType(DealType.findByKey((key.split("\\.")[1])))
+                    .cryptoCurrency(CryptoCurrency.fromShortName(key.split("\\.")[2]))
                     .build());
         }
         BULK_DISCOUNTS.sort(Comparator.comparingInt(BulkDiscount::getSum));
