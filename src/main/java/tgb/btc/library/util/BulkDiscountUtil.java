@@ -24,10 +24,11 @@ public final class BulkDiscountUtil {
     private BulkDiscountUtil() {
     }
 
-    public static BigDecimal getPercentBySum(BigDecimal sum, FiatCurrency fiatCurrency, DealType dealType) {
+    public static BigDecimal getPercentBySum(BigDecimal sum, FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency) {
         for (BulkDiscount bulkDiscount : BULK_DISCOUNTS.stream()
                 .filter(bulkDiscount -> bulkDiscount.getFiatCurrency().equals(fiatCurrency)
-                        && bulkDiscount.getDealType().equals(dealType))
+                        && bulkDiscount.getDealType().equals(dealType)
+                        && bulkDiscount.getCryptoCurrency().equals(cryptoCurrency))
                 .collect(Collectors.toList())) {
             if (BigDecimal.valueOf(bulkDiscount.getSum()).compareTo(sum) < 1)
                 return BigDecimal.valueOf(bulkDiscount.getPercent());
