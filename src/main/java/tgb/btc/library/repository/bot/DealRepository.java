@@ -117,6 +117,9 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.isActive=false")
     Long getPassedDealsCountByUserChatId(Long chatId);
 
+    @Query("select case when count(d) > :countDeals then true else false end from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
+    boolean dealsByUserChatIdIsExist(Long chatId, DealStatus dealStatus, Long countDeals);
+
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.dealType=:dealType")
     Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType);
 
