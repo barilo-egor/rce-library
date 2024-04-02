@@ -55,11 +55,11 @@ public class CalculateService {
         if (dealAmount.isEnteredInCrypto()) {
             dealAmount.setCryptoAmount(enteredAmount);
             if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, withCredited);
-            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency);
+            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
         } else {
             dealAmount.setAmount(enteredAmount);
             if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, withCredited);
-            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
+            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
         }
         return dealAmount;
     }
@@ -85,10 +85,10 @@ public class CalculateService {
 
         if (dealAmount.isEnteredInCrypto()) {
             if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency(), withCredited);
-            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency);
+            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency());
         } else {
             if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency(), withCredited);
-            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency);
+            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency, calculateDataForm.getCryptoCurrency());
         }
         return dealAmount;
     }
@@ -105,7 +105,7 @@ public class CalculateService {
                 : BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(calculateData.getCommission()));
         dealAmount.setCommission(commission);
         amount = amount.subtract(commission);
-        BigDecimal bulkDiscount = BulkDiscountUtil.getPercentBySum(amount, fiatCurrency, dealAmount.getDealType());
+        BigDecimal bulkDiscount = BulkDiscountUtil.getPercentBySum(amount, fiatCurrency, dealAmount.getDealType(), cryptoCurrency);
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.addHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
@@ -139,7 +139,7 @@ public class CalculateService {
                 ? calculateData.getBulkDiscount()
                 : BulkDiscountUtil.getPercentBySum(
                 convertToFiat(cryptoAmount, calculateData.getCryptoCourse(), calculateData.getUsdCourse()), fiatCurrency,
-                dealAmount.getDealType());
+                dealAmount.getDealType(), cryptoCurrency);
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             BigDecimal totalPercentsWithBulk = BigDecimalUtil.addHalfUp(BigDecimalUtil.HUNDRED, bulkDiscount);
             BigDecimal onePercentBulk = BigDecimalUtil.divideHalfUp(cryptoAmount, totalPercentsWithBulk);
@@ -180,13 +180,13 @@ public class CalculateService {
                 BigDecimalUtil.multiplyHalfUp(cryptoAmount, cryptoCourse));
     }
 
-    private void calculateCryptoAmountForSell(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency) {
+    private void calculateCryptoAmountForSell(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency) {
         BigDecimal amount = dealAmount.getAmount();
         BigDecimal commission = amount.compareTo(calculateData.getFix()) < 0
                 ? calculateData.getFixCommission()
                 : getCommissionForSell(amount, calculateData.getCommission());
         amount = amount.add(commission);
-        BigDecimal bulkDiscount = BulkDiscountUtil.getPercentBySum(amount, fiatCurrency, dealAmount.getDealType());
+        BigDecimal bulkDiscount = BulkDiscountUtil.getPercentBySum(amount, fiatCurrency, dealAmount.getDealType(), cryptoCurrency);
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.subtractHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
@@ -199,7 +199,7 @@ public class CalculateService {
         dealAmount.setCryptoAmount(BigDecimalUtil.divideHalfUp(usd, calculateData.getCryptoCourse()));
     }
 
-    private void calculateAmountForSell(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency) {
+    private void calculateAmountForSell(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency) {
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
                 ? calculateData.getPersonalDiscount()
@@ -213,7 +213,7 @@ public class CalculateService {
                 ? calculateData.getBulkDiscount()
                 : BulkDiscountUtil.getPercentBySum(
                 convertToFiat(cryptoAmount, calculateData.getCryptoCourse(), calculateData.getUsdCourse()), fiatCurrency,
-                dealAmount.getDealType());
+                dealAmount.getDealType(), cryptoCurrency);
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             BigDecimal totalPercentsWithBulk = BigDecimalUtil.subtractHalfUp(BigDecimalUtil.HUNDRED, bulkDiscount);
             BigDecimal onePercentBulk = BigDecimalUtil.divideHalfUp(cryptoAmount, totalPercentsWithBulk);
