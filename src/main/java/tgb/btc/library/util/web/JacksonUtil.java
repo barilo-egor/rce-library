@@ -55,16 +55,14 @@ public class JacksonUtil {
     }
 
     public static void put(ObjectNode node, String key, Object object){
-        if (object instanceof Integer) node.put(key, ((Integer) object));
-        if (object instanceof Long) node.put(key, ((Long) object));
-        if (object instanceof Double) node.put(key, ((Double) object));
-        if (object instanceof Float) node.put(key, ((Float) object));
-        if (object instanceof BigInteger) node.put(key, ((BigInteger) object));
-        if (object instanceof BigDecimal){
-            node.put(key, ((BigDecimal) object));
-        } else{
-            throw new RuntimeException(String.format("Для %s не определен формат.", object));
-        }
+        if (object instanceof String) node.put(key, (String) object);
+        else if (object instanceof Integer) node.put(key, ((Integer) object));
+        else if (object instanceof Long) node.put(key, ((Long) object));
+        else if (object instanceof Double) node.put(key, ((Double) object));
+        else if (object instanceof Float) node.put(key, ((Float) object));
+        else if (object instanceof BigInteger) node.put(key, ((BigInteger) object));
+        else if (object instanceof BigDecimal) node.put(key, ((BigDecimal) object));
+        else throw new RuntimeException(String.format("Для %s не определен формат.", object));
     }
 
     public static ObjectNode getEmpty() {
