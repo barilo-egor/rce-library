@@ -26,9 +26,6 @@ public class PaymentRequisite extends BasePersist {
     @Column(name = "REQUISITE")
     private String requisite;
 
-    @Column(name = "REQUISITE_ORDER")
-    private Integer requisiteOrder;
-
     @Column(name = "IS_ON")
     private Boolean isOn;
 
@@ -50,14 +47,6 @@ public class PaymentRequisite extends BasePersist {
 
     public void setRequisite(String requisite) {
         this.requisite = requisite;
-    }
-
-    public Integer getRequisiteOrder() {
-        return requisiteOrder;
-    }
-
-    public void setRequisiteOrder(Integer order) {
-        this.requisiteOrder = order;
     }
 
     public String getName() {
