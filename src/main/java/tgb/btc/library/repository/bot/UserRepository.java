@@ -77,6 +77,9 @@ public interface UserRepository extends BaseRepository<User> {
     @Query("select isBanned from User where chatId=:chatId")
     Boolean getIsBannedByChatId(Long chatId);
 
+    @Query("select chatId from User where isBanned=:isBanned")
+    List<Long> getChatIdsByIsBanned(Boolean isBanned);
+
     /**
      * use userService.ban() and userService.unban()
      */
