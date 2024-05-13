@@ -9,6 +9,7 @@ import java.util.function.Function;
 public enum RoleConstants implements ObjectNodeConvertable<RoleConstants> {
     ROLE_USER("Пользователь"),
     ROLE_OPERATOR("Оператор"),
+    ROLE_API_CLIENT("АПИ клиент"),
     ROLE_ADMIN("Администратор");
 
     final String displayName;
