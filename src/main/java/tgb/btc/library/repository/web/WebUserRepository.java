@@ -19,4 +19,8 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     List<Role> getRolesByUsername(String username);
 
     WebUser getByChatId(Long chatId);
+
+    boolean existsByChatId(Long chatId);
+
+    boolean existsByUsername(String username);
 }
