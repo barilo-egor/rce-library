@@ -54,7 +54,8 @@ public class JacksonUtil {
         return mapper.mapFunction().apply(t);
     }
 
-    public static void put(ObjectNode node, String key, Object object){
+    public static void put(ObjectNode node, String key, Object object) {
+        if (Objects.isNull(object)) node.set(key, null);
         if (object instanceof String) node.put(key, (String) object);
         else if (object instanceof Integer) node.put(key, ((Integer) object));
         else if (object instanceof Long) node.put(key, ((Long) object));
