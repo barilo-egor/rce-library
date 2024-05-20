@@ -1,10 +1,8 @@
 package tgb.btc.library.util.web;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang.ObjectUtils;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 
 import java.math.BigDecimal;
@@ -56,7 +54,7 @@ public class JacksonUtil {
 
     public static void put(ObjectNode node, String key, Object object) {
         if (Objects.isNull(object)) node.set(key, null);
-        if (object instanceof String) node.put(key, (String) object);
+        else if (object instanceof String) node.put(key, (String) object);
         else if (object instanceof Integer) node.put(key, ((Integer) object));
         else if (object instanceof Long) node.put(key, ((Long) object));
         else if (object instanceof Double) node.put(key, ((Double) object));
