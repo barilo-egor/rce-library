@@ -210,7 +210,7 @@ public interface DealRepository extends BaseRepository<Deal> {
     Integer getCountPassedByChatId(Long chatId);
 
     @Query(value = "select count (pid) from Deal where user.chatId=:chatId and dealStatus=:dealStatus")
-    Integer getCountByChatIdAndStatus(Long chatId, DealStatus dealStatus);
+    Long getCountByChatIdAndStatus(Long chatId, DealStatus dealStatus);
 
     @Query(value = "select count(pid) from Deal where dateTime between :startDateTime and :endDateTime and isPassed=true")
     Integer getCountByPeriod(LocalDateTime startDateTime, LocalDateTime endDateTime);
