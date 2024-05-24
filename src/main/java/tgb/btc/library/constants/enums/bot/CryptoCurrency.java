@@ -11,7 +11,7 @@ import java.util.function.Function;
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
     BITCOIN("btc", 8, 0.004),
     LITECOIN("ltc", 8, 0.7),
-    USDT("usdt", 1, 50.0),
+    USDT("usdt", 6, 50.0),
     MONERO("xmr", 8, 0.5);
 
     final String shortName;
