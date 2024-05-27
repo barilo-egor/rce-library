@@ -183,6 +183,9 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select creditedAmount from Deal where pid=:pid")
     BigDecimal getCreditedAmountByPid(Long pid);
 
+    @Query("from Deal where pid in (:pids)")
+    List<Deal> getDealsByPids(List<Long> pids);
+
     /**
      * Reports
      */
