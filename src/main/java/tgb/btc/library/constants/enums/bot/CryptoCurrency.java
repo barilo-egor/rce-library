@@ -43,6 +43,7 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
     @Override
     public Function<CryptoCurrency, ObjectNode> mapFunction() {
         return cryptoCurrency -> JacksonUtil.getEmpty()
-                .put("name", cryptoCurrency.name());
+                .put("name", cryptoCurrency.name())
+                .put("shortName", cryptoCurrency.getShortName());
     }
 }
