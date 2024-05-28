@@ -41,6 +41,7 @@ public class ApiDeal extends BasePersist {
 
     private FiatCurrency fiatCurrency;
 
+    @Enumerated(EnumType.STRING)
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
     }
