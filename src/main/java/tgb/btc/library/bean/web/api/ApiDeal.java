@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
 import javax.persistence.*;
@@ -37,6 +38,16 @@ public class ApiDeal extends BasePersist {
     private CryptoCurrency cryptoCurrency;
 
     private String requisite;
+
+    private FiatCurrency fiatCurrency;
+
+    public FiatCurrency getFiatCurrency() {
+        return fiatCurrency;
+    }
+
+    public void setFiatCurrency(FiatCurrency fiatCurrency) {
+        this.fiatCurrency = fiatCurrency;
+    }
 
     public ApiUser getApiUser() {
         return apiUser;
