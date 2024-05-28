@@ -7,20 +7,27 @@ import tgb.btc.library.util.web.JacksonUtil;
 import java.util.function.Function;
 
 public enum ApiDealStatus implements ObjectNodeConvertable<ApiDealStatus> {
-    CREATED("Создана"),
-    PAID("Оплачена"),
-    CANCELED("Отменена клиентом"),
-    ACCEPTED("Подтверждена оператором"),
-    DECLINED("Отклонена оператором");
+    CREATED("Создана", "blackColor"),
+    PAID("Оплачена", "mediumSeaGreenColor"),
+    CANCELED("Отменена клиентом", "orangeColor"),
+    ACCEPTED("Подтверждена оператором", "lightGrey"),
+    DECLINED("Отклонена оператором", "redColor");
 
     private final String description;
 
-    ApiDealStatus(String description) {
+    private final String color;
+
+    ApiDealStatus(String description, String color) {
         this.description = description;
+        this.color = color;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
