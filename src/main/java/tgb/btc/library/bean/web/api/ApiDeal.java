@@ -39,9 +39,9 @@ public class ApiDeal extends BasePersist {
 
     private String requisite;
 
+    @Enumerated(EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
-    @Enumerated(EnumType.STRING)
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
     }
