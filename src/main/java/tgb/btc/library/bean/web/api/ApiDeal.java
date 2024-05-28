@@ -25,6 +25,7 @@ public class ApiDeal extends BasePersist {
 
     private LocalDateTime dateTime;
 
+    @Enumerated(EnumType.STRING)
     private DealType dealType;
 
     @Column(precision = 15, scale = 8)
@@ -35,6 +36,7 @@ public class ApiDeal extends BasePersist {
     @Enumerated(EnumType.STRING)
     private ApiDealStatus apiDealStatus;
 
+    @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
     private String requisite;
