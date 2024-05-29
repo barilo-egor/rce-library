@@ -29,16 +29,6 @@ public class DealAmount {
 
     private BigDecimal creditedAmount;
 
-    private BigDecimal personalDiscount;
-
-    public BigDecimal getPersonalDiscount() {
-        return personalDiscount;
-    }
-
-    public void setPersonalDiscount(BigDecimal personalDiscount) {
-        this.personalDiscount = personalDiscount;
-    }
-
     public DealType getDealType() {
         return dealType;
     }

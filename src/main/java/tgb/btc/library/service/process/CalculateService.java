@@ -64,29 +64,6 @@ public class CalculateService {
         return dealAmount;
     }
 
-    public DealAmount calculate(BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
-            DealType dealType, Boolean isEnteredInCrypto, BigDecimal personalDiscount) {
-        CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
-
-        DealAmount dealAmount = new DealAmount();
-        dealAmount.setPersonalDiscount(personalDiscount);
-        dealAmount.setDealType(dealType);
-        if (Objects.nonNull(isEnteredInCrypto)) dealAmount.setEnteredInCrypto(isEnteredInCrypto);
-        else dealAmount.setEnteredInCrypto(isEnteredInCrypto(cryptoCurrency, enteredAmount));
-        dealAmount.setCalculateData(calculateData);
-        if (dealAmount.isEnteredInCrypto()) {
-            dealAmount.setCryptoAmount(enteredAmount);
-            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, false);
-            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
-        } else {
-            dealAmount.setAmount(enteredAmount);
-            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, false);
-            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
-        }
-        return dealAmount;
-    }
-
     public DealAmount calculate(CalculateDataForm calculateDataForm) {
         return calculate(calculateDataForm, false);
     }
@@ -132,9 +109,7 @@ public class CalculateService {
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.addHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
-        BigDecimal personal = Objects.nonNull(dealAmount.getPersonalDiscount())
-                ? dealAmount.getPersonalDiscount()
-                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
+        BigDecimal personal = personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
             amount = BigDecimalUtil.addHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(personal)));
         }
@@ -154,9 +129,7 @@ public class CalculateService {
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
                 ? calculateData.getPersonalDiscount()
-                : Objects.nonNull(dealAmount.getPersonalDiscount())
-                ? dealAmount.getPersonalDiscount()
-                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());;
+                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
             BigDecimal totalPercentsWithPersonal = BigDecimalUtil.addHalfUp(BigDecimalUtil.HUNDRED, personal);
             BigDecimal onePercentPersonal = BigDecimalUtil.divideHalfUp(cryptoAmount, totalPercentsWithPersonal);
@@ -217,9 +190,7 @@ public class CalculateService {
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.subtractHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
-        BigDecimal personal = Objects.nonNull(dealAmount.getPersonalDiscount())
-                ? dealAmount.getPersonalDiscount()
-                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
+        BigDecimal personal = personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
             amount = BigDecimalUtil.subtractHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(personal)));
         }
@@ -232,9 +203,7 @@ public class CalculateService {
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
                 ? calculateData.getPersonalDiscount()
-                : Objects.nonNull(dealAmount.getPersonalDiscount())
-                ? dealAmount.getPersonalDiscount()
-                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());;
+                : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
             BigDecimal totalPercentsWithPersonal = BigDecimalUtil.subtractHalfUp(BigDecimalUtil.HUNDRED, personal);
             BigDecimal onePercentPersonal = BigDecimalUtil.divideHalfUp(cryptoAmount, totalPercentsWithPersonal);
