@@ -132,7 +132,7 @@ public class CalculateService {
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.addHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
-        BigDecimal personal = Objects.isNull(dealAmount.getChatId())
+        BigDecimal personal = Objects.nonNull(dealAmount.getPersonalDiscount())
                 ? dealAmount.getPersonalDiscount()
                 : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
@@ -154,7 +154,7 @@ public class CalculateService {
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
                 ? calculateData.getPersonalDiscount()
-                : Objects.isNull(dealAmount.getChatId())
+                : Objects.nonNull(dealAmount.getPersonalDiscount())
                 ? dealAmount.getPersonalDiscount()
                 : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());;
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
@@ -217,7 +217,7 @@ public class CalculateService {
         if (BigDecimal.ZERO.compareTo(bulkDiscount) != 0) {
             amount = BigDecimalUtil.subtractHalfUp(amount, BigDecimalUtil.multiplyHalfUp(amount, getPercentsFactor(bulkDiscount)));
         }
-        BigDecimal personal = Objects.isNull(dealAmount.getChatId())
+        BigDecimal personal = Objects.nonNull(dealAmount.getPersonalDiscount())
                 ? dealAmount.getPersonalDiscount()
                 : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
@@ -232,7 +232,7 @@ public class CalculateService {
         BigDecimal cryptoAmount = dealAmount.getCryptoAmount();
         BigDecimal personal = Objects.nonNull(calculateData.getPersonalDiscount())
                 ? calculateData.getPersonalDiscount()
-                : Objects.isNull(dealAmount.getChatId())
+                : Objects.nonNull(dealAmount.getPersonalDiscount())
                 ? dealAmount.getPersonalDiscount()
                 : personalDiscountsCache.getDiscount(dealAmount.getChatId(), dealAmount.getDealType());;
         if (BigDecimal.ZERO.compareTo(personal) != 0) {
