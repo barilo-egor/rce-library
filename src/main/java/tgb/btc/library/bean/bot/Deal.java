@@ -101,6 +101,14 @@ public class Deal extends BasePersist {
     @Column(name = "CREATE_TYPE", columnDefinition = "varchar(20) default 'BOT'")
     private CreateType createType;
 
+    public CreateType getCreateType() {
+        return createType;
+    }
+
+    public void setCreateType(CreateType createType) {
+        this.createType = createType;
+    }
+
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
     }
