@@ -177,7 +177,7 @@ public interface DealRepository extends BaseRepository<Deal> {
     List<Deal> getDealsByPids(List<Long> pids);
 
     @Query("select pid from Deal where dealStatus='PAID'")
-    List<Deal> getPaidDealsPids();
+    List<Long> getPaidDealsPids();
 
     /**
      * Reports
