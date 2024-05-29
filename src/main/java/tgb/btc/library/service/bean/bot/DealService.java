@@ -119,16 +119,8 @@ public class DealService extends BasePersistService<Deal> {
         dealRepository.updatePaymentTypeByPid(paymentType, pid);
     }
 
-    public Long getPidActiveDealByChatId(Long chatId) {
-        return dealRepository.getPidActiveDealByChatId(chatId);
-    }
-
     public Long getCountPassedByUserChatId(Long chatId) {
         return dealRepository.getCountPassedByUserChatId(chatId);
-    }
-
-    public List<Long> getActiveDealPids() {
-        return dealRepository.getActiveDealPids();
     }
 
     public Long getUserChatIdByDealPid(Long pid) {
@@ -156,10 +148,7 @@ public class DealService extends BasePersistService<Deal> {
     public Deal createNewDeal(DealType dealType, Long chatId) {
         Deal deal = new Deal();
         deal.setDealStatus(DealStatus.NEW);
-        deal.setActive(false);
-        deal.setPassed(false);
         deal.setDateTime(LocalDateTime.now());
-        deal.setDate(LocalDate.now());
         deal.setDealType(dealType);
         deal.setUser(userRepository.findByChatId(chatId));
         Deal savedDeal = save(deal);
@@ -184,9 +173,6 @@ public class DealService extends BasePersistService<Deal> {
     public void confirm(Long dealPid) {
         Deal deal = getByPid(dealPid);
         User user = deal.getUser();
-
-        deal.setActive(false);
-        deal.setPassed(true);
 
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());

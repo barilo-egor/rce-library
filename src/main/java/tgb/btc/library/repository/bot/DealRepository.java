@@ -59,10 +59,6 @@ public interface DealRepository extends BaseRepository<Deal> {
     void updateIsUsedPromoByPid(Boolean isUsedPromo, Long pid);
 
     @Modifying
-    @Query("update Deal set isActive=:isActive where pid=:pid")
-    void updateIsActiveByPid(Boolean isActive, Long pid);
-
-    @Modifying
     @Query("update Deal set dealStatus=:dealStatus where pid=:pid")
     void updateDealStatusByPid(DealStatus dealStatus, Long pid);
 
@@ -114,22 +110,22 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
     List<Long> getListNewDeal(Long chatId, DealStatus dealStatus);
 
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.isActive=false")
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED'")
     Long getPassedDealsCountByUserChatId(Long chatId);
 
     @Query("select case when count(d) > :countDeals then true else false end from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
     boolean dealsByUserChatIdIsExist(Long chatId, DealStatus dealStatus, Long countDeals);
 
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.dealType=:dealType")
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType")
     Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType);
 
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
     Long getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
-    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.isPassed=true and d.dealType=:dealType)")
+    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType)")
     String getWalletFromLastPassedByChatIdAndDealType(Long chatId, DealType dealType);
 
-    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.isPassed=true " +
+    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' " +
             "and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency)")
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
@@ -144,14 +140,8 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select discount from Deal where pid=:pid")
     BigDecimal getDiscountByPid(Long pid);
 
-    @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.isActive=true")
-    Long getPidActiveDealByChatId(Long chatId);
-
-    @Query("select count(d) from Deal d where d.isPassed=true and d.user.chatId=:chatId")
+    @Query("select count(d) from Deal d where d.dealStatus='CONFIRMED' and d.user.chatId=:chatId")
     Long getCountPassedByUserChatId(Long chatId);
-
-    @Query("select pid from Deal where isActive=true")
-    List<Long> getActiveDealPids();
 
     @Query("select d.user.chatId from Deal d where d.pid=:pid")
     Long getUserChatIdByDealPid(Long pid);
@@ -159,10 +149,10 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select d.user.username from Deal d where d.pid=:pid")
     String getUserUsernameByDealPid(Long pid);
 
-    @Query("from Deal d where (d.date BETWEEN :startDate AND :endDate) and d.isPassed=true")
+    @Query("from Deal d where (d.date BETWEEN :startDate AND :endDate) and d.dealStatus='CONFIRMED'")
     List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate);
 
-    @Query("from Deal d where d.date=:date and d.isPassed=true")
+    @Query("from Deal d where d.date=:date and d.dealStatus='CONFIRMED'")
     List<Deal> getPassedByDate(LocalDate date);
 
     @Query("select dealType from Deal where pid=:pid")
@@ -190,52 +180,49 @@ public interface DealRepository extends BaseRepository<Deal> {
      * Reports
      */
 
-    @Query(value = "select sum(cryptoAmount) from Deal where isPassed=:isPassed and dealType=:dealType and date=:date and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getCryptoAmountSum(boolean isPassed, DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency);
+    @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and date=:date and cryptoCurrency=:cryptoCurrency")
+    BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency);
 
-    @Query(value = "select sum(cryptoAmount) from Deal where isPassed=:isPassed and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getCryptoAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
+    @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
+    BigDecimal getCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
 
-    @Query(value = "select sum(amount) from Deal where isPassed=:isPassed and dealType=:dealType and dateTime=:dateTime and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getTotalAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateTime, CryptoCurrency cryptoCurrency);
+    @Query(value = "select sum(amount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and dateTime=:dateTime and cryptoCurrency=:cryptoCurrency")
+    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateTime, CryptoCurrency cryptoCurrency);
 
-    @Query(value = "select sum(amount) from Deal where isPassed=:isPassed and dealType=:dealType and dateTime=:dateTime and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
-    BigDecimal getTotalAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateTime, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
+    @Query(value = "select sum(amount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and dateTime=:dateTime and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
+    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateTime, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
 
 
-    @Query(value = "select sum(amount) from Deal where isPassed=:isPassed and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getTotalAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
+    @Query(value = "select sum(amount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
+    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
 
-    @Query(value = "select sum(amount) from Deal where isPassed=:isPassed and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
-    BigDecimal getTotalAmountSum(boolean isPassed, DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
+    @Query(value = "select sum(amount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
+    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
 
-    @Query(value = "select count(pid) from Deal where user.chatId=:chatId and isPassed=true")
+    @Query(value = "select count(pid) from Deal where user.chatId=:chatId and dealStatus='CONFIRMED'")
     Integer getCountPassedByChatId(Long chatId);
 
     @Query(value = "select count (pid) from Deal where user.chatId=:chatId and dealStatus=:dealStatus")
     Long getCountByChatIdAndStatus(Long chatId, DealStatus dealStatus);
 
-    @Query(value = "select count(pid) from Deal where dateTime between :startDateTime and :endDateTime and isPassed=true")
+    @Query(value = "select count(pid) from Deal where dateTime between :startDateTime and :endDateTime and dealStatus='CONFIRMED'")
     Integer getCountByPeriod(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    @Query(value = "select sum(cryptoAmount) from Deal where user.chatId=:chatId and isPassed=true and cryptoCurrency=:cryptoCurrency and dealType=:dealType")
+    @Query(value = "select sum(cryptoAmount) from Deal where user.chatId=:chatId and dealStatus='CONFIRMED' and cryptoCurrency=:cryptoCurrency and dealType=:dealType")
     BigDecimal getUserCryptoAmountSum(Long chatId, CryptoCurrency cryptoCurrency, DealType dealType);
 
-    @Query(value = "select sum(amount) from Deal where user.chatId=:chatId and isPassed=true and dealType=:dealType")
+    @Query(value = "select sum(amount) from Deal where user.chatId=:chatId and dealStatus='CONFIRMED' and dealType=:dealType")
     BigDecimal getUserAmountSum(Long chatId, DealType dealType);
 
-    @Query(value = "select sum(amount) from Deal where user.chatId=:chatId and isPassed=true and dealType=:dealType and fiatCurrency=:fiatCurrency")
+    @Query(value = "select sum(amount) from Deal where user.chatId=:chatId and dealStatus='CONFIRMED' and dealType=:dealType and fiatCurrency=:fiatCurrency")
     BigDecimal getUserAmountSumByDealTypeAndFiatCurrency(Long chatId, DealType dealType, FiatCurrency fiatCurrency);
 
     List<Deal> getByUser_ChatId(Long chatId);
 
-    @Query(value = "select isActive from Deal where pid=:pid")
-    Boolean getIsActiveByPid(Long pid);
-
     @Query(value = "select isUsedPromo from Deal where pid=:pid")
     Boolean getIsUsedPromoByPid(Long pid);
 
-    @Query(value = "select pid,user.pid,dealType,cryptoCurrency,cryptoAmount,fiatCurrency,amount from Deal where isPassed=true")
+    @Query(value = "select pid,user.pid,dealType,cryptoCurrency,cryptoAmount,fiatCurrency,amount from Deal where dealStatus='CONFIRMED'")
     List<Object[]> findAllForUsersReport();
 
     @Query(value = "select dealStatus from Deal where pid=:pid")

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
 
 import javax.persistence.*;
@@ -44,19 +45,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "VERIFICATION_PHOTO")
     private String verificationPhoto;
-
-    @Column(name = "USER_CHECK")
-    @Deprecated
-    private String userCheck;
-
-    @Column(name = "IS_ACTIVE")
-    private Boolean isActive;
-
-    @Column(name = "IS_PASSED")
-    private Boolean isPassed;
-
-    @Column(name = "IS_CURRENT")
-    private Boolean isCurrent;
 
     @Column(name = "IS_USED_PROMO")
     private Boolean isUsedPromo;
@@ -109,13 +97,9 @@ public class Deal extends BasePersist {
     @Column(name = "CREDITED_AMOUNT")
     private BigDecimal creditedAmount;
 
-    public Boolean getCurrent() {
-        return isCurrent;
-    }
-
-    public void setCurrent(Boolean current) {
-        isCurrent = current;
-    }
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "CREATE_TYPE", columnDefinition = "varchar(20) default 'BOT'")
+    private CreateType createType;
 
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
@@ -123,30 +107,6 @@ public class Deal extends BasePersist {
 
     public void setFiatCurrency(FiatCurrency fiatCurrency) {
         this.fiatCurrency = fiatCurrency;
-    }
-
-    public String getUserCheck() {
-        return userCheck;
-    }
-
-    public void setUserCheck(String check) {
-        this.userCheck = check;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Boolean getPassed() {
-        return isPassed;
-    }
-
-    public void setPassed(Boolean passed) {
-        isPassed = passed;
     }
 
     public User getUser() {
