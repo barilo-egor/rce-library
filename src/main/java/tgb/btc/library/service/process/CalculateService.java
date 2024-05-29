@@ -93,6 +93,29 @@ public class CalculateService {
         return dealAmount;
     }
 
+    public DealAmount calculate(BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
+            DealType dealType, Boolean isEnteredInCrypto, BigDecimal personalDiscount) {
+        CalculateData calculateData =
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
+        calculateData.setPersonalDiscount(personalDiscount);
+
+        DealAmount dealAmount = new DealAmount();
+        dealAmount.setDealType(dealType);
+        if (Objects.nonNull(isEnteredInCrypto)) dealAmount.setEnteredInCrypto(isEnteredInCrypto);
+        else dealAmount.setEnteredInCrypto(isEnteredInCrypto(cryptoCurrency, enteredAmount));
+        dealAmount.setCalculateData(calculateData);
+        if (dealAmount.isEnteredInCrypto()) {
+            dealAmount.setCryptoAmount(enteredAmount);
+            if (DealType.isBuy(dealType)) calculateAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, false);
+            else calculateAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
+        } else {
+            dealAmount.setAmount(enteredAmount);
+            if (DealType.isBuy(dealType)) calculateCryptoAmount(dealAmount, calculateData, fiatCurrency, cryptoCurrency, false);
+            else calculateCryptoAmountForSell(dealAmount, calculateData, fiatCurrency, cryptoCurrency);
+        }
+        return dealAmount;
+    }
+
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {
         return !CryptoCurrency.BITCOIN.equals(cryptoCurrency)
                 || enteredAmount.compareTo(VariablePropertiesUtil.getBigDecimal(VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey())) < 0;

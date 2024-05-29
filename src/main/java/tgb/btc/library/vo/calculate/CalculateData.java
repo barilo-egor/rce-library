@@ -1,5 +1,6 @@
 package tgb.btc.library.vo.calculate;
 
+import lombok.Data;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
@@ -8,6 +9,7 @@ import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
 import java.math.BigDecimal;
 
+@Data
 public class CalculateData {
     private final BigDecimal fix;
 
