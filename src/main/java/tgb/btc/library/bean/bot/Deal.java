@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
-import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
 
 import javax.persistence.*;
@@ -96,10 +95,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "CREDITED_AMOUNT")
     private BigDecimal creditedAmount;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "CREATE_TYPE", columnDefinition = "varchar(20) default 'BOT'")
-    private CreateType createType;
 
     public FiatCurrency getFiatCurrency() {
         return fiatCurrency;
