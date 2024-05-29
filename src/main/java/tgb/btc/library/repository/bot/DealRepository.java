@@ -176,8 +176,8 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("from Deal where pid in (:pids)")
     List<Deal> getDealsByPids(List<Long> pids);
 
-    @Query("from Deal where dealStatus='PAID'")
-    List<Deal> getPaidDeals();
+    @Query("select pid from Deal where dealStatus='PAID'")
+    List<Deal> getPaidDealsPids();
 
     /**
      * Reports
