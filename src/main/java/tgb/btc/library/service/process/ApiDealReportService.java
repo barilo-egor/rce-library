@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.web.api.ApiDeal;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Service
 public class ApiDealReportService {
 
     public byte[] loadReport(List<ApiDeal> deals) {
