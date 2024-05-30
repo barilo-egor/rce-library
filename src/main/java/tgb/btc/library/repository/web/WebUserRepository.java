@@ -23,4 +23,11 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     boolean existsByChatId(Long chatId);
 
     boolean existsByUsername(String username);
+
+    /**
+     * UPDATE
+     */
+
+    @Query("update WebUser set username=:username where pid=:pid")
+    void updateUsernameByPid(Long pid, String username);
 }
