@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.web;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.web.Role;
@@ -28,6 +29,7 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
      * UPDATE
      */
 
+    @Modifying
     @Query("update WebUser set username=:username where pid=:pid")
     void updateUsernameByPid(Long pid, String username);
 }
