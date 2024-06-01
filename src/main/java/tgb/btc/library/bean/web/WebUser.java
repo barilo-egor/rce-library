@@ -3,10 +3,12 @@ package tgb.btc.library.bean.web;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.BasePersist;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -57,6 +59,7 @@ public class WebUser extends BasePersist implements UserDetails {
     }
 
     public Set<Role> getRoles() {
+        if (CollectionUtils.isEmpty(roles)) return new HashSet<>();
         return roles;
     }
 
