@@ -102,8 +102,11 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
                     .put("isBanned", BooleanUtils.isTrue(apiUser.getIsBanned()))
                     .put("token", apiUser.getToken())
                     .put("buyRequisite", apiUser.getBuyRequisite())
-                    .put("sellRequisite", apiUser.getSellRequisite())
-                    .put("fiatCurrency", apiUser.fiatCurrency.name());
+                    .put("sellRequisite", apiUser.getSellRequisite());
+            if (Objects.nonNull(apiUser.getFiatCurrency())) {
+                ObjectNode fiatCurrency = apiUser.getFiatCurrency().mapFunction().apply(apiUser.getFiatCurrency());
+                result.set("fiatCurrency", fiatCurrency);
+            }
             usdApiUserCourseList.stream()
                     .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
                     .findFirst()
