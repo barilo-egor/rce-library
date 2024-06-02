@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.web;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,4 +22,14 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
 
     @Query("select pid from ApiUser where token=:token")
     Long getPidByToken(String token);
+
+    @Query("from ApiUser where id=:id")
+    ApiUser getById(String id);
+
+    /**
+     * DELETE
+     */
+    @Modifying
+    @Query("delete from ApiUser where id=:id")
+    void deleteById(String id);
 }

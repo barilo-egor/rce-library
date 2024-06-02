@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.web.api.ApiDeal;
+import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.repository.BaseRepository;
 
@@ -20,10 +21,6 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("select apiDealStatus from ApiDeal where pid=:pid")
     ApiDealStatus getApiDealStatusByPid(Long pid);
 
-    @Modifying
-    @Query("update ApiDeal set apiDealStatus=:status where pid=:pid")
-    void updateApiDealStatusByPid(ApiDealStatus status, Long pid);
-
     long countByApiDealStatusAndApiUser_Pid(ApiDealStatus status, Long userPid);
 
     @Query("select pid from ApiDeal where apiDealStatus='PAID'")
@@ -34,4 +31,22 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
 
     @Query("from ApiDeal where pid in (:dealsPids)")
     List<ApiDeal> getDealsByPids(List<Long> dealsPids);
+
+    @Query("from ApiDeal where apiUser.id=:id")
+    List<ApiDeal> getByApiUserId(String id);
+
+    /**
+     * UPDATE
+     */
+    @Modifying
+    @Query("update ApiDeal set apiDealStatus=:status where pid=:pid")
+    void updateApiDealStatusByPid(ApiDealStatus status, Long pid);
+
+    @Modifying
+    @Query("update ApiDeal set apiUser=:apiUser where apiUser.id=:oldApiUserId")
+    void updateDealsApiUser(ApiUser apiUser, String oldApiUserId);
+
+    @Modifying
+    @Query("delete from ApiDeal where apiUser.id=:apiUserId")
+    void deleteByApiUserId(String apiUserId);
 }
