@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "WEB_USER")
@@ -95,4 +96,15 @@ public class WebUser extends BasePersist implements UserDetails {
     public void setChatId(Long chatId) {
         this.chatId = chatId;
     }
+
+    @Override
+    public String toString() {
+        return "WebUser{" +
+                "username='" + username + '\'' +
+                ", isEnabled=" + isEnabled +
+                ", chatId=" + chatId +
+                ", roles=" + getRoles().stream().map(Role::getName).collect(Collectors.joining(",")) +
+                '}';
+    }
+
 }
