@@ -6,6 +6,7 @@ import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Function;
 
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
@@ -45,5 +46,16 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
         return cryptoCurrency -> JacksonUtil.getEmpty()
                 .put("name", cryptoCurrency.name())
                 .put("shortName", cryptoCurrency.getShortName());
+    }
+
+    public CryptoCurrency valueOfNullable(String name) {
+        if (Objects.isNull(name)) return null;
+        CryptoCurrency cryptoCurrency;
+        try {
+            cryptoCurrency = CryptoCurrency.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            cryptoCurrency = null;
+        }
+        return cryptoCurrency;
     }
 }

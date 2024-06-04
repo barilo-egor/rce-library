@@ -6,6 +6,7 @@ import tgb.btc.library.exception.EnumTypeNotFoundException;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -70,5 +71,16 @@ public enum FiatCurrency implements ObjectNodeConvertable<FiatCurrency> {
                 .put("displayName", fiatCurrency.getDisplayName())
                 .put("genitive", fiatCurrency.getGenitive())
                 .put("flag", fiatCurrency.getFlag());
+    }
+
+    public FiatCurrency valueOfNullable(String name) {
+        if (Objects.isNull(name)) return null;
+        FiatCurrency fiatCurrency;
+        try {
+            fiatCurrency = FiatCurrency.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            fiatCurrency = null;
+        }
+        return fiatCurrency;
     }
 }
