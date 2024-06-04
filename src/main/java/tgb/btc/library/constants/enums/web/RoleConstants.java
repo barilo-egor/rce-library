@@ -37,7 +37,7 @@ public enum RoleConstants implements ObjectNodeConvertable<RoleConstants> {
 
     public static List<RoleConstants> getAvailable(RoleConstants roleConstants) {
         if (Objects.isNull(roleConstants)) return ALL;
-        if (RoleConstants.ROLE_ADMIN.equals(roleConstants)) return AVAILABLE_TO_OPERATOR;
+        if (RoleConstants.ROLE_ADMIN.equals(roleConstants)) return ALL;
         if (RoleConstants.ROLE_OPERATOR.equals(roleConstants)) return AVAILABLE_TO_OPERATOR;
         throw new BaseException("Доступ к ролям для " + roleConstants.name() + " не настроен.");
     }
