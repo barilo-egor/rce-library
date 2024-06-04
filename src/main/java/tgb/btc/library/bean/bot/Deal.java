@@ -292,4 +292,16 @@ public class Deal extends BasePersist {
     public void setCreditedAmount(BigDecimal creditedAmount) {
         this.creditedAmount = creditedAmount;
     }
+
+    public String manualToString() {
+        return "Deal{" +
+                ", cryptoAmount=" + cryptoAmount +
+                ", amount=" + amount +
+                ", cryptoCurrency=" + cryptoCurrency.name() +
+                ", dealType=" + dealType.name() +
+                ", fiatCurrency=" + fiatCurrency.name() +
+                ", dealStatus=" + dealStatus.name() +
+                '}';
+    }
+
 }
