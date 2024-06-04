@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "DEAL")
@@ -297,10 +298,10 @@ public class Deal extends BasePersist {
         return "Deal{" +
                 ", cryptoAmount=" + cryptoAmount +
                 ", amount=" + amount +
-                ", cryptoCurrency=" + cryptoCurrency.name() +
-                ", dealType=" + dealType.name() +
-                ", fiatCurrency=" + fiatCurrency.name() +
-                ", dealStatus=" + dealStatus.name() +
+                ", cryptoCurrency=" + (Objects.nonNull(cryptoCurrency) ? cryptoCurrency.name() : "null") +
+                ", dealType=" + (Objects.nonNull(dealType) ? dealType.name() : "null") +
+                ", fiatCurrency=" + (Objects.nonNull(fiatCurrency) ? fiatCurrency.name() : "null") +
+                ", dealStatus=" + (Objects.nonNull(dealStatus) ? dealStatus.name() : "null") +
                 '}';
     }
 
