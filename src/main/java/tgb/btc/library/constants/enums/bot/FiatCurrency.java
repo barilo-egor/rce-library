@@ -73,7 +73,7 @@ public enum FiatCurrency implements ObjectNodeConvertable<FiatCurrency> {
                 .put("flag", fiatCurrency.getFlag());
     }
 
-    public FiatCurrency valueOfNullable(String name) {
+    public static FiatCurrency valueOfNullable(String name) {
         if (Objects.isNull(name)) return null;
         FiatCurrency fiatCurrency;
         try {

@@ -76,7 +76,7 @@ public enum DealType implements ObjectNodeConvertable<DealType> {
                 .put("nominative", dealType.getNominative());
     }
 
-    public DealType valueOfNullable(String name) {
+    public static DealType valueOfNullable(String name) {
         if (Objects.isNull(name)) return null;
         DealType dealType;
         try {

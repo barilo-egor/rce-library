@@ -48,7 +48,7 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
                 .put("shortName", cryptoCurrency.getShortName());
     }
 
-    public CryptoCurrency valueOfNullable(String name) {
+    public static CryptoCurrency valueOfNullable(String name) {
         if (Objects.isNull(name)) return null;
         CryptoCurrency cryptoCurrency;
         try {
