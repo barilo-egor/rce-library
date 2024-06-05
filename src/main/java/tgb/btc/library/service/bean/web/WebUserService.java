@@ -1,5 +1,7 @@
 package tgb.btc.library.service.bean.web;
 
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.web.RoleConstants;
+import tgb.btc.library.repository.bot.UserRepository;
+import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.repository.web.WebUserRepository;
 
@@ -21,6 +25,20 @@ public class WebUserService implements UserDetailsService {
     private BCryptPasswordEncoder passwordEncoder;
 
     private RoleRepository roleRepository;
+
+    private ApiUserRepository apiUserRepository;
+
+    private UserRepository userRepository;
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setApiUserRepository(ApiUserRepository apiUserRepository) {
+        this.apiUserRepository = apiUserRepository;
+    }
 
     @Autowired
     public void setRoleRepository(RoleRepository roleRepository) {
@@ -53,6 +71,21 @@ public class WebUserService implements UserDetailsService {
         }
         webUser.setRoles(roleRepository.getByName(role.name()));
         return webUserRepository.save(webUser);
+    }
+
+    public WebUser save(String username, Long chatId, String token) {
+        WebUser webUser = new WebUser();
+        webUser.setChatId(chatId);
+        webUser.setUsername(username);
+        webUser.setPassword(RandomStringUtils.randomAlphanumeric(10));
+        webUser.setEnabled(true);
+        RoleConstants roleConstants;
+        if (StringUtils.isNotEmpty(token) && apiUserRepository.countByToken(token) == 1)
+            roleConstants = RoleConstants.ROLE_API_CLIENT;
+        else if (userRepository.isAdminByChatId(chatId)) roleConstants = RoleConstants.ROLE_OPERATOR;
+        else roleConstants = RoleConstants.ROLE_USER;
+        webUser.setRoles(roleRepository.getByName(roleConstants.name()));
+        return save(webUser);
     }
 
     public void changePassword(String userName, String newPassword) {
