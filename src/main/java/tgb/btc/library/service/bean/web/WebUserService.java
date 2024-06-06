@@ -88,12 +88,6 @@ public class WebUserService implements UserDetailsService {
         return save(webUser);
     }
 
-    public void changePassword(String userName, String newPassword) {
-        WebUser webUser = getUser(userName);
-        webUser.setPassword(passwordEncoder.encode(newPassword));
-        webUserRepository.save(webUser);
-    }
-
     public WebUser getUser(String username) {
         return (WebUser) loadUserByUsername(username);
     }
