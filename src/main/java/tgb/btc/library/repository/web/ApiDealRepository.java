@@ -38,6 +38,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("select dateTime from ApiDeal where pid=:pid")
     LocalDateTime getDateTimeByPid(Long pid);
 
+    @Query("from ApiDeal where dateTime between :lastPaidDealDateTime and :currentPaidDealDateTime")
+    List<ApiDeal> getByDateRange(LocalDateTime lastPaidDealDateTime, LocalDateTime currentPaidDealDateTime);
+
     /**
      * UPDATE
      */
