@@ -35,6 +35,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal where apiUser.id=:id")
     List<ApiDeal> getByApiUserId(String id);
 
+    @Query("select dateTime from ApiDeal where pid=:pid")
+    List<ApiDeal> getDateTimeByPid(Long pid);
+
     /**
      * UPDATE
      */
