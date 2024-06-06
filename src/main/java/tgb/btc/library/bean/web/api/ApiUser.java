@@ -72,6 +72,9 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
     @Setter
     private List<ApiUserMinSum> apiUserMinSum;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private ApiDeal lastPaidDeal;
+
     public String getRequisite(DealType dealType) {
         if (DealType.isBuy(dealType)) return buyRequisite;
         else return sellRequisite;
@@ -89,6 +92,16 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
                 .filter(course -> fiatCurrency.equals(course.getFiatCurrency()))
                 .findFirst()
                 .orElse(null);
+    }
+
+
+    @Column(name = "LAST_PAID_DEAL")
+    public ApiDeal getLastPaidDeal() {
+        return lastPaidDeal;
+    }
+
+    public void setLastPaidDeal(ApiDeal lastPaidDeal) {
+        this.lastPaidDeal = lastPaidDeal;
     }
 
     @Override

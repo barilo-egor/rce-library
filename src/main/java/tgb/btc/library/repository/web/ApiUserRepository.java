@@ -26,6 +26,9 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("from ApiUser where id=:id")
     ApiUser getById(String id);
 
+    @Query("select lastPaidDeal.pid from ApiUser where pid=:pid")
+    Long getLastPaidDealPidByUserPid(Long pid);
+
     /**
      * DELETE
      */
