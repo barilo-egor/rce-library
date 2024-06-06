@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.bean.web.api.ApiDeal;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -26,6 +27,9 @@ public class WebUser extends BasePersist implements UserDetails {
     private Boolean isEnabled;
 
     private Long chatId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private ApiDeal lastPaidDeal;
 
     public WebUser() {
     }
@@ -95,6 +99,19 @@ public class WebUser extends BasePersist implements UserDetails {
 
     public void setChatId(Long chatId) {
         this.chatId = chatId;
+    }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    @Column(name = "LAST_PAID_DEAL")
+    public ApiDeal getLastPaidDeal() {
+        return lastPaidDeal;
+    }
+
+    public void setLastPaidDeal(ApiDeal lastPaidDeal) {
+        this.lastPaidDeal = lastPaidDeal;
     }
 
     @Override
