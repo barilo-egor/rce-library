@@ -45,5 +45,5 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
      */
     @Modifying
     @Query("update ApiUser u set u.lastPaidDeal=:lastPaidDeal where u.pid=:userPid")
-    ApiUser updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
+    void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
 }
