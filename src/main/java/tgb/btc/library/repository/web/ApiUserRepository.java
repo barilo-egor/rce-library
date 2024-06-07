@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.repository.BaseRepository;
 
@@ -28,6 +29,9 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
 
     @Query("select lastPaidDeal.pid from ApiUser where pid=:pid")
     Long getLastPaidDealPidByUserPid(Long pid);
+
+    @Query("select lastPaidDeal from ApiUser where pid=:userPid")
+    ApiDeal getLastPaidDeal(Long userPid);
 
     /**
      * DELETE
