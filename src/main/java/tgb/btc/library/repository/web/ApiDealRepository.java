@@ -29,6 +29,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus=:apiDealStatus")
     List<ApiDeal> getByDateBetween(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
+    @Query("from ApiDeal d where d.dateTime >= :startDate AND d.dateTime < :endDate and d.apiDealStatus=:apiDealStatus")
+    List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
+
     @Query("from ApiDeal where pid in (:dealsPids)")
     List<ApiDeal> getDealsByPids(List<Long> dealsPids);
 
