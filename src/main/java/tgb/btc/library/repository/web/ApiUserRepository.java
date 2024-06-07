@@ -30,7 +30,7 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select lastPaidDeal.pid from ApiUser where pid=:pid")
     Long getLastPaidDealPidByUserPid(Long pid);
 
-    @Query("select lastPaidDeal from ApiUser where pid=:userPid")
+    @Query("select u.lastPaidDeal from ApiUser u where u.pid=:userPid")
     ApiDeal getLastPaidDeal(Long userPid);
 
     /**
