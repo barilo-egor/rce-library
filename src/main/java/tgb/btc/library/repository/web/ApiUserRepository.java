@@ -39,4 +39,11 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Modifying
     @Query("delete from ApiUser where id=:id")
     void deleteById(String id);
+
+    /**
+     * UPDATE
+     */
+    @Modifying
+    @Query("update ApiUser u set u.lastPaidDeal=:lastPaidDeal where u.pid=:userPid")
+    ApiUser updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
 }
