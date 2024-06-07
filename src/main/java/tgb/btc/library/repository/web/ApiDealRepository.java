@@ -45,7 +45,7 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     ApiDeal getFirstDeal(Long userPid);
 
     @Query("from ApiDeal where dateTime = (select max(dateTime) from ApiDeal where apiUser.pid=:userPid) and apiUser.pid=:userPid")
-    Long getLastDeal(Long userPid);
+    ApiDeal getLastDeal(Long userPid);
 
     /**
      * UPDATE
