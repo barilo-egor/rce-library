@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "BOT_USER")
+@Table(name = "USER")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
