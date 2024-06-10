@@ -11,7 +11,6 @@ import tgb.btc.library.constants.enums.bot.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -27,10 +26,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "DATE_TIME")
     private LocalDateTime dateTime;
-
-    @Deprecated
-    @Column(name = "DATE")
-    private LocalDate date;
 
     @ManyToOne
     private PaymentType paymentType;
@@ -73,9 +68,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "ORIGINAL_PRICE")
     private BigDecimal originalPrice;
-
-    @Column(name = "BULK_APPLIED")
-    private Boolean isBulkApplied;
 
     @Column(name = "IS_PERSONAL_APPLIED")
     private Boolean isPersonalApplied;
@@ -198,14 +190,6 @@ public class Deal extends BasePersist {
         this.dealType = dealType;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
     public Boolean getUsedReferralDiscount() {
         return isUsedReferralDiscount;
     }
@@ -244,14 +228,6 @@ public class Deal extends BasePersist {
 
     public void setOriginalPrice(BigDecimal originalPrice) {
         this.originalPrice = originalPrice;
-    }
-
-    public Boolean getBulkApplied() {
-        return isBulkApplied;
-    }
-
-    public void setBulkApplied(Boolean bulkApplied) {
-        isBulkApplied = bulkApplied;
     }
 
     public Boolean getPersonalApplied() {

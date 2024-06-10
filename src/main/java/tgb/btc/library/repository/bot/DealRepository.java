@@ -149,11 +149,19 @@ public interface DealRepository extends BaseRepository<Deal> {
     @Query("select d.user.username from Deal d where d.pid=:pid")
     String getUserUsernameByDealPid(Long pid);
 
-    @Query("from Deal d where (d.date BETWEEN :startDate AND :endDate) and d.dealStatus='CONFIRMED'")
-    List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate);
+    default List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate) {
+        return getByDateTimeBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+    }
 
-    @Query("from Deal d where d.date=:date and d.dealStatus='CONFIRMED'")
-    List<Deal> getPassedByDate(LocalDate date);
+    @Query("from Deal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.dealStatus='CONFIRMED'")
+    List<Deal> getByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    default List<Deal> getPassedByDate(LocalDate date) {
+        return getPassedByDateTimeBetween(date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+    }
+
+    @Query("from Deal d where d.dateTime between :startDate and :endDate and d.dealStatus='CONFIRMED'")
+    List<Deal> getPassedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("select dealType from Deal where pid=:pid")
     DealType getDealTypeByPid(Long pid);
@@ -183,8 +191,12 @@ public interface DealRepository extends BaseRepository<Deal> {
      * Reports
      */
 
-    @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and date=:date and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency);
+    default BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency) {
+        return getCryptoAmountSumByDate(dealType, date.atStartOfDay(), date.plusDays(1).atStartOfDay(), cryptoCurrency);
+    }
+
+    @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and dateTime between :startDateTime and :endDateTime and cryptoCurrency=:cryptoCurrency")
+    BigDecimal getCryptoAmountSumByDate(DealType dealType, LocalDateTime startDateTime, LocalDateTime endDateTime, CryptoCurrency cryptoCurrency);
 
     @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
     BigDecimal getCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
