@@ -22,40 +22,80 @@
 
     <profiles>
         <profile>
-            <id>local-getting-libraries</id>
+            <id>windows</id>
             <activation>
-                <file>
-                    <exists>config/local.properties</exists>
-                </file>
+                <os>
+                    <family>Windows</family>
+                </os>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>tgb.btc</groupId>
-                    <artifactId>rce-api</artifactId>
-                    <version>1.1</version>
-                </dependency>
-            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>pre-clean-install-windows</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <exec executable="mvn.cmd">
+                                            <arg value="/c"/>
+                                            <arg value="mvn.cmd"/>
+                                            <arg value="clean"/>
+                                            <arg value="install"/>
+                                            <arg value="-f"/>
+                                            <arg value="../rce-api/pom.xml"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
-            <id>jitpack-getting-libraries</id>
+            <id>windows</id>
             <activation>
-                <file>
-                    <missing>config/local.properties</missing>
-                </file>
+                <os>
+                    <family>unix</family>
+                </os>
             </activation>
-            <repositories>
-                <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
-                </repository>
-            </repositories>
-            <dependencies>
-                <dependency>
-                    <groupId>com.github.barilo-egor</groupId>
-                    <artifactId>rce-api</artifactId>
-                    <version>77b5f2ea18</version>
-                </dependency>
-            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>pre-clean-install-windows</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <exec executable="cmd">
+                                            <arg value="/c"/>
+                                            <arg value="mvn.cmd"/>
+                                            <arg value="clean"/>
+                                            <arg value="install"/>
+                                            <arg value="-f"/>
+                                            <arg value="../rce-api/pom.xml"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -129,6 +169,11 @@
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>tgb.btc</groupId>
+            <artifactId>rce-api</artifactId>
+            <version>1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -146,7 +191,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <exec executable="mvn.cmd">
+                                <exec executable="mvn">
                                     <arg value="clean"/>
                                     <arg value="install"/>
                                     <arg value="-f"/>
