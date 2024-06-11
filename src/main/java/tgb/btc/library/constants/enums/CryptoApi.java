@@ -1,7 +1,10 @@
 package tgb.btc.library.constants.enums;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.exception.ReadFromUrlException;
 
@@ -60,22 +63,15 @@ public enum CryptoApi {
     }
 
     private static JSONObject readJsonFromUrl(String url) {
-        try (InputStream is = new URL(url).openStream()) {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            String jsonText = readAll(rd);
-            return new JSONObject(jsonText);
+        log.debug("Открытие стрима для получения курса.");
+        RestTemplate restTemplate=new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url,
+                String.class);
+        try {
+            return new JSONObject(response.getBody());
         } catch (Exception ex) {
-            log.error("Ошика при получении курса по url=" + url, ex);
+            log.error("Ошибка при получении курса по url=" + url, ex);
             throw new ReadFromUrlException("Проблема при получении курса. Создание заявки для этой валюты пока что невозможно.");
         }
-    }
-
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
     }
 }

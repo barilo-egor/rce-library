@@ -25,6 +25,7 @@ public class CryptoCurrencyService {
 
     static {
         String propertyApi = PropertiesPath.CONFIG_PROPERTIES.getString("bot.btc.api");
+        log.debug("Значение проперти bot.btc.api=" + propertyApi);
         if (Objects.isNull(propertyApi)) {
             CURRENT_BTC_USD_API = getAvailable();
             IS_BTC_USD_API_MANUAL = false;
@@ -37,12 +38,15 @@ public class CryptoCurrencyService {
     }
 
     private static CryptoApi getAvailable() {
+        log.debug("Получение доступного апи для получения курса btc.");
         for (CryptoApi cryptoApi : CryptoApi.BTC_USD) {
+            log.debug("Попытка получения курса для {}.", cryptoApi.name());
             try {
                 cryptoApi.getCourse();
                 CURRENT_BTC_USD_API = cryptoApi;
                 return cryptoApi;
             } catch (ReadFromUrlException ignored) {
+                log.debug("Не получилось взять курс для {}.", cryptoApi.name());
             }
         }
         throw new BaseException("Не получилось связаться ни с одним API для BTC.");
