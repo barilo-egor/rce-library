@@ -37,7 +37,7 @@ public class BackupService {
         final String database = "rce";
         File backupFile = null;
         try {
-            backupFile = File.createTempFile("backup-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")),
+            backupFile = File.createTempFile("backup-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm_")),
                     ".sql");
             String command = String.format("mysqldump -u %s -p%s %s --result-file=%s",
                     userDB, passwordDB, database, backupFile.getAbsolutePath());
