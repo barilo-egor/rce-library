@@ -26,6 +26,9 @@ public class DealPayment extends BasePersist {
     @Column(name = "APP")
     private String app;
 
+    @Column(name = "PHONE")
+    private String phone;
+
     @OneToOne
     private Deal deal;
 
@@ -51,6 +54,14 @@ public class DealPayment extends BasePersist {
 
     public void setApp(String app) {
         this.app = app;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Deal getDeal() {
