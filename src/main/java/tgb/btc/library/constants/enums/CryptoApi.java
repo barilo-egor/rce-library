@@ -65,9 +65,9 @@ public enum CryptoApi {
     private static JSONObject readJsonFromUrl(String url) {
         log.debug("Открытие стрима для получения курса.");
         RestTemplate restTemplate=new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url,
-                String.class);
         try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url,
+                    String.class);
             return new JSONObject(response.getBody());
         } catch (Exception ex) {
             log.error("Ошибка при получении курса по url=" + url, ex);
