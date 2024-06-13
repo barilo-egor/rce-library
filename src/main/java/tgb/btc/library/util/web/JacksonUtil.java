@@ -3,6 +3,7 @@ package tgb.btc.library.util.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 
 import java.math.BigDecimal;
@@ -37,6 +38,13 @@ public class JacksonUtil {
         return getEmptyArray()
                 .addAll(objects.stream()
                         .map(object -> object.mapFunction().apply(object))
+                        .collect(Collectors.toList()));
+    }
+
+    public static <T extends JsonConvertable> ArrayNode toJsonArrayNode(Collection<T> objects) {
+        return getEmptyArray()
+                .addAll(objects.stream()
+                        .map(JsonConvertable::map)
                         .collect(Collectors.toList()));
     }
 
