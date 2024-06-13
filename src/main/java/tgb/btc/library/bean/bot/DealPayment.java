@@ -1,22 +1,26 @@
 package tgb.btc.library.bean.bot;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.interfaces.JsonConvertable;
+import tgb.btc.library.util.web.JacksonUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "DEAL_PAYMENT")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DealPayment extends BasePersist {
+public class DealPayment extends BasePersist implements JsonConvertable {
 
     @Column(name = "TITLE")
     private String title;
@@ -83,4 +87,15 @@ public class DealPayment extends BasePersist {
     public void setDeal(Deal deal) {
         this.deal = deal;
     }
+
+    @Override
+    public ObjectNode map() {
+        return JacksonUtil.getEmpty()
+                .put("deal.pid", Objects.nonNull(deal) ? deal.getPid().toString() : "Не привязан")
+                .put("app", app)
+                .put("title", title)
+                .put("message", message)
+                .put("phone", phone);
+    }
+
 }
