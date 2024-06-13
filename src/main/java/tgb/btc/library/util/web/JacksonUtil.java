@@ -52,6 +52,10 @@ public class JacksonUtil {
         return t.mapFunction().apply(t);
     }
 
+    public static <T extends JsonConvertable> ObjectNode toObjectNode(T t) {
+        return t.map();
+    }
+
     public static <T> ObjectNode toObjectNode(T t, Function<T, ObjectNode> mapper) {
         return mapper.apply(t);
     }
