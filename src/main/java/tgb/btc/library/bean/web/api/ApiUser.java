@@ -74,7 +74,6 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
     @Setter
     private List<ApiUserMinSum> apiUserMinSum;
 
-    @Column(name = "LAST_PAID_DEAL")
     @OneToOne(fetch = FetchType.LAZY)
     @Getter
     @Setter
