@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "DEAL_PAYMENT")
@@ -28,6 +29,9 @@ public class DealPayment extends BasePersist {
 
     @Column(name = "PHONE")
     private String phone;
+
+    @Column(name = "DATE_TIME")
+    private LocalDateTime dateTime;
 
     @OneToOne
     private Deal deal;
@@ -62,6 +66,14 @@ public class DealPayment extends BasePersist {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public Deal getDeal() {
