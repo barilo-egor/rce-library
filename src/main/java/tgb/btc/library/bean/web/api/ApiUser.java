@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
@@ -72,8 +74,16 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
     @Setter
     private List<ApiUserMinSum> apiUserMinSum;
 
+    @Column(name = "LAST_PAID_DEAL")
     @OneToOne(fetch = FetchType.LAZY)
+    @Getter
+    @Setter
     private ApiDeal lastPaidDeal;
+
+    @OneToOne
+    @Getter
+    @Setter
+    private WebUser webUser;
 
     public String getRequisite(DealType dealType) {
         if (DealType.isBuy(dealType)) return buyRequisite;
@@ -94,16 +104,6 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
                 .orElse(null);
     }
 
-
-    @Column(name = "LAST_PAID_DEAL")
-    public ApiDeal getLastPaidDeal() {
-        return lastPaidDeal;
-    }
-
-    public void setLastPaidDeal(ApiDeal lastPaidDeal) {
-        this.lastPaidDeal = lastPaidDeal;
-    }
-
     @Override
     public Function<ApiUser, ObjectNode> mapFunction() {
         return apiUser -> {
@@ -115,7 +115,9 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
                     .put("isBanned", BooleanUtils.isTrue(apiUser.getIsBanned()))
                     .put("token", apiUser.getToken())
                     .put("buyRequisite", apiUser.getBuyRequisite())
-                    .put("sellRequisite", apiUser.getSellRequisite());
+                    .put("sellRequisite", apiUser.getSellRequisite())
+                    .put("webUser", Objects.nonNull(apiUser.getWebUser()) ? apiUser.getWebUser().getUsername() :
+                            StringUtils.EMPTY);
             if (Objects.nonNull(apiUser.getFiatCurrency())) {
                 ObjectNode fiatCurrency = apiUser.getFiatCurrency().mapFunction().apply(apiUser.getFiatCurrency());
                 result.set("fiatCurrency", fiatCurrency);
