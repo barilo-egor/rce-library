@@ -45,6 +45,7 @@ public class ApiDealService {
 
     public List<ApiDeal> getAcceptedByDateBetween(Date start, Date end, Boolean isRange) {
         if (BooleanUtils.isNotTrue(isRange)) {
+            if (Objects.isNull(start)) return apiDealRepository.findAll();
             return getAcceptedByDate(start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         } else {
             if (Objects.nonNull(start) && Objects.isNull(end)) {
