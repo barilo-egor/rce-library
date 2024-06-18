@@ -50,6 +50,12 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal where dateTime = (select max(dateTime) from ApiDeal where apiUser.pid=:userPid) and apiUser.pid=:userPid")
     ApiDeal getLastDeal(Long userPid);
 
+    @Query("select pid from ApiDeal where cast(pid as string) like %:query")
+    List<Long> getPidsByQuery(String query);
+
+    @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='CONFIRMED'")
+    List<ApiDeal> getByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+
     /**
      * UPDATE
      */
