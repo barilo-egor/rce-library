@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.WebUser;
+import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.RoleConstants;
 import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
@@ -80,12 +81,20 @@ public class WebUserService implements UserDetailsService {
         webUser.setPassword(RandomStringUtils.randomAlphanumeric(10));
         webUser.setEnabled(true);
         RoleConstants roleConstants;
-        if (StringUtils.isNotEmpty(token) && apiUserRepository.countByToken(token) == 1)
+        ApiUser apiUser = null;
+        if (StringUtils.isNotEmpty(token) && apiUserRepository.countByToken(token) == 1) {
             roleConstants = RoleConstants.ROLE_API_CLIENT;
+            apiUser = apiUserRepository.getByToken(token);
+        }
         else if (userRepository.isAdminByChatId(chatId)) roleConstants = RoleConstants.ROLE_OPERATOR;
         else roleConstants = RoleConstants.ROLE_USER;
         webUser.setRoles(roleRepository.getByName(roleConstants.name()));
-        return save(webUser);
+        webUser = save(webUser);
+        if (Objects.nonNull(apiUser)) {
+            apiUser.setWebUser(webUser);
+            apiUserRepository.save(apiUser);
+        }
+        return webUser;
     }
 
     public WebUser getUser(String username) {
