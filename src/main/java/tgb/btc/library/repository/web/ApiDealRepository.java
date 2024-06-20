@@ -53,17 +53,17 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("select pid from ApiDeal where cast(pid as string) like %:query")
     List<Long> getPidsByQuery(String query);
 
-    @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='ACCEPTED'")
-    List<ApiDeal> getAcceptedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+    @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
+    List<ApiDeal> getAcceptedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate, Long userPid);
 
     @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='ACCEPTED'")
     List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("from ApiDeal d where d.dateTime>=:dateTime and d.apiDealStatus='ACCEPTED'")
-    List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime);
+    @Query("from ApiDeal d where d.dateTime>=:dateTime and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
+    List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid);
 
-    @Query("from ApiDeal d where d.dateTime<=:dateTime and d.apiDealStatus='ACCEPTED'")
-    List<ApiDeal> getAcceptedByDateTimeBefore(LocalDateTime dateTime);
+    @Query("from ApiDeal d where d.dateTime<=:dateTime and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
+    List<ApiDeal> getAcceptedByDateTimeBefore(LocalDateTime dateTime, Long userPid);
 
     /**
      * UPDATE

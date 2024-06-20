@@ -43,26 +43,28 @@ public class ApiDealService {
         return apiDealRepository.getByDateBetween(startDay, endDay, ApiDealStatus.ACCEPTED);
     }
 
-    public List<ApiDeal> getAcceptedByDateBetween(Date start, Date end, Boolean isRange) {
+    public List<ApiDeal> getAcceptedByDateBetween(Long apiUserPid, Date start, Date end, Boolean isRange) {
         if (BooleanUtils.isNotTrue(isRange)) {
             if (Objects.isNull(start)) return apiDealRepository.findAll();
-            return getAcceptedByDate(start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            return getAcceptedByDate(start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), apiUserPid);
         } else {
             if (Objects.nonNull(start) && Objects.isNull(end)) {
                 return apiDealRepository.getAcceptedByDateTimeAfter(
-                        start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay());
+                        start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(), apiUserPid);
             } else if (Objects.isNull(start) && Objects.nonNull(end)) {
                 return apiDealRepository.getAcceptedByDateTimeBefore(
-                        end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1).atStartOfDay());
+                        end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1).atStartOfDay(),
+                        apiUserPid);
             }
             return apiDealRepository.getAcceptedByDateTimeBetween(
                     start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(),
-                    end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1).atStartOfDay());
+                    end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1).atStartOfDay(),
+                    apiUserPid);
         }
     }
 
-    public List<ApiDeal> getAcceptedByDate(LocalDate date) {
+    public List<ApiDeal> getAcceptedByDate(LocalDate date, Long apiUserPid) {
         return apiDealRepository.getAcceptedByDateTimeBetween(
-                date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+                date.atStartOfDay(), date.plusDays(1).atStartOfDay(), apiUserPid);
     }
 }
