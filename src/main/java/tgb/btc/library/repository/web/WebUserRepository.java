@@ -25,6 +25,9 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
 
     boolean existsByUsername(String username);
 
+    @Query("select username from WebUser")
+    List<String> getUsernames();
+
     /**
      * UPDATE
      */
