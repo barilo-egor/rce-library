@@ -9,6 +9,7 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
@@ -26,7 +27,7 @@ import java.util.function.Function;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUser> {
+public class ApiUser extends BasePersist implements JsonConvertable {
 
     @Getter
     @Setter
@@ -104,33 +105,31 @@ public class ApiUser extends BasePersist implements ObjectNodeConvertable<ApiUse
     }
 
     @Override
-    public Function<ApiUser, ObjectNode> mapFunction() {
-        return apiUser -> {
-            ObjectNode result = JacksonUtil.getEmpty()
-                    .put("pid", apiUser.getPid())
-                    .put("id", apiUser.getId())
-                    .put("personalDiscount", apiUser.getPersonalDiscount())
-                    .put("registrationDate", apiUser.getRegistrationDate().format(DateTimeFormatter.ISO_DATE))
-                    .put("isBanned", BooleanUtils.isTrue(apiUser.getIsBanned()))
-                    .put("token", apiUser.getToken())
-                    .put("buyRequisite", apiUser.getBuyRequisite())
-                    .put("sellRequisite", apiUser.getSellRequisite())
-                    .put("webUser", Objects.nonNull(apiUser.getWebUser()) ? apiUser.getWebUser().getUsername() :
-                            StringUtils.EMPTY);
-            if (Objects.nonNull(apiUser.getFiatCurrency())) {
-                ObjectNode fiatCurrency = apiUser.getFiatCurrency().mapFunction().apply(apiUser.getFiatCurrency());
-                result.set("fiatCurrency", fiatCurrency);
-            }
-            usdApiUserCourseList.stream()
-                    .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
-                    .findFirst()
-                    .ifPresent(course -> result.put("usdCourseBYN", course.getCourse()));
-            usdApiUserCourseList.stream()
-                    .filter(course -> FiatCurrency.RUB.equals(course.getFiatCurrency()))
-                    .findFirst()
-                    .ifPresent(course -> result.put("usdCourseRUB", course.getCourse()));
-            return result;
-        };
+    public ObjectNode map() {
+        ObjectNode result = JacksonUtil.getEmpty()
+                .put("pid", getPid())
+                .put("id", getId())
+                .put("personalDiscount", getPersonalDiscount())
+                .put("registrationDate", getRegistrationDate().format(DateTimeFormatter.ISO_DATE))
+                .put("isBanned", BooleanUtils.isTrue(getIsBanned()))
+                .put("token", getToken())
+                .put("buyRequisite", getBuyRequisite())
+                .put("sellRequisite", getSellRequisite())
+                .put("webUser", Objects.nonNull(getWebUser()) ? getWebUser().getUsername() :
+                        StringUtils.EMPTY);
+        if (Objects.nonNull(getFiatCurrency())) {
+            ObjectNode fiatCurrency = getFiatCurrency().mapFunction().apply(getFiatCurrency());
+            result.set("fiatCurrency", fiatCurrency);
+        }
+        usdApiUserCourseList.stream()
+                .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
+                .findFirst()
+                .ifPresent(course -> result.put("usdCourseBYN", course.getCourse()));
+        usdApiUserCourseList.stream()
+                .filter(course -> FiatCurrency.RUB.equals(course.getFiatCurrency()))
+                .findFirst()
+                .ifPresent(course -> result.put("usdCourseRUB", course.getCourse()));
+        return result;
     }
 
 }
