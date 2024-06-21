@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +28,8 @@ public class ApiCalculation extends BasePersist {
     @ManyToOne
     private ApiUser apiUser;
 
+    private LocalDateTime dateTime;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -36,12 +39,13 @@ public class ApiCalculation extends BasePersist {
         if (!super.equals(o))
             return false;
         ApiCalculation that = (ApiCalculation) o;
-        return Objects.equals(deals, that.deals) && Objects.equals(apiUser, that.apiUser);
+        return Objects.equals(deals, that.deals) && Objects.equals(apiUser, that.apiUser)
+                && Objects.equals(dateTime, that.dateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), deals, apiUser);
+        return Objects.hash(super.hashCode(), deals, apiUser, dateTime);
     }
 
 }
