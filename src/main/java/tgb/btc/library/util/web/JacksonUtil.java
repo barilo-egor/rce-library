@@ -95,4 +95,9 @@ public class JacksonUtil {
         result.set("items", toArrayNode(list, mapper));
         return result;
     }
+
+    public static void pagingData(ObjectNode node, long total) {
+        node.put("success", true);
+        node.put("total", total);
+    }
 }
