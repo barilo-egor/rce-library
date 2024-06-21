@@ -37,6 +37,9 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select pid from ApiUser where webUser.username=:username")
     Long getPidByUsername(String username);
 
+    @Query("from ApiUser where webUser.username=:username")
+    Long getByUsername(String username);
+
     @Query("select u.webUser from ApiUser u where u.pid=:pid")
     WebUser getWebUser(Long pid);
 
