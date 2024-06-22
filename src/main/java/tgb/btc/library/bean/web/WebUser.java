@@ -27,6 +27,8 @@ public class WebUser extends BasePersist implements UserDetails {
 
     private Long chatId;
 
+    private Boolean soundEnabled;
+
     public WebUser() {
     }
 
@@ -99,6 +101,14 @@ public class WebUser extends BasePersist implements UserDetails {
 
     public Boolean getEnabled() {
         return isEnabled;
+    }
+
+    public Boolean getSoundEnabled() {
+        return soundEnabled;
+    }
+
+    public void setSoundEnabled(Boolean soundEnabled) {
+        this.soundEnabled = soundEnabled;
     }
 
     @Override
