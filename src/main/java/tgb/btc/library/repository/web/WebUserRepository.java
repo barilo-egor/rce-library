@@ -35,4 +35,8 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     @Modifying
     @Query("update WebUser set username=:username where pid=:pid")
     void updateUsernameByPid(Long pid, String username);
+
+    @Modifying
+    @Query("update WebUser set username=:newUsername where username=:oldUsername")
+    void updateUsername(String newUsername, String oldUsername);
 }
