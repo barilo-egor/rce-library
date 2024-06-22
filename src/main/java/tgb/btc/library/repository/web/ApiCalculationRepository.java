@@ -14,6 +14,7 @@ public interface ApiCalculationRepository extends BaseRepository<ApiCalculation>
     @Query("from ApiCalculation where apiUser.pid=:pid")
     List<ApiCalculation> getByApiUserPid(Long pid);
 
+    @Query("from ApiCalculation where apiUser=:apiUser order by dateTime desc")
     List<ApiCalculation> findAllByApiUser(ApiUser apiUser);
 
     Long countAllByApiUser(ApiUser apiUser);
