@@ -48,5 +48,5 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
 
     @Modifying
     @Query("update WebUser set soundEnabled=:soundEnabled where username=:username")
-    void updateUsername(String username, Boolean soundEnabled);
+    void updateSoundEnabled(String username, Boolean soundEnabled);
 }
