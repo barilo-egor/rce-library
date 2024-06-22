@@ -31,6 +31,9 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     @Query("select chatId from WebUser where username=:username")
     Long getChatIdByUsername(String username);
 
+    @Query("select soundEnabled from WebUser where username=:username")
+    Boolean getSoundEnabledByUsername(String username);
+
     /**
      * UPDATE
      */
@@ -42,4 +45,8 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     @Modifying
     @Query("update WebUser set username=:newUsername where username=:oldUsername")
     void updateUsername(String newUsername, String oldUsername);
+
+    @Modifying
+    @Query("update WebUser set soundEnabled=:soundEnabled where username=:username")
+    void updateUsername(String username, Boolean soundEnabled);
 }
