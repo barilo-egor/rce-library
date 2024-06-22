@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean.web;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,14 @@ public class ApiUserService {
     }
 
     @Transactional
-    public void updateDealsToNewUser(String deleteUserId, String newUserId) {
-
+    public String generateToken(String username) {
+        ApiUser apiUser = apiUserRepository.getByUsername(username);
+        String token = RandomStringUtils.randomAlphanumeric(42);
+        while (apiUserRepository.countByToken(token) > 0) {
+            token = RandomStringUtils.randomAlphanumeric(42);
+        }
+        apiUser.setToken(token);
+        apiUserRepository.save(apiUser);
+        return token;
     }
 }
