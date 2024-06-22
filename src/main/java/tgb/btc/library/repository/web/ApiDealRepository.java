@@ -68,6 +68,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal d where d.dateTime<=:dateTime and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
     List<ApiDeal> getAcceptedByDateTimeBefore(LocalDateTime dateTime, Long userPid);
 
+    @Query("select apiUser.pid from ApiDeal where pid=:pid")
+    Long getApiUserPidByDealPid(Long pid);
+
     /**
      * UPDATE
      */
