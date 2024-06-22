@@ -71,6 +71,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("select apiUser.pid from ApiDeal where pid=:pid")
     Long getApiUserPidByDealPid(Long pid);
 
+    @Query("select count(d.pid) from ApiDeal d where d.apiUser.token=:token and d.pid=:dealPid")
+    Long getCountByTokenAndPid(String token, Long dealPid);
+
     /**
      * UPDATE
      */
