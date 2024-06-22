@@ -28,6 +28,9 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     @Query("select username from WebUser")
     List<String> getUsernames();
 
+    @Query("select chatId from WebUser where username=:username")
+    Long getChatIdByUsername(String username);
+
     /**
      * UPDATE
      */
