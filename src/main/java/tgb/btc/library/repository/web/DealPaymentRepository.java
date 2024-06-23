@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.DealPayment;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.List;
+
 @Repository
 public interface DealPaymentRepository extends BaseRepository<DealPayment>  {
 
@@ -14,4 +16,7 @@ public interface DealPaymentRepository extends BaseRepository<DealPayment>  {
 
     @Query("from DealPayment where deal.pid=:dealPid")
     DealPayment getByDealPid(Long dealPid);
+
+    @Query("from DealPayment order by dateTime desc")
+    List<DealPayment> findAllSortedDescDateTime();
 }
