@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Entity
@@ -95,7 +96,8 @@ public class DealPayment extends BasePersist implements JsonConvertable {
                 .put("app", app)
                 .put("title", title)
                 .put("message", message)
-                .put("phone", phone);
+                .put("phone", phone)
+                .put("dateTime", dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
     }
 
 }
