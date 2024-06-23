@@ -17,6 +17,6 @@ public interface DealPaymentRepository extends BaseRepository<DealPayment>  {
     @Query("from DealPayment where deal.pid=:dealPid")
     DealPayment getByDealPid(Long dealPid);
 
-    @Query("from DealPayment order by dateTime desc")
+    @Query(value = "SELECT * FROM deal_payment ORDER BY date_time LIMIT 50", nativeQuery = true)
     List<DealPayment> findAllSortedDescDateTime();
 }
