@@ -6,6 +6,8 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.List;
+
 @Service
 public class BasePersistService<T extends BasePersist> {
     private final BaseRepository<T> baseRepository;
@@ -30,5 +32,9 @@ public class BasePersistService<T extends BasePersist> {
 
     public T save(T t) {
         return baseRepository.save(t);
+    }
+
+    public List<T> findAll() {
+        return baseRepository.findAll();
     }
 }
