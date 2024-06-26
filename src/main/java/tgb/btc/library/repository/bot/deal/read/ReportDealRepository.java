@@ -1,21 +1,18 @@
 package tgb.btc.library.repository.bot.deal.read;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-public interface ReportDealRepository extends BaseRepository<Deal> {
+public interface ReportDealRepository {
 
     default BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency) {
         return getCryptoAmountSumByDate(dealType, date.atStartOfDay(), date.plusDays(1).atStartOfDay(), cryptoCurrency);

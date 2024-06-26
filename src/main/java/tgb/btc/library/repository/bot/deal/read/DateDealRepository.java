@@ -1,16 +1,13 @@
 package tgb.btc.library.repository.bot.deal.read;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.repository.BaseRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-public interface DateDealRepository extends BaseRepository<Deal> {
+public interface DateDealRepository {
     default List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate) {
         return getByDateTimeBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
     }

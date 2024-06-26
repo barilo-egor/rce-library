@@ -4,15 +4,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.constants.enums.bot.*;
-import tgb.btc.library.repository.bot.deal.*;
-import tgb.btc.library.repository.bot.deal.read.*;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.DealStatus;
+import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.repository.BaseRepository;
+import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
+import tgb.btc.library.repository.bot.deal.ReadDealRepository;
 
 import java.util.List;
 
 @Repository
 @Transactional
-public interface DealRepository extends ReadDealRepository, ModifyDealRepository {
+public interface DealRepository extends ReadDealRepository, ModifyDealRepository, BaseRepository<Deal> {
 
     Deal findByPid(Long pid);
 

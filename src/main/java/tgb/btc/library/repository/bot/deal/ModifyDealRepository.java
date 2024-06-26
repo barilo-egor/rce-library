@@ -2,20 +2,16 @@ package tgb.btc.library.repository.bot.deal;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Repository
-public interface ModifyDealRepository extends BaseRepository<Deal> {
+public interface ModifyDealRepository {
 
     /**
      * UPDATE
