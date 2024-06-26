@@ -73,8 +73,6 @@ public interface ModifyDealRepository {
     @Query(value = "update Deal set additionalVerificationImageId=:additionalVerificationImageId where pid=:pid")
     void updateAdditionalVerificationImageIdByPid(Long pid, String additionalVerificationImageId);
 
-    void findAllByDealStatusNot(DealStatus dealStatus);
-
     @Modifying
     @Query("update Deal set deliveryType=:deliveryType where pid=:pid")
     void updateDeliveryTypeByPid(Long pid, DeliveryType deliveryType);
