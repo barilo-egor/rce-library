@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface DealCountRepository {
 
-
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus not in :dealStatus")
     Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus);
 
