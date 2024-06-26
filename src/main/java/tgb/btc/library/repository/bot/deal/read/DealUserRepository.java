@@ -10,5 +10,4 @@ public interface DealUserRepository {
     @Query("select d.user.username from Deal d where d.pid=:pid")
     String getUserUsernameByDealPid(Long pid);
 
-
 }
