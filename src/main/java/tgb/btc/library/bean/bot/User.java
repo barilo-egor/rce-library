@@ -44,8 +44,8 @@ public class User extends BasePersist {
     @Column(name = "FROM_CHAT_ID")
     private Long fromChatId;
 
-    @Column(name = "REFERRAL_BALANCE")
-    private Integer referralBalance;
+    @Column(name = "REFERRAL_BALANCE", nullable = false)
+    private Integer referralBalance = 0;
 
     @Column(name = "CHARGES")
     private Integer charges;
