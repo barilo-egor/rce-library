@@ -7,7 +7,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.Game;
 import tgb.btc.library.constants.enums.bot.GameResultType;
-import tgb.btc.library.interfaces.service.IGameResultService;
+import tgb.btc.library.interfaces.service.bot.IGameResultService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.GameResultRepository;
 import tgb.btc.library.service.bean.BasePersistService;

@@ -1,4 +1,4 @@
-package tgb.btc.library.interfaces.service;
+package tgb.btc.library.interfaces.service.bot;
 
 import tgb.btc.library.bean.GameResult;
 import tgb.btc.library.bean.bot.User;
