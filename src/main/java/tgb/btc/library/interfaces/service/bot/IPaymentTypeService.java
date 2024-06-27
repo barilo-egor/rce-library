@@ -10,6 +10,14 @@ import java.util.List;
 
 public interface IPaymentTypeService {
 
+    Integer getTurnedCountByDeal(Long chatId);
+
+    PaymentType getFirstTurned(Long dealPid);
+
+    void remove(Long paymentTypePid);
+
+    boolean isNameFree(String name);
+
     /** SELECT **/
 
     PaymentType getByPid(@Param("pid") Long pid);
