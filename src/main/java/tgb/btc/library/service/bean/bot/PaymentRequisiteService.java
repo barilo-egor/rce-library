@@ -7,6 +7,7 @@ import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class PaymentRequisiteService {
+public class PaymentRequisiteService implements IPaymentRequisiteService {
 
     private PaymentRequisiteRepository paymentRequisiteRepository;
 
@@ -78,5 +79,45 @@ public class PaymentRequisiteService {
             throw new BaseException("Не найден ни один включенный реквизит.");
         Integer order = getOrder(paymentType.getPid());
         return turnedRequisites.get(order).getRequisite();
+    }
+
+    @Override
+    public List<PaymentRequisite> getByPaymentType(PaymentType paymentType) {
+        return paymentRequisiteRepository.getByPaymentType(paymentType);
+    }
+
+    @Override
+    public long getCountByPaymentType(PaymentType paymentType) {
+        return paymentRequisiteRepository.getCountByPaymentType(paymentType);
+    }
+
+    @Override
+    public List<PaymentRequisite> getByPaymentType_Pid(Long paymentTypePid) {
+        return paymentRequisiteRepository.getByPaymentType_Pid(paymentTypePid);
+    }
+
+    @Override
+    public PaymentType getPaymentTypeByPid(Long pid) {
+        return paymentRequisiteRepository.getPaymentTypeByPid(pid);
+    }
+
+    @Override
+    public String getRequisiteByPaymentTypePidAndOrder(Long paymentPid, Integer requisiteOrder) {
+        return paymentRequisiteRepository.getRequisiteByPaymentTypePidAndOrder(paymentPid, requisiteOrder);
+    }
+
+    @Override
+    public Integer countByPaymentTypePidAndIsOn(Long paymentTypePid) {
+        return paymentRequisiteRepository.countByPaymentTypePidAndIsOn(paymentTypePid);
+    }
+
+    @Override
+    public void updateRequisiteByPid(String requisite, Long pid) {
+        paymentRequisiteRepository.updateRequisiteByPid(requisite, pid);
+    }
+
+    @Override
+    public void deleteByPaymentTypePid(Long paymentTypePid) {
+        paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
     }
 }
