@@ -7,12 +7,15 @@ import tgb.btc.library.constants.enums.bot.BotMessageType;
 import tgb.btc.library.constants.enums.bot.MessageType;
 import tgb.btc.library.constants.strings.ErrorMessage;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bot.IBotMessageService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.BotMessageRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.util.Optional;
+
 @Service
-public class BotMessageService extends BasePersistService<BotMessage> {
+public class BotMessageService extends BasePersistService<BotMessage> implements IBotMessageService {
     private final BotMessageRepository botMessageRepository;
 
     @Autowired
@@ -21,8 +24,8 @@ public class BotMessageService extends BasePersistService<BotMessage> {
         this.botMessageRepository = botMessageRepository;
     }
 
-    public BotMessage findByType(BotMessageType botMessageType) {
-        return botMessageRepository.findByType(botMessageType)
+    public BotMessage findByTypeNullSafe(BotMessageType botMessageType) {
+        return findByType(botMessageType)
                 .orElse(BotMessage.builder().messageType(MessageType.TEXT)
                         .text(String.format(ErrorMessage.BOT_MESSAGE_NOT_SET, botMessageType.getDisplayName())).build());
     }
@@ -31,6 +34,11 @@ public class BotMessageService extends BasePersistService<BotMessage> {
         return botMessageRepository.findByType(botMessageType)
                 .orElseThrow(() -> new BaseException(String.format(ErrorMessage.BOT_MESSAGE_NOT_SET,
                         botMessageType.getDisplayName())));
+    }
+
+    @Override
+    public Optional<BotMessage> findByType(BotMessageType botMessageType) {
+        return botMessageRepository.findByType(botMessageType);
     }
 }
 
