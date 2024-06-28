@@ -43,4 +43,7 @@ public interface DealPropertyRepository {
 
     @Query(value = "select dealStatus from Deal where pid=:pid")
     DealStatus getDealStatusByPid(Long pid);
+
+    @Query(value = "select isUsedPromo from Deal where pid=:pid")
+    Boolean getIsUsedPromoByPid(Long pid);
 }

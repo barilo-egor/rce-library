@@ -41,7 +41,5 @@ public interface IReportDealService {
 
     List<Deal> getByUser_ChatId(Long chatId);
 
-    Boolean getIsUsedPromoByPid(Long pid);
-
     List<Object[]> findAllForUsersReport();
 }

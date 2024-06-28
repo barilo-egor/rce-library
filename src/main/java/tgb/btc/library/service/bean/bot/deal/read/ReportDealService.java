@@ -105,11 +105,6 @@ public class ReportDealService extends BasePersistService<Deal> implements IRepo
     }
 
     @Override
-    public Boolean getIsUsedPromoByPid(Long pid) {
-        return reportDealRepository.getIsUsedPromoByPid(pid);
-    }
-
-    @Override
     public List<Object[]> findAllForUsersReport() {
         return reportDealRepository.findAllForUsersReport();
     }

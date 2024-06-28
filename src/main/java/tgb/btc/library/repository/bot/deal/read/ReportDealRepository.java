@@ -57,9 +57,6 @@ public interface ReportDealRepository {
 
     List<Deal> getByUser_ChatId(Long chatId);
 
-    @Query(value = "select isUsedPromo from Deal where pid=:pid")
-    Boolean getIsUsedPromoByPid(Long pid);
-
     @Query(value = "select pid,user.pid,dealType,cryptoCurrency,cryptoAmount,fiatCurrency,amount from Deal where dealStatus='CONFIRMED'")
     List<Object[]> findAllForUsersReport();
 }

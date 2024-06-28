@@ -88,4 +88,9 @@ public class DealPropertyService extends BasePersistService<Deal> implements IDe
     public DealStatus getDealStatusByPid(Long pid) {
         return dealPropertyRepository.getDealStatusByPid(pid);
     }
+
+    @Override
+    public Boolean getIsUsedPromoByPid(Long pid) {
+        return dealPropertyRepository.getIsUsedPromoByPid(pid);
+    }
 }

@@ -30,4 +30,6 @@ public interface IDealPropertyService {
     BigDecimal getCreditedAmountByPid(Long pid);
 
     DealStatus getDealStatusByPid(Long pid);
+
+    Boolean getIsUsedPromoByPid(Long pid);
 }
