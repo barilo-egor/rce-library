@@ -41,6 +41,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         this.modifyDealRepository = modifyDealRepository;
     }
 
+    @Override
     public Deal createNewDeal(DealType dealType, Long chatId) {
         Deal deal = new Deal();
         deal.setDealStatus(DealStatus.NEW);
