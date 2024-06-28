@@ -23,4 +23,6 @@ public interface IPaymentRequisiteService extends IBasePersistService<PaymentReq
     void updateRequisiteByPid(String requisite, Long pid);
 
     void deleteByPaymentTypePid(Long paymentTypePid);
+
+    String getRequisite(PaymentType paymentType);
 }

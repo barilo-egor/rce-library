@@ -67,6 +67,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         }
     }
 
+    @Override
     public String getRequisite(PaymentType paymentType) {
         List<PaymentRequisite> paymentRequisite = paymentRequisiteRepository.getByPaymentType_Pid(paymentType.getPid());
         if (CollectionUtils.isEmpty(paymentRequisite)) {
