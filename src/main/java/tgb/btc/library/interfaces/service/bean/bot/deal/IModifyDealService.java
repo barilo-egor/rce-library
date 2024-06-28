@@ -1,5 +1,6 @@
 package tgb.btc.library.interfaces.service.bean.bot.deal;
 
+import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -10,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface IModifyDealService {
+
+    Deal save(Deal deal);
 
     /**
      * UPDATE
