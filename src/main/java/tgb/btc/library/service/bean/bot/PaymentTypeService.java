@@ -9,16 +9,18 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bot.IPaymentTypeService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 import tgb.btc.library.repository.bot.PaymentTypeRepository;
 import tgb.btc.library.repository.bot.UserRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class PaymentTypeService implements IPaymentTypeService {
+public class PaymentTypeService extends BasePersistService<PaymentType> implements IPaymentTypeService {
 
     private PaymentTypeRepository paymentTypeRepository;
 
@@ -27,6 +29,11 @@ public class PaymentTypeService implements IPaymentTypeService {
     private UserRepository userRepository;
 
     private PaymentRequisiteRepository paymentRequisiteRepository;
+
+    @Autowired
+    public PaymentTypeService(BaseRepository<PaymentType> baseRepository) {
+        super(baseRepository);
+    }
 
     @Autowired
     public void setPaymentRequisiteRepository(PaymentRequisiteRepository paymentRequisiteRepository) {
