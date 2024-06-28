@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
-public class GameResultService extends BasePersistService<Deal> implements IGameResultService {
+public class GameResultService extends BasePersistService<GameResult> implements IGameResultService {
 
     private GameResultRepository gameResultRepository;
 
@@ -26,7 +26,7 @@ public class GameResultService extends BasePersistService<Deal> implements IGame
     }
 
     @Autowired
-    public GameResultService(BaseRepository<Deal> baseRepository) {
+    public GameResultService(BaseRepository<GameResult> baseRepository) {
         super(baseRepository);
     }
 

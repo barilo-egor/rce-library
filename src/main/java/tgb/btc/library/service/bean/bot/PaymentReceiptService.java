@@ -12,7 +12,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
-public class PaymentReceiptService extends BasePersistService<Deal> implements IPaymentReceiptService {
+public class PaymentReceiptService extends BasePersistService<PaymentReceipt> implements IPaymentReceiptService {
 
     private PaymentReceiptRepository paymentReceiptRepository;
 
@@ -22,7 +22,7 @@ public class PaymentReceiptService extends BasePersistService<Deal> implements I
     }
 
     @Autowired
-    public PaymentReceiptService(BaseRepository<Deal> baseRepository) {
+    public PaymentReceiptService(BaseRepository<PaymentReceipt> baseRepository) {
         super(baseRepository);
     }
 

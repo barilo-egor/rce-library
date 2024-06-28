@@ -3,13 +3,14 @@ package tgb.btc.library.service.bean.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.bean.bot.LotteryWin;
 import tgb.btc.library.interfaces.service.bean.bot.ILotteryWinService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.LotteryWinRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 @Service
-public class LotteryWinService extends BasePersistService<Deal> implements ILotteryWinService {
+public class LotteryWinService extends BasePersistService<LotteryWin> implements ILotteryWinService {
 
     private LotteryWinRepository lotteryWinRepository;
 
@@ -18,7 +19,7 @@ public class LotteryWinService extends BasePersistService<Deal> implements ILott
         this.lotteryWinRepository = lotteryWinRepository;
     }
 
-    public LotteryWinService(BaseRepository<Deal> baseRepository) {
+    public LotteryWinService(BaseRepository<LotteryWin> baseRepository) {
         super(baseRepository);
     }
 
