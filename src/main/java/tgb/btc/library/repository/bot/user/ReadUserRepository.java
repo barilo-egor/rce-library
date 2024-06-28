@@ -1,14 +1,17 @@
 package tgb.btc.library.repository.bot.user;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReadUserRepository {
+@Repository
+public interface ReadUserRepository extends BaseRepository<User> {
 
     User findByChatId(Long chatId);
 

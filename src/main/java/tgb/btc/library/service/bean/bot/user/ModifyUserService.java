@@ -26,8 +26,13 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     }
 
     @Override
-    public void setDefaultValues(Long chatId) {
+    public User save(User user) {
+        return modifyUserRepository.save(user);
+    }
 
+    @Override
+    public void setDefaultValues(Long chatId) {
+        modifyUserRepository.setDefaultValues(chatId);
     }
 
     @Override

@@ -2,11 +2,14 @@ package tgb.btc.library.repository.bot.user;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 
-public interface ModifyUserRepository {
+@Repository
+public interface ModifyUserRepository extends BaseRepository<User> {
 
     @Modifying
     @Query("update User set step=" + User.DEFAULT_STEP + ", command = 'START' where chatId=:chatId")
