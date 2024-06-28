@@ -2,28 +2,22 @@ package tgb.btc.library.service.bean.bot.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.constants.enums.bot.CryptoCurrency;
-import tgb.btc.library.constants.enums.bot.DealStatus;
-import tgb.btc.library.constants.enums.bot.DeliveryType;
-import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.service.bot.user.IModifyUserService;
 import tgb.btc.library.repository.BaseRepository;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
+import tgb.btc.library.repository.bot.user.ModifyUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class ModifyUserService extends BasePersistService<User> implements IModifyUserService {
 
-    private ModifyDealRepository modifyDealRepository;
+    private ModifyUserRepository modifyUserRepository;
 
     @Autowired
-    public void setModifyDealRepository(ModifyDealRepository modifyDealRepository) {
-        this.modifyDealRepository = modifyDealRepository;
+    public void setModifyUserRepository(ModifyUserRepository modifyUserRepository) {
+        this.modifyUserRepository = modifyUserRepository;
     }
 
     @Autowired
@@ -32,88 +26,78 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     }
 
     @Override
-    public void updateCryptoCurrencyByPid(Long pid, CryptoCurrency cryptoCurrency) {
-        modifyDealRepository.updateCryptoCurrencyByPid(pid, cryptoCurrency);
+    public void setDefaultValues(Long chatId) {
+
     }
 
     @Override
-    public void updateCryptoAmountByPid(BigDecimal cryptoAmount, Long pid) {
-        modifyDealRepository.updateCryptoAmountByPid(cryptoAmount, pid);
+    public void nextStep(Long chatId, String command) {
+        modifyUserRepository.nextStep(chatId, command);
     }
 
     @Override
-    public void updateAmountByPid(BigDecimal amount, Long pid) {
-        modifyDealRepository.updateAmountByPid(amount, pid);
+    public void nextStep(Long chatId) {
+        modifyUserRepository.nextStep(chatId);
     }
 
     @Override
-    public void updateDiscountByPid(BigDecimal discount, Long pid) {
-        modifyDealRepository.updateDiscountByPid(discount, pid);
+    public void previousStep(Long chatId) {
+        modifyUserRepository.previousStep(chatId);
     }
 
     @Override
-    public void updateCommissionByPid(BigDecimal commission, Long pid) {
-        modifyDealRepository.updateCommissionByPid(commission, pid);
+    public void updateBufferVariable(Long chatId, String bufferVariable) {
+        modifyUserRepository.updateBufferVariable(chatId, bufferVariable);
     }
 
     @Override
-    public void updateUsedReferralDiscountByPid(Boolean isUsedReferralDiscount, Long pid) {
-        modifyDealRepository.updateUsedReferralDiscountByPid(isUsedReferralDiscount, pid);
+    public void updateIsActiveByChatId(boolean isActive, Long chatId) {
+        modifyUserRepository.updateIsActiveByChatId(isActive, chatId);
     }
 
     @Override
-    public void updateWalletByPid(String wallet, Long pid) {
-        modifyDealRepository.updateWalletByPid(wallet, pid);
+    public void updateIsBannedByChatId(Long chatId, Boolean isBanned) {
+        modifyUserRepository.updateIsBannedByChatId(chatId, isBanned);
     }
 
     @Override
-    public void updatePaymentTypeByPid(PaymentType paymentType, Long pid) {
-        modifyDealRepository.updatePaymentTypeByPid(paymentType, pid);
+    public void updateCurrentDealByChatId(Long dealPid, Long chatId) {
+        modifyUserRepository.updateCurrentDealByChatId(dealPid, chatId);
     }
 
     @Override
-    public void updateIsUsedPromoByPid(Boolean isUsedPromo, Long pid) {
-        modifyDealRepository.updateIsUsedPromoByPid(isUsedPromo, pid);
+    public void updateCommandByChatId(String command, Long chatId) {
+        modifyUserRepository.updateCommandByChatId(command, chatId);
     }
 
     @Override
-    public void updateDealStatusByPid(DealStatus dealStatus, Long pid) {
-        modifyDealRepository.updateDealStatusByPid(dealStatus, pid);
+    public void updateReferralBalanceByChatId(Integer referralBalance, Long chatId) {
+        modifyUserRepository.updateReferralBalanceByChatId(referralBalance, chatId);
     }
 
     @Override
-    public void updateFiatCurrencyByPid(Long pid, FiatCurrency fiatCurrency) {
-        modifyDealRepository.updateFiatCurrencyByPid(pid, fiatCurrency);
+    public void updateChargesByChatId(Integer charges, Long chatId) {
+        modifyUserRepository.updateChargesByChatId(charges, chatId);
     }
 
     @Override
-    public void updateIsPersonalAppliedByPid(Long pid, Boolean isPersonalApplied) {
-        modifyDealRepository.updateIsPersonalAppliedByPid(pid, isPersonalApplied);
+    public void updateReferralPercent(BigDecimal referralPercent, Long chatId) {
+        modifyUserRepository.updateReferralPercent(referralPercent, chatId);
     }
 
     @Override
-    public void updatePaymentTypeToNullByPaymentTypePid(Long paymentTypePid) {
-        modifyDealRepository.updatePaymentTypeToNullByPaymentTypePid(paymentTypePid);
+    public void updateStepAndCommandByChatId(Long chatId, String command, Integer step) {
+        modifyUserRepository.updateStepAndCommandByChatId(chatId, command, step);
     }
 
     @Override
-    public void updateAdditionalVerificationImageIdByPid(Long pid, String additionalVerificationImageId) {
-        modifyDealRepository.updateAdditionalVerificationImageIdByPid(pid, additionalVerificationImageId);
+    public void updateStepByChatId(Long chatId, Integer step) {
+        modifyUserRepository.updateStepByChatId(chatId, step);
     }
 
     @Override
-    public void updateDeliveryTypeByPid(Long pid, DeliveryType deliveryType) {
-        modifyDealRepository.updateDeliveryTypeByPid(pid, deliveryType);
-    }
-
-    @Override
-    public void deleteByUser_ChatId(Long chatId) {
-        modifyDealRepository.deleteByUser_ChatId(chatId);
-    }
-
-    @Override
-    public void deleteByPidIn(List<Long> pidList) {
-        modifyDealRepository.deleteByPidIn(pidList);
+    public void updateIsAdminByChatId(Long chatId, Boolean isAdmin) {
+        modifyUserRepository.updateIsAdminByChatId(chatId, isAdmin);
     }
 
 }
