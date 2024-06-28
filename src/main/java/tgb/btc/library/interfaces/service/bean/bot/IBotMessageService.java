@@ -8,4 +8,8 @@ import java.util.Optional;
 
 public interface IBotMessageService extends IBasePersistService<BotMessage> {
     Optional<BotMessage> findByType(BotMessageType botMessageType);
+
+    BotMessage findByTypeNullSafe(BotMessageType botMessageType);
+
+    BotMessage findByTypeThrows(BotMessageType botMessageType);
 }
