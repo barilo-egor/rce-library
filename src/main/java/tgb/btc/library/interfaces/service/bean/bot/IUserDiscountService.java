@@ -1,10 +1,11 @@
 package tgb.btc.library.interfaces.service.bean.bot;
 
 import tgb.btc.library.bean.bot.UserDiscount;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
 
-public interface IUserDiscountService {
+public interface IUserDiscountService extends IBasePersistService<UserDiscount> {
 
     /** SELECT **/
 

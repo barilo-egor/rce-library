@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.util.List;
 
 @Service
-public class BasePersistService<T extends BasePersist> {
+public class BasePersistService<T extends BasePersist> implements IBasePersistService<T> {
     private final BaseRepository<T> baseRepository;
 
     @Autowired

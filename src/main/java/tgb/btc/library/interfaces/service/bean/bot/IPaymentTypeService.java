@@ -4,11 +4,12 @@ import org.springframework.data.repository.query.Param;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface IPaymentTypeService {
+public interface IPaymentTypeService extends IBasePersistService<PaymentType> {
 
     Integer getTurnedCountByDeal(Long chatId);
 

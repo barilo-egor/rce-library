@@ -4,8 +4,9 @@ import tgb.btc.library.bean.bot.UserData;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
-public interface IUserDataService {
+public interface IUserDataService extends IBasePersistService<UserData> {
 
     UserData save(UserData userData);
 

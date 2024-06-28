@@ -1,6 +1,9 @@
 package tgb.btc.library.interfaces.service.bean.bot;
 
-public interface ILotteryWinService {
+import tgb.btc.library.bean.bot.LotteryWin;
+import tgb.btc.library.interfaces.service.IBasePersistService;
+
+public interface ILotteryWinService extends IBasePersistService<LotteryWin> {
 
     Long getLotteryWinCount(Long chatId);
 

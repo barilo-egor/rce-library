@@ -2,10 +2,11 @@ package tgb.btc.library.interfaces.service.bean.bot;
 
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
 
-public interface IPaymentRequisiteService {
+public interface IPaymentRequisiteService extends IBasePersistService<PaymentRequisite> {
 
     List<PaymentRequisite> getByPaymentType(PaymentType paymentType);
 
