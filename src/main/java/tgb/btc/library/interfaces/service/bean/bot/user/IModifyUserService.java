@@ -1,8 +1,12 @@
 package tgb.btc.library.interfaces.service.bean.bot.user;
 
+import tgb.btc.library.bean.bot.User;
+
 import java.math.BigDecimal;
 
 public interface IModifyUserService {
+
+    User save(User user);
 
     void setDefaultValues(Long chatId);
 
