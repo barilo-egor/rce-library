@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
-import tgb.btc.library.interfaces.service.web.IApiDealService;
+import tgb.btc.library.interfaces.service.bean.web.IApiDealService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
-import tgb.btc.library.interfaces.service.bot.IPaymentReceiptService;
+import tgb.btc.library.interfaces.service.bean.bot.IPaymentReceiptService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentReceiptRepository;
 import tgb.btc.library.service.bean.BasePersistService;

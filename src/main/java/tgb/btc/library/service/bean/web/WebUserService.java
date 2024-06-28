@@ -12,7 +12,7 @@ import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.RoleConstants;
-import tgb.btc.library.interfaces.service.web.IWebUserService;
+import tgb.btc.library.interfaces.service.bean.web.IWebUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;

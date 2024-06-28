@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.web.RoleConstants;
-import tgb.btc.library.interfaces.service.web.IRoleService;
+import tgb.btc.library.interfaces.service.bean.web.IRoleService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.service.bean.BasePersistService;

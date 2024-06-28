@@ -3,7 +3,7 @@ package tgb.btc.library.service.bean.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.DealPayment;
-import tgb.btc.library.interfaces.service.web.IDealPaymentService;
+import tgb.btc.library.interfaces.service.bean.web.IDealPaymentService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.DealPaymentRepository;
 import tgb.btc.library.service.bean.BasePersistService;

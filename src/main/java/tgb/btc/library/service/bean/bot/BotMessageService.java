@@ -7,7 +7,7 @@ import tgb.btc.library.constants.enums.bot.BotMessageType;
 import tgb.btc.library.constants.enums.bot.MessageType;
 import tgb.btc.library.constants.strings.ErrorMessage;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bot.IBotMessageService;
+import tgb.btc.library.interfaces.service.bean.bot.IBotMessageService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.BotMessageRepository;
 import tgb.btc.library.service.bean.BasePersistService;

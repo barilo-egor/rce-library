@@ -3,7 +3,7 @@ package tgb.btc.library.service.bean.bot.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.interfaces.service.bot.user.IModifyUserService;
+import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.user.ModifyUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;

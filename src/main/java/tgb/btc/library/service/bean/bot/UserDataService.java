@@ -6,7 +6,7 @@ import tgb.btc.library.bean.bot.UserData;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.interfaces.service.bot.IUserDataService;
+import tgb.btc.library.interfaces.service.bean.bot.IUserDataService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserDataRepository;
 import tgb.btc.library.service.bean.BasePersistService;

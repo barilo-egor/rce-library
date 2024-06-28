@@ -3,7 +3,7 @@ package tgb.btc.library.service.bean.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.UserDiscount;
-import tgb.btc.library.interfaces.service.bot.IUserDiscountService;
+import tgb.btc.library.interfaces.service.bean.bot.IUserDiscountService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserDiscountRepository;
 import tgb.btc.library.service.bean.BasePersistService;

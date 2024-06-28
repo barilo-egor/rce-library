@@ -7,7 +7,7 @@ import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bot.IPaymentRequisiteService;
+import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;

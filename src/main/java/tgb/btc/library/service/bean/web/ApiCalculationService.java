@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.ApiCalculation;
 import tgb.btc.library.bean.web.api.ApiUser;
-import tgb.btc.library.interfaces.service.web.IApiCalculationService;
+import tgb.btc.library.interfaces.service.bean.web.IApiCalculationService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiCalculationRepository;
 import tgb.btc.library.service.bean.BasePersistService;

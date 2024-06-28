@@ -3,7 +3,7 @@ package tgb.btc.library.service.bean.bot.deal.read;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.interfaces.service.bot.deal.read.IDateDealService;
+import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDateDealService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.read.DateDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
