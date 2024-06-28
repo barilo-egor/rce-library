@@ -38,4 +38,8 @@ public class BasePersistService<T extends BasePersist> implements IBasePersistSe
     public List<T> findAll() {
         return baseRepository.findAll();
     }
+
+    public boolean existsById(Long pid) {
+        return baseRepository.existsById(pid);
+    }
 }

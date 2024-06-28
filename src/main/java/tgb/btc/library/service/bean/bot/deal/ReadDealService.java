@@ -8,15 +8,22 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ReadDealService implements IReadDealService {
+public class ReadDealService extends BasePersistService<Deal> implements IReadDealService {
 
     private ReadDealRepository readDealRepository;
+
+    @Autowired
+    public ReadDealService(BaseRepository<Deal> baseRepository) {
+        super(baseRepository);
+    }
 
     @Autowired
     public void setReadDealRepository(ReadDealRepository readDealRepository) {

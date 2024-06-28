@@ -9,7 +9,10 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import java.util.List;
 
 public interface IReadDealService {
+
     Deal findByPid(Long pid);
+
+    boolean existsById(Long pid);
 
     @Query("from Deal where pid in (:pids)")
     List<Deal> getDealsByPids(List<Long> pids);
