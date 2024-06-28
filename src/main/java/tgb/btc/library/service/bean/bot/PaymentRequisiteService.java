@@ -8,7 +8,9 @@ import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bot.IPaymentRequisiteService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +19,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class PaymentRequisiteService implements IPaymentRequisiteService {
+public class PaymentRequisiteService extends BasePersistService<PaymentRequisite> implements IPaymentRequisiteService {
 
     private PaymentRequisiteRepository paymentRequisiteRepository;
 
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
+
+    @Autowired
+    public PaymentRequisiteService(BaseRepository<PaymentRequisite> baseRepository) {
+        super(baseRepository);
+    }
 
     @Autowired
     public void setPaymentRequisiteRepository(PaymentRequisiteRepository paymentRequisiteRepository) {
