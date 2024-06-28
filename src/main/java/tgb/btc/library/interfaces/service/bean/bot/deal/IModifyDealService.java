@@ -14,6 +14,8 @@ public interface IModifyDealService {
 
     Deal save(Deal deal);
 
+    void deleteById(Long pid);
+
     /**
      * UPDATE
      */
