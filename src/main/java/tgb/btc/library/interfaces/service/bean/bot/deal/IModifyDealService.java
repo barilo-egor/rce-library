@@ -15,6 +15,10 @@ public interface IModifyDealService {
 
     Deal createNewDeal(DealType dealType, Long chatId);
 
+    void deleteDeal(Long dealPid, Boolean isBanUser);
+
+    void confirm(Long dealPid);
+
     /**
      * UPDATE
      */
