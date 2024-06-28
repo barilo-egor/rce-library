@@ -3,6 +3,7 @@ package tgb.btc.library.service.bean.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.WithdrawalRequest;
+import tgb.btc.library.interfaces.service.bot.IWithdrawalRequestService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.WithdrawalRequestRepository;
 import tgb.btc.library.service.bean.BasePersistService;
@@ -10,7 +11,8 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
-public class WithdrawalRequestService extends BasePersistService<WithdrawalRequest> {
+public class WithdrawalRequestService extends BasePersistService<WithdrawalRequest> implements
+        IWithdrawalRequestService {
 
     private final WithdrawalRequestRepository withdrawalRequestRepository;
 
@@ -40,4 +42,10 @@ public class WithdrawalRequestService extends BasePersistService<WithdrawalReque
     public Long getPidByUserChatId(Long chatId) {
         return withdrawalRequestRepository.getPidByUserChatId(chatId);
     }
+
+    @Override
+    public void deleteByUser_ChatId(Long userChatId) {
+        withdrawalRequestRepository.deleteByUser_ChatId(userChatId);
+    }
+
 }
