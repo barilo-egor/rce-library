@@ -27,6 +27,11 @@ public class UserDataService extends BasePersistService<UserData> implements IUs
     }
 
     @Override
+    public UserData save(UserData userData) {
+        return userDataRepository.save(userData);
+    }
+
+    @Override
     public Long getLongByUserPid(Long userPid) {
         return userDataRepository.getLongByUserPid(userPid);
     }

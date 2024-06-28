@@ -1,10 +1,13 @@
 package tgb.btc.library.interfaces.service.bean.bot;
 
+import tgb.btc.library.bean.bot.UserData;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
 public interface IUserDataService {
+
+    UserData save(UserData userData);
 
     Long getLongByUserPid(Long userPid);
 
