@@ -22,6 +22,8 @@ public interface IUserDiscountService {
 
     /** UPDATE **/
 
+    UserDiscount save(UserDiscount userDiscount);
+
     void updateIsRankDiscountOnByPid(Boolean isRankDiscountOn, Long pid);
 
     void updatePersonalBuyByUserPid(BigDecimal personalBuy, Long userPid);
