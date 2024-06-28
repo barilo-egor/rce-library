@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReadUserService extends BasePersistService<User> implements IReadUserService {
 
     private ReadUserRepository readUserRepository;

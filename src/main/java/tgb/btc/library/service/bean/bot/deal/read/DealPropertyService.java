@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot.deal.read;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealPropertyService;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional(readOnly = true)
 public class DealPropertyService extends BasePersistService<Deal> implements IDealPropertyService {
 
     private DealPropertyRepository dealPropertyRepository;

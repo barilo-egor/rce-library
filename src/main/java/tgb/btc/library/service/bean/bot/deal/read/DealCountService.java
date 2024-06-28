@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot.deal.read;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -14,6 +15,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class DealCountService extends BasePersistService<Deal> implements IDealCountService {
 
     private DealCountRepository dealCountRepository;
