@@ -4,16 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
-import tgb.btc.library.constants.enums.bot.CryptoCurrency;
-import tgb.btc.library.constants.enums.bot.DealStatus;
-import tgb.btc.library.constants.enums.bot.DeliveryType;
-import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.CreateType;
+import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
+import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
+import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,14 +22,39 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     
     private ModifyDealRepository modifyDealRepository;
 
-    /**
-     * UPDATE
-     */
+    private IModifyUserService modifyUserService;
+
+    private IReadUserService readUserService;
+
+    @Autowired
+    public void setModifyUserService(IModifyUserService modifyUserService) {
+        this.modifyUserService = modifyUserService;
+    }
+
+    @Autowired
+    public void setReadUserService(IReadUserService readUserService) {
+        this.readUserService = readUserService;
+    }
 
     @Autowired
     public void setModifyDealRepository(ModifyDealRepository modifyDealRepository) {
         this.modifyDealRepository = modifyDealRepository;
     }
+
+    public Deal createNewDeal(DealType dealType, Long chatId) {
+        Deal deal = new Deal();
+        deal.setDealStatus(DealStatus.NEW);
+        deal.setCreateType(CreateType.BOT);
+        deal.setDateTime(LocalDateTime.now());
+        deal.setDealType(dealType);
+        deal.setUser(readUserService.findByChatId(chatId));
+        Deal savedDeal = save(deal);
+        modifyUserService.updateCurrentDealByChatId(savedDeal.getPid(), chatId);
+        return savedDeal;
+    }
+    /**
+     * UPDATE
+     */
 
     @Autowired
     public ModifyDealService(BaseRepository<Deal> baseRepository) {
