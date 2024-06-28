@@ -39,6 +39,8 @@ public interface IPaymentTypeService {
 
     /** UPDATE **/
 
+    PaymentType save(PaymentType paymentType);
+
     void updateIsOnByPid(Boolean isOn, Long pid);
 
     void updateMinSumByPid(BigDecimal minSum, Long pid);
