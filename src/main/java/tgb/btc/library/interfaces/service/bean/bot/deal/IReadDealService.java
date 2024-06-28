@@ -2,6 +2,7 @@ package tgb.btc.library.interfaces.service.bean.bot.deal;
 
 import org.springframework.data.jpa.repository.Query;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -30,4 +31,6 @@ public interface IReadDealService {
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
     void findAllByDealStatusNot(DealStatus dealStatus);
+
+    List<PaymentReceipt> getPaymentReceipts(Long dealPid);
 }

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.api.library.IReviewPriseService;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
@@ -35,7 +34,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -138,12 +136,6 @@ public class DealService extends BasePersistService<Deal> {
 
     public DealType getDealTypeByPid(Long pid) {
         return dealRepository.getDealTypeByPid(pid);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
-        Deal deal = getByPid(dealPid);
-        return new ArrayList<>(deal.getPaymentReceipts());
     }
 
     public Deal createNewDeal(DealType dealType, Long chatId) {

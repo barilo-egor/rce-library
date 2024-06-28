@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -12,6 +13,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -66,4 +68,10 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
         readDealRepository.findAllByDealStatusNot(dealStatus);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
+        Deal deal = findByPid(dealPid);
+        return new ArrayList<>(deal.getPaymentReceipts());
+    }
 }
