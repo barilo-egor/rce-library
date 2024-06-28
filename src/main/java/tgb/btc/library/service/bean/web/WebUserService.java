@@ -8,18 +8,23 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.RoleConstants;
+import tgb.btc.library.interfaces.service.web.IWebUserService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.repository.web.WebUserRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
-public class WebUserService implements UserDetailsService {
+public class WebUserService extends BasePersistService<WebUser> implements UserDetailsService, IWebUserService {
 
     private WebUserRepository webUserRepository;
 
@@ -30,6 +35,11 @@ public class WebUserService implements UserDetailsService {
     private ApiUserRepository apiUserRepository;
 
     private UserRepository userRepository;
+
+    @Autowired
+    public WebUserService(BaseRepository<WebUser> baseRepository) {
+        super(baseRepository);
+    }
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -105,4 +115,65 @@ public class WebUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return webUserRepository.getByUsername(username);
     }
+
+    @Override
+    public int countByUsername(String username) {
+        return webUserRepository.countByUsername(username);
+    }
+
+    @Override
+    public WebUser getByUsername(String username) {
+        return webUserRepository.getByUsername(username);
+    }
+
+    @Override
+    public List<Role> getRolesByUsername(String username) {
+        return webUserRepository.getRolesByUsername(username);
+    }
+
+    @Override
+    public WebUser getByChatId(Long chatId) {
+        return webUserRepository.getByChatId(chatId);
+    }
+
+    @Override
+    public boolean existsByChatId(Long chatId) {
+        return webUserRepository.existsByChatId(chatId);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return webUserRepository.existsByUsername(username);
+    }
+
+    @Override
+    public List<String> getUsernames() {
+        return webUserRepository.getUsernames();
+    }
+
+    @Override
+    public Long getChatIdByUsername(String username) {
+        return webUserRepository.getChatIdByUsername(username);
+    }
+
+    @Override
+    public Boolean getSoundEnabledByUsername(String username) {
+        return webUserRepository.getSoundEnabledByUsername(username);
+    }
+
+    @Override
+    public void updateUsernameByPid(Long pid, String username) {
+        webUserRepository.updateUsernameByPid(pid, username);
+    }
+
+    @Override
+    public void updateUsername(String newUsername, String oldUsername) {
+        webUserRepository.updateUsername(newUsername, oldUsername);
+    }
+
+    @Override
+    public void updateSoundEnabled(String username, Boolean soundEnabled) {
+        webUserRepository.updateSoundEnabled(username, soundEnabled);
+    }
+
 }
