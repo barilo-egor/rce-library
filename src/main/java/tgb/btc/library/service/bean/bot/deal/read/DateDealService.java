@@ -48,4 +48,9 @@ public class DateDealService extends BasePersistService<Deal> implements IDateDe
     public List<Deal> getPassedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return dealRepository.getPassedByDateTimeBetween(startDate, endDate);
     }
+
+    @Override
+    public List<Deal> getByDate(LocalDate dateTime) {
+        return dealRepository.getPassedByDate(dateTime);
+    }
 }

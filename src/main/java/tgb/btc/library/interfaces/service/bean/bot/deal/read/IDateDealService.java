@@ -15,4 +15,6 @@ public interface IDateDealService {
     List<Deal> getPassedByDate(LocalDate date);
 
     List<Deal> getPassedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<Deal> getByDate(LocalDate dateTime);
 }
