@@ -34,6 +34,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
         this.apiDealRepository = apiDealRepository;
     }
 
+    @Override
     public List<ApiDeal> getAcceptedByDate(LocalDateTime dateTime) {
         LocalDateTime startDay = dateTime.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime endDay = dateTime
@@ -43,6 +44,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
         return apiDealRepository.getByDateBetween(startDay, endDay, ApiDealStatus.ACCEPTED);
     }
 
+    @Override
     public List<ApiDeal> getAcceptedByDateBetween(LocalDateTime start, LocalDateTime end) {
         LocalDateTime startDay = start.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime endDay = end
@@ -52,6 +54,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
         return apiDealRepository.getByDateBetween(startDay, endDay, ApiDealStatus.ACCEPTED);
     }
 
+    @Override
     public List<ApiDeal> getAcceptedByDateBetween(Long apiUserPid, Date start, Date end, Boolean isRange) {
         if (BooleanUtils.isNotTrue(isRange)) {
             if (Objects.isNull(start)) return apiDealRepository.findAll();
@@ -72,6 +75,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
         }
     }
 
+    @Override
     public List<ApiDeal> getAcceptedByDate(LocalDate date, Long apiUserPid) {
         return apiDealRepository.getAcceptedByDateTimeBetween(
                 date.atStartOfDay(), date.plusDays(1).atStartOfDay(), apiUserPid);

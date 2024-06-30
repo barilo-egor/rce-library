@@ -4,10 +4,20 @@ import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface IApiDealService {
+
+    List<ApiDeal> getAcceptedByDate(LocalDateTime dateTime);
+
+    List<ApiDeal> getAcceptedByDateBetween(LocalDateTime start, LocalDateTime end);
+
+    List<ApiDeal> getAcceptedByDateBetween(Long apiUserPid, Date start, Date end, Boolean isRange);
+
+    List<ApiDeal> getAcceptedByDate(LocalDate date, Long apiUserPid);
 
     ApiDeal getByPid(Long pid);
 
