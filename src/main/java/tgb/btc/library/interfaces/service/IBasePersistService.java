@@ -12,6 +12,8 @@ public interface IBasePersistService<T extends BasePersist> {
 
     void delete(T t);
 
+    void deleteAll();
+
     T save(T t);
 
     List<T> findAll();

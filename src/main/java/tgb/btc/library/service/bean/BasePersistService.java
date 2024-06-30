@@ -31,6 +31,10 @@ public class BasePersistService<T extends BasePersist> implements IBasePersistSe
         baseRepository.delete(t);
     }
 
+    public void deleteAll() {
+        baseRepository.deleteAll();
+    }
+
     public T save(T t) {
         return baseRepository.save(t);
     }
