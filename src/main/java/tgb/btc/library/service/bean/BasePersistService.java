@@ -7,6 +7,7 @@ import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -33,6 +34,10 @@ public class BasePersistService<T extends BasePersist> implements IBasePersistSe
 
     public void deleteAll() {
         baseRepository.deleteAll();
+    }
+
+    public void deleteAll(Collection<T> collection) {
+        baseRepository.deleteAll(collection);
     }
 
     public T save(T t) {

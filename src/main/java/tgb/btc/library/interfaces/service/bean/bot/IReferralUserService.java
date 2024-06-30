@@ -6,6 +6,4 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 public interface IReferralUserService extends IBasePersistService<ReferralUser> {
 
     ReferralUser save(ReferralUser referralUser);
-
-    void deleteAll();
 }
