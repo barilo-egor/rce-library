@@ -2,12 +2,13 @@ package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface IReadUserService {
+public interface IReadUserService extends IBasePersistService<User> {
 
     User findByChatId(Long chatId);
 
