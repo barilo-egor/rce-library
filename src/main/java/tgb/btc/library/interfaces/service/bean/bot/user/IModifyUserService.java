@@ -1,10 +1,12 @@
 package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.interfaces.service.IBasePersistService;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
 
-public interface IModifyUserService {
+public interface IModifyUserService extends IBasePersistService<User> {
 
     User save(User user);
 
