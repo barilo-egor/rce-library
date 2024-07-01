@@ -23,11 +23,6 @@ public class RoleService extends BasePersistService<Role> implements IRoleServic
     private RoleRepository roleRepository;
 
     @Autowired
-    public RoleService(BaseRepository<Role> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setRoleRepository(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
@@ -44,6 +39,11 @@ public class RoleService extends BasePersistService<Role> implements IRoleServic
     @Override
     public Set<Role> getByName(String name) {
         return roleRepository.getByName(name);
+    }
+
+    @Override
+    protected BaseRepository<Role> getBaseRepository() {
+        return roleRepository;
     }
 
 }

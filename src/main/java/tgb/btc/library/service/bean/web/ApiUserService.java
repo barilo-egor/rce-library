@@ -24,11 +24,6 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     private ApiDealRepository apiDealRepository;
 
     @Autowired
-    public ApiUserService(BaseRepository<ApiUser> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setApiDealRepository(ApiDealRepository apiDealRepository) {
         this.apiDealRepository = apiDealRepository;
     }
@@ -138,6 +133,11 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     @Override
     public void updateWebUser(Long pid, WebUser webUser) {
         apiUserRepository.updateWebUser(pid, webUser);
+    }
+
+    @Override
+    protected BaseRepository<ApiUser> getBaseRepository() {
+        return apiUserRepository;
     }
 
 }

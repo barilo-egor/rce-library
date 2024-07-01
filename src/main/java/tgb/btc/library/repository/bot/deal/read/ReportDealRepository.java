@@ -6,13 +6,14 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReportDealRepository {
+public interface ReportDealRepository extends BaseRepository<Deal> {
 
     default BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency) {
         return getCryptoAmountSumByDate(dealType, date.atStartOfDay(), date.plusDays(1).atStartOfDay(), cryptoCurrency);

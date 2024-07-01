@@ -213,11 +213,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
      * UPDATE
      */
 
-    @Autowired
-    public ModifyDealService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public void updateCryptoCurrencyByPid(Long pid, CryptoCurrency cryptoCurrency) {
         modifyDealRepository.updateCryptoCurrencyByPid(pid, cryptoCurrency);
@@ -306,4 +301,10 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     public void deleteByPidIn(List<Long> pidList) {
         modifyDealRepository.deleteByPidIn(pidList);
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return modifyDealRepository;
+    }
+
 }

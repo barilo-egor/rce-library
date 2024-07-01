@@ -10,13 +10,16 @@ import tgb.btc.library.service.bean.BasePersistService;
 
 @Service
 public class ReferralUserService extends BasePersistService<ReferralUser> implements IReferralUserService {
-    private final ReferralUserRepository referralUserRepository;
+    private ReferralUserRepository referralUserRepository;
 
     @Autowired
-    public ReferralUserService(BaseRepository<ReferralUser> baseRepository,
-                               ReferralUserRepository referralUserRepository) {
-        super(baseRepository);
+    public ReferralUserService(ReferralUserRepository referralUserRepository) {
         this.referralUserRepository = referralUserRepository;
+    }
+
+    @Override
+    protected BaseRepository<ReferralUser> getBaseRepository() {
+        return referralUserRepository;
     }
 
     public ReferralUser save(ReferralUser referralUser) {

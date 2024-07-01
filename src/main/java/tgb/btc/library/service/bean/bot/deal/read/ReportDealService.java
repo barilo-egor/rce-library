@@ -29,11 +29,6 @@ public class ReportDealService extends BasePersistService<Deal> implements IRepo
         this.reportDealRepository = reportDealRepository;
     }
 
-    @Autowired
-    public ReportDealService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public BigDecimal getCryptoAmountSum(DealType dealType, LocalDate date, CryptoCurrency cryptoCurrency) {
         return reportDealRepository.getCryptoAmountSum(dealType, date, cryptoCurrency);
@@ -108,4 +103,10 @@ public class ReportDealService extends BasePersistService<Deal> implements IRepo
     public List<Object[]> findAllForUsersReport() {
         return reportDealRepository.findAllForUsersReport();
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return reportDealRepository;
+    }
+
 }

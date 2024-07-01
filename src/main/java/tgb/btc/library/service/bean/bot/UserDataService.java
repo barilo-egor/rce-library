@@ -21,9 +21,9 @@ public class UserDataService extends BasePersistService<UserData> implements IUs
         this.userDataRepository = userDataRepository;
     }
 
-    @Autowired
-    public UserDataService(BaseRepository<UserData> baseRepository) {
-        super(baseRepository);
+    @Override
+    protected BaseRepository<UserData> getBaseRepository() {
+        return userDataRepository;
     }
 
     @Override

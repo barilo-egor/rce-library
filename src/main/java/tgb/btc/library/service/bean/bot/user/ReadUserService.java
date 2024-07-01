@@ -25,11 +25,6 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
         this.readUserRepository = readUserRepository;
     }
 
-    @Autowired
-    public ReadUserService(BaseRepository<User> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public User findByChatId(Long chatId) {
         return readUserRepository.findByChatId(chatId);
@@ -144,6 +139,11 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     @Override
     public List<Object[]> findAllForUsersReport() {
         return readUserRepository.findAllForUsersReport();
+    }
+
+    @Override
+    protected BaseRepository<User> getBaseRepository() {
+        return readUserRepository;
     }
 
 }

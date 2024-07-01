@@ -20,9 +20,9 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
         this.modifyUserRepository = modifyUserRepository;
     }
 
-    @Autowired
-    public ModifyUserService(BaseRepository<User> baseRepository) {
-        super(baseRepository);
+    @Override
+    protected BaseRepository<User> getBaseRepository() {
+        return modifyUserRepository;
     }
 
     @Override

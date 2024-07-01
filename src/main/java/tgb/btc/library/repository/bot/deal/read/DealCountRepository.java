@@ -1,13 +1,15 @@
 package tgb.btc.library.repository.bot.deal.read;
 
 import org.springframework.data.jpa.repository.Query;
+import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.util.List;
 
-public interface DealCountRepository {
+public interface DealCountRepository extends BaseRepository<Deal> {
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus not in :dealStatus")
     Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus);

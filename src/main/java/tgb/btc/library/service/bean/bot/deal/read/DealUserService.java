@@ -20,11 +20,6 @@ public class DealUserService extends BasePersistService<Deal> implements IDealUs
         this.dealUserRepository = dealUserRepository;
     }
 
-    @Autowired
-    public DealUserService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public Long getUserChatIdByDealPid(Long pid) {
         return dealUserRepository.getUserChatIdByDealPid(pid);
@@ -34,4 +29,10 @@ public class DealUserService extends BasePersistService<Deal> implements IDealUs
     public String getUserUsernameByDealPid(Long pid) {
         return dealUserRepository.getUserUsernameByDealPid(pid);
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealUserRepository;
+    }
+
 }

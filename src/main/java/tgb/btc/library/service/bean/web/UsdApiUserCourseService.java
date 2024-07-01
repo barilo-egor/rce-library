@@ -5,14 +5,23 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.UsdApiUserCourse;
 import tgb.btc.library.interfaces.service.bean.web.IUsdApiUserCourseService;
 import tgb.btc.library.repository.BaseRepository;
+import tgb.btc.library.repository.web.UsdApiUserCourseRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 @Service
 public class UsdApiUserCourseService extends BasePersistService<UsdApiUserCourse> implements IUsdApiUserCourseService {
 
+    private UsdApiUserCourseRepository usdApiUserCourseRepository;
+
     @Autowired
-    public UsdApiUserCourseService(BaseRepository<UsdApiUserCourse> baseRepository) {
-        super(baseRepository);
+    public void setUsdApiUserCourseRepository(
+            UsdApiUserCourseRepository usdApiUserCourseRepository) {
+        this.usdApiUserCourseRepository = usdApiUserCourseRepository;
+    }
+
+    @Override
+    protected BaseRepository<UsdApiUserCourse> getBaseRepository() {
+        return usdApiUserCourseRepository;
     }
 
 }

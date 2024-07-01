@@ -16,12 +16,16 @@ import java.util.Optional;
 
 @Service
 public class BotMessageService extends BasePersistService<BotMessage> implements IBotMessageService {
-    private final BotMessageRepository botMessageRepository;
+    private BotMessageRepository botMessageRepository;
 
     @Autowired
-    public BotMessageService(BaseRepository<BotMessage> baseRepository, BotMessageRepository botMessageRepository) {
-        super(baseRepository);
+    public void setBotMessageRepository(BotMessageRepository botMessageRepository) {
         this.botMessageRepository = botMessageRepository;
+    }
+
+    @Override
+    protected BaseRepository<BotMessage> getBaseRepository() {
+        return botMessageRepository;
     }
 
     public BotMessage findByTypeNullSafe(BotMessageType botMessageType) {
@@ -40,5 +44,6 @@ public class BotMessageService extends BasePersistService<BotMessage> implements
     public Optional<BotMessage> findByType(BotMessageType botMessageType) {
         return botMessageRepository.findByType(botMessageType);
     }
+
 }
 

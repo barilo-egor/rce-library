@@ -14,13 +14,17 @@ import java.util.List;
 public class WithdrawalRequestService extends BasePersistService<WithdrawalRequest> implements
         IWithdrawalRequestService {
 
-    private final WithdrawalRequestRepository withdrawalRequestRepository;
+    private WithdrawalRequestRepository withdrawalRequestRepository;
 
     @Autowired
-    public WithdrawalRequestService(BaseRepository<WithdrawalRequest> baseRepository,
-                                    WithdrawalRequestRepository withdrawalRequestRepository) {
-        super(baseRepository);
+    public void setWithdrawalRequestRepository(
+            WithdrawalRequestRepository withdrawalRequestRepository) {
         this.withdrawalRequestRepository = withdrawalRequestRepository;
+    }
+
+    @Override
+    protected BaseRepository<WithdrawalRequest> getBaseRepository() {
+        return withdrawalRequestRepository;
     }
 
     public List<WithdrawalRequest> findAll() {

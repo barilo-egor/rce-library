@@ -1,8 +1,10 @@
 package tgb.btc.library.repository.bot.deal.read;
 
 import org.springframework.data.jpa.repository.Query;
+import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.repository.BaseRepository;
 
-public interface DealUserRepository {
+public interface DealUserRepository extends BaseRepository<Deal> {
 
     @Query("select d.user.chatId from Deal d where d.pid=:pid")
     Long getUserChatIdByDealPid(Long pid);

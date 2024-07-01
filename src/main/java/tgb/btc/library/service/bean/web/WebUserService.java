@@ -37,11 +37,6 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
     private UserRepository userRepository;
 
     @Autowired
-    public WebUserService(BaseRepository<WebUser> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -64,6 +59,11 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
     @Autowired
     public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    protected BaseRepository<WebUser> getBaseRepository() {
+        return webUserRepository;
     }
 
     public WebUser save(WebUser webUser) {

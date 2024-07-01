@@ -20,11 +20,6 @@ public class DealPaymentService extends BasePersistService<DealPayment> implemen
         this.dealPaymentRepository = dealPaymentRepository;
     }
 
-    @Autowired
-    public DealPaymentService(BaseRepository<DealPayment> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public DealPayment getByDealPid(Long dealPid) {
         return dealPaymentRepository.getByDealPid(dealPid);
@@ -33,6 +28,11 @@ public class DealPaymentService extends BasePersistService<DealPayment> implemen
     @Override
     public List<DealPayment> findAllSortedDescDateTime() {
         return dealPaymentRepository.findAllSortedDescDateTime();
+    }
+
+    @Override
+    protected BaseRepository<DealPayment> getBaseRepository() {
+        return dealPaymentRepository;
     }
 
 }

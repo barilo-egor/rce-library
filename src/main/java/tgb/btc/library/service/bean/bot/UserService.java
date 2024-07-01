@@ -21,11 +21,6 @@ public class UserService extends BasePersistService<User> {
     private UserRepository userRepository;
 
     @Autowired
-    public UserService(BaseRepository<User> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -64,6 +59,11 @@ public class UserService extends BasePersistService<User> {
 
     public List<Long> getAdminsChatIds() {
         return userRepository.getAdminsChatIds();
+    }
+
+    @Override
+    protected BaseRepository<User> getBaseRepository() {
+        return userRepository;
     }
 
     @Override

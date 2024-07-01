@@ -1,12 +1,14 @@
 package tgb.btc.library.repository.bot.deal.read;
 
 import org.springframework.data.jpa.repository.Query;
+import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.*;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public interface DealPropertyRepository {
+public interface DealPropertyRepository extends BaseRepository<Deal> {
 
     @Query("select cryptoCurrency from Deal where pid=:pid")
     CryptoCurrency getCryptoCurrencyByPid(Long pid);

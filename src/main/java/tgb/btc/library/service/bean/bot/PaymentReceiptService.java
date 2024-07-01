@@ -2,7 +2,6 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentReceiptService;
 import tgb.btc.library.repository.BaseRepository;
@@ -21,13 +20,14 @@ public class PaymentReceiptService extends BasePersistService<PaymentReceipt> im
         this.paymentReceiptRepository = paymentReceiptRepository;
     }
 
-    @Autowired
-    public PaymentReceiptService(BaseRepository<PaymentReceipt> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public List<PaymentReceipt> getByDealsPids(Long userChatId) {
         return paymentReceiptRepository.getByDealsPids(userChatId);
     }
+
+    @Override
+    protected BaseRepository<PaymentReceipt> getBaseRepository() {
+        return paymentReceiptRepository;
+    }
+
 }

@@ -31,11 +31,6 @@ public class PaymentTypeService extends BasePersistService<PaymentType> implemen
     private PaymentRequisiteRepository paymentRequisiteRepository;
 
     @Autowired
-    public PaymentTypeService(BaseRepository<PaymentType> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setPaymentRequisiteRepository(PaymentRequisiteRepository paymentRequisiteRepository) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
     }
@@ -69,6 +64,11 @@ public class PaymentTypeService extends BasePersistService<PaymentType> implemen
         if (CollectionUtils.isEmpty(paymentTypeList))
             throw new BaseException("Не найден ни один тип оплаты для " + dealType.name() + " " + fiatCurrency.name());
         return paymentTypeList.get(0);
+    }
+
+    @Override
+    protected BaseRepository<PaymentType> getBaseRepository() {
+        return paymentTypeRepository;
     }
 
     public List<PaymentType> findAll() {

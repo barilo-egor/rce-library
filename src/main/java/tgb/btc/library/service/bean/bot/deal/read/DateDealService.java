@@ -24,11 +24,6 @@ public class DateDealService extends BasePersistService<Deal> implements IDateDe
         this.dealRepository = dealRepository;
     }
 
-    @Autowired
-    public DateDealService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate) {
         return dealRepository.getByDateBetween(startDate, endDate);
@@ -53,4 +48,10 @@ public class DateDealService extends BasePersistService<Deal> implements IDateDe
     public List<Deal> getByDate(LocalDate dateTime) {
         return dealRepository.getPassedByDate(dateTime);
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealRepository;
+    }
+
 }

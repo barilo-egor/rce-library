@@ -25,11 +25,6 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     private ApiDealRepository apiDealRepository;
 
     @Autowired
-    public ApiDealService(BaseRepository<ApiDeal> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setApiDealRepository(ApiDealRepository apiDealRepository) {
         this.apiDealRepository = apiDealRepository;
     }
@@ -201,6 +196,11 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     @Override
     public void deleteByApiUserId(String apiUserId) {
         apiDealRepository.deleteByApiUserId(apiUserId);
+    }
+
+    @Override
+    protected BaseRepository<ApiDeal> getBaseRepository() {
+        return apiDealRepository;
     }
 
 }

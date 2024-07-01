@@ -25,11 +25,6 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
         this.dealCountRepository = dealCountRepository;
     }
 
-    @Autowired
-    public DealCountService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus) {
         return dealCountRepository.getCountFinishedDeal(chatId, dealStatus);
@@ -54,4 +49,10 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     public Long getPassedDealsCountByUserChatId(Long chatId) {
         return dealCountRepository.getPassedDealsCountByUserChatId(chatId);
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealCountRepository;
+    }
+
 }

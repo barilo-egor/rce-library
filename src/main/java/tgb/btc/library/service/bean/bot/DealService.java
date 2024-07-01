@@ -43,7 +43,7 @@ import java.util.Objects;
 @Slf4j
 public class DealService extends BasePersistService<Deal> {
 
-    private final DealRepository dealRepository;
+    private DealRepository dealRepository;
 
     private UserRepository userRepository;
 
@@ -95,8 +95,7 @@ public class DealService extends BasePersistService<Deal> {
     }
 
     @Autowired
-    public DealService(BaseRepository<Deal> baseRepository, DealRepository dealRepository) {
-        super(baseRepository);
+    public void setDealRepository(DealRepository dealRepository) {
         this.dealRepository = dealRepository;
     }
 
@@ -250,4 +249,10 @@ public class DealService extends BasePersistService<Deal> {
         Deal deal = getByPid(dealPid);
         return new ArrayList<>(deal.getPaymentReceipts());
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealRepository;
+    }
+
 }

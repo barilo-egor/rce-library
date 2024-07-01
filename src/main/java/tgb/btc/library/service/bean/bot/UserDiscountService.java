@@ -20,11 +20,6 @@ public class UserDiscountService extends BasePersistService<UserDiscount> implem
         this.userDiscountRepository = userDiscountRepository;
     }
 
-    @Autowired
-    public UserDiscountService(BaseRepository<UserDiscount> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public Boolean getRankDiscountByUserChatId(Long chatId) {
         return userDiscountRepository.getRankDiscountByUserChatId(chatId);
@@ -73,4 +68,10 @@ public class UserDiscountService extends BasePersistService<UserDiscount> implem
     public void deleteByUser_ChatId(Long userChatId) {
         userDiscountRepository.deleteByUser_ChatId(userChatId);
     }
+
+    @Override
+    protected BaseRepository<UserDiscount> getBaseRepository() {
+        return userDiscountRepository;
+    }
+
 }

@@ -12,12 +12,16 @@ import java.util.List;
 
 @Service
 public class ContactService extends BasePersistService<Contact> implements IContactService {
-    private final ContactRepository contactRepository;
+    private ContactRepository contactRepository;
 
     @Autowired
-    public ContactService(BaseRepository<Contact> baseRepository, ContactRepository contactRepository) {
-        super(baseRepository);
+    public void setContactRepository(ContactRepository contactRepository) {
         this.contactRepository = contactRepository;
+    }
+
+    @Override
+    protected BaseRepository<Contact> getBaseRepository() {
+        return contactRepository;
     }
 
     public List<Contact> findAll() {

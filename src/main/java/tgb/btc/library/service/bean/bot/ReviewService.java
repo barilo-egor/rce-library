@@ -13,12 +13,16 @@ import java.util.List;
 @Service
 public class ReviewService extends BasePersistService<Review> implements IReviewService {
 
-    private final ReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewService(BaseRepository<Review> baseRepository, ReviewRepository reviewRepository) {
-        super(baseRepository);
+    public void setReviewRepository(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
+    }
+
+    @Override
+    protected BaseRepository<Review> getBaseRepository() {
+        return reviewRepository;
     }
 
     public List<Review> findAll() {

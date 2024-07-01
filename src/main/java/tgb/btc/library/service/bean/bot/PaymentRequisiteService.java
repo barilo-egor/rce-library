@@ -26,11 +26,6 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
 
     @Autowired
-    public PaymentRequisiteService(BaseRepository<PaymentRequisite> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setPaymentRequisiteRepository(PaymentRequisiteRepository paymentRequisiteRepository) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
     }
@@ -128,4 +123,10 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     public void deleteByPaymentTypePid(Long paymentTypePid) {
         paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
     }
+
+    @Override
+    protected BaseRepository<PaymentRequisite> getBaseRepository() {
+        return paymentRequisiteRepository;
+    }
+
 }

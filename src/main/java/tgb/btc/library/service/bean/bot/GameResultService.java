@@ -3,7 +3,6 @@ package tgb.btc.library.service.bean.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.GameResult;
-import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.Game;
 import tgb.btc.library.constants.enums.bot.GameResultType;
@@ -25,11 +24,6 @@ public class GameResultService extends BasePersistService<GameResult> implements
         this.gameResultRepository = gameResultRepository;
     }
 
-    @Autowired
-    public GameResultService(BaseRepository<GameResult> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public GameResult save(LocalDateTime dateTime, User user, Game game, GameResultType gameResultType, BigDecimal sum) {
         GameResult gameResult = new GameResult();
@@ -39,6 +33,11 @@ public class GameResultService extends BasePersistService<GameResult> implements
         gameResult.setGameResultType(gameResultType);
         gameResult.setSum(sum);
         return gameResultRepository.save(gameResult);
+    }
+
+    @Override
+    protected BaseRepository<GameResult> getBaseRepository() {
+        return gameResultRepository;
     }
 
     @Override

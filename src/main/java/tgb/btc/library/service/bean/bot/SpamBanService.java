@@ -21,11 +21,6 @@ public class SpamBanService extends BasePersistService<SpamBan> implements ISpam
     private UserRepository userRepository;
 
     @Autowired
-    public SpamBanService(BaseRepository<SpamBan> baseRepository) {
-        super(baseRepository);
-    }
-
-    @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -63,4 +58,10 @@ public class SpamBanService extends BasePersistService<SpamBan> implements ISpam
     public long countByPid(Long pid) {
         return spamBanRepository.countByPid(pid);
     }
+
+    @Override
+    protected BaseRepository<SpamBan> getBaseRepository() {
+        return spamBanRepository;
+    }
+
 }

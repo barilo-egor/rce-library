@@ -21,11 +21,6 @@ public class ApiCalculationService extends BasePersistService<ApiCalculation> im
         this.apiCalculationRepository = apiCalculationRepository;
     }
 
-    @Autowired
-    public ApiCalculationService(BaseRepository<ApiCalculation> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public List<ApiCalculation> getByApiUserPid(Long pid) {
         return apiCalculationRepository.getByApiUserPid(pid);
@@ -39,6 +34,11 @@ public class ApiCalculationService extends BasePersistService<ApiCalculation> im
     @Override
     public Long countAllByApiUser(ApiUser apiUser) {
         return apiCalculationRepository.countAllByApiUser(apiUser);
+    }
+
+    @Override
+    protected BaseRepository<ApiCalculation> getBaseRepository() {
+        return apiCalculationRepository;
     }
 
 }

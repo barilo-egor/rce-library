@@ -2,16 +2,18 @@ package tgb.btc.library.repository.bot.deal;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface ModifyDealRepository {
+public interface ModifyDealRepository extends BaseRepository<Deal> {
 
     @Modifying
     @Query("update Deal set cryptoCurrency=:cryptoCurrency where pid=:pid")

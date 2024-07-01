@@ -24,11 +24,6 @@ public class DealPropertyService extends BasePersistService<Deal> implements IDe
         this.dealPropertyRepository = dealPropertyRepository;
     }
 
-    @Autowired
-    public DealPropertyService(BaseRepository<Deal> baseRepository) {
-        super(baseRepository);
-    }
-
     @Override
     public CryptoCurrency getCryptoCurrencyByPid(Long pid) {
         return dealPropertyRepository.getCryptoCurrencyByPid(pid);
@@ -93,4 +88,10 @@ public class DealPropertyService extends BasePersistService<Deal> implements IDe
     public Boolean getIsUsedPromoByPid(Long pid) {
         return dealPropertyRepository.getIsUsedPromoByPid(pid);
     }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealPropertyRepository;
+    }
+
 }
