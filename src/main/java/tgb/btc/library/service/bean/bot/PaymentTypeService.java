@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@Transactional
 public class PaymentTypeService extends BasePersistService<PaymentType> implements IPaymentTypeService {
 
     private PaymentTypeRepository paymentTypeRepository;

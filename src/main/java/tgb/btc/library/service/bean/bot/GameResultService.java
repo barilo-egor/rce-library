@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.GameResult;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.Game;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 public class GameResultService extends BasePersistService<GameResult> implements IGameResultService {
 
     private GameResultRepository gameResultRepository;

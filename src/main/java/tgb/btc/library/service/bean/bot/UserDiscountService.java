@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.UserDiscount;
 import tgb.btc.library.interfaces.service.bean.bot.IUserDiscountService;
 import tgb.btc.library.repository.BaseRepository;
@@ -11,6 +12,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.math.BigDecimal;
 
 @Service
+@Transactional
 public class UserDiscountService extends BasePersistService<UserDiscount> implements IUserDiscountService {
 
     private UserDiscountRepository userDiscountRepository;

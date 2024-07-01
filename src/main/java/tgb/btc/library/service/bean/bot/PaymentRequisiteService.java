@@ -3,6 +3,7 @@ package tgb.btc.library.service.bean.bot;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class PaymentRequisiteService extends BasePersistService<PaymentRequisite> implements IPaymentRequisiteService {
 
     private PaymentRequisiteRepository paymentRequisiteRepository;

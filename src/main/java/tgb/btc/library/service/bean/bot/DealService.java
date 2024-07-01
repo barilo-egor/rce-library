@@ -41,6 +41,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@Transactional
 public class DealService extends BasePersistService<Deal> {
 
     private DealRepository dealRepository;

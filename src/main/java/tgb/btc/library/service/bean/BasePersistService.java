@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean;
 
+import org.springframework.data.jpa.repository.Modifying;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.IBasePersistService;
@@ -33,6 +34,7 @@ public abstract class BasePersistService<T extends BasePersist> implements IBase
         getBaseRepository().deleteAll(collection);
     }
 
+    @Modifying
     public T save(T t) {
         return getBaseRepository().save(t);
     }

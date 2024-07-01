@@ -3,6 +3,7 @@ package tgb.btc.library.service.bean.bot.paging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.repository.bot.paging.PagingDealRepository;
@@ -10,6 +11,7 @@ import tgb.btc.library.repository.bot.paging.PagingDealRepository;
 import java.util.List;
 
 @Service
+@Transactional
 public class PagingDealService {
 
     private PagingDealRepository pagingDealRepository;
