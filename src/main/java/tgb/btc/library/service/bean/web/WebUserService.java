@@ -101,7 +101,7 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
         webUser.setRoles(roleRepository.getByName(roleConstants.name()));
         webUser = save(webUser);
         if (Objects.nonNull(apiUser)) {
-            apiUser.setWebUser(webUser);
+            apiUser.getWebUsers().add(webUser);
             apiUserRepository.save(apiUser);
         }
         return webUser;

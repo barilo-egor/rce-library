@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
-import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
 import javax.persistence.*;
@@ -20,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 @Entity
 @Table(name = "API_USER")
@@ -85,6 +82,14 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @Setter
     private WebUser webUser;
 
+    @OneToMany
+    private List<WebUser> webUsers;
+
+    public List<WebUser> getWebUsers() {
+        if (Objects.isNull(webUsers)) return new ArrayList<>();
+        return webUsers;
+    }
+
     public String getRequisite(DealType dealType) {
         if (DealType.isBuy(dealType)) return buyRequisite;
         else return sellRequisite;
@@ -114,9 +119,7 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .put("isBanned", BooleanUtils.isTrue(getIsBanned()))
                 .put("token", getToken())
                 .put("buyRequisite", getBuyRequisite())
-                .put("sellRequisite", getSellRequisite())
-                .put("webUser", Objects.nonNull(getWebUser()) ? getWebUser().getUsername() :
-                        StringUtils.EMPTY);
+                .put("sellRequisite", getSellRequisite());
         if (Objects.nonNull(getFiatCurrency())) {
             ObjectNode fiatCurrency = getFiatCurrency().mapFunction().apply(getFiatCurrency());
             result.set("fiatCurrency", fiatCurrency);
