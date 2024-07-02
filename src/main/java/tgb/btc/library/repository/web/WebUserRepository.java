@@ -34,6 +34,12 @@ public interface WebUserRepository extends BaseRepository<WebUser> {
     @Query("select soundEnabled from WebUser where username=:username")
     Boolean getSoundEnabledByUsername(String username);
 
+    @Query("select webUser.username from ApiUser apiUser join apiUser.webUsers webUser where apiUser.pid=:apiUserPid")
+    List<String> getWebUsernamesByApiUserPid(Long apiUserPid);
+
+    @Query("select username from WebUser where pid not in (select webUser.pid from ApiUser apiUser join apiUser.webUsers webUser)")
+    List<String> getNotTiedToApiWebUsernames();
+
     /**
      * UPDATE
      */
