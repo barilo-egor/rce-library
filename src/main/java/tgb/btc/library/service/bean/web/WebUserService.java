@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiUser;
@@ -176,4 +177,30 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
         webUserRepository.updateSoundEnabled(username, soundEnabled);
     }
 
+    @Override
+    public List<String> getNotTiedToApiWebUsernames() {
+        return webUserRepository.getNotTiedToApiWebUsernames();
+    }
+
+    @Override
+    public List<String> getWebUsernamesByApiUserPid(Long apiUserPid) {
+        return webUserRepository.getWebUsernamesByApiUserPid(apiUserPid);
+    }
+
+    @Override
+    @Transactional
+    public void addWebUser(String username, Long apiUserPid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+        WebUser webUser = webUserRepository.getByUsername(username);
+        apiUser.getWebUsers().add(webUser);
+        apiUserRepository.save(apiUser);
+    }
+
+    @Override
+    @Transactional
+    public void removeWebUser(String username, Long apiUserPid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+        apiUser.getWebUsers().removeIf(user -> user.getUsername().equals(username));
+        apiUserRepository.save(apiUser);
+    }
 }

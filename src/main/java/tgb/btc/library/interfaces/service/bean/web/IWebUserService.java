@@ -34,4 +34,12 @@ public interface IWebUserService {
     void updateUsername(String newUsername, String oldUsername);
 
     void updateSoundEnabled(String username, Boolean soundEnabled);
+
+    List<String> getNotTiedToApiWebUsernames();
+
+    List<String> getWebUsernamesByApiUserPid(Long apiUserPid);
+
+    void addWebUser(String username, Long apiUserPid);
+
+    void removeWebUser(String username, Long apiUserPid);
 }

@@ -77,11 +77,6 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @Setter
     private ApiDeal lastPaidDeal;
 
-    @OneToOne
-    @Getter
-    @Setter
-    private WebUser webUser;
-
     @OneToMany
     private List<WebUser> webUsers;
 

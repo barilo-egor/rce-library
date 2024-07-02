@@ -116,8 +116,8 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Override
-    public WebUser getWebUser(Long pid) {
-        return apiUserRepository.getWebUser(pid);
+    public List<WebUser> getWebUsers(Long pid) {
+        return apiUserRepository.getWebUsers(pid);
     }
 
     @Override
@@ -128,11 +128,6 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     @Override
     public void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal) {
         apiUserRepository.updateLastPidDeal(userPid, lastPaidDeal);
-    }
-
-    @Override
-    public void updateWebUser(Long pid, WebUser webUser) {
-        apiUserRepository.updateWebUser(pid, webUser);
     }
 
     @Override

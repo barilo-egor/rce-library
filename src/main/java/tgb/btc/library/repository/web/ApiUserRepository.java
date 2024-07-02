@@ -9,6 +9,8 @@ import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public interface ApiUserRepository extends BaseRepository<ApiUser> {
@@ -34,14 +36,14 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select u.lastPaidDeal from ApiUser u where u.pid=:userPid")
     ApiDeal getLastPaidDeal(Long userPid);
 
-    @Query("select pid from ApiUser where webUser.username=:username")
+    @Query("select apiUser.pid from ApiUser apiUser join apiUser.webUsers webUser where webUser.username=:username")
     Long getPidByUsername(String username);
 
-    @Query("from ApiUser where webUser.username=:username")
+    @Query("from ApiUser apiUser join WebUser webUser where webUser.username=:username")
     ApiUser getByUsername(String username);
 
-    @Query("select u.webUser from ApiUser u where u.pid=:pid")
-    WebUser getWebUser(Long pid);
+    @Query("select u.webUsers from ApiUser u where u.pid=:pid")
+    List<WebUser> getWebUsers(Long pid);
 
     /**
      * DELETE
@@ -56,8 +58,4 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Modifying
     @Query("update ApiUser u set u.lastPaidDeal=:lastPaidDeal where u.pid=:userPid")
     void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
-
-    @Modifying
-    @Query("update ApiUser set webUser=:webUser where pid=:pid")
-    void updateWebUser(Long pid, WebUser webUser);
 }

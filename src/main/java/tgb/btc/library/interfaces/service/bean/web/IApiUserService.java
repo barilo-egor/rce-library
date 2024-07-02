@@ -4,6 +4,8 @@ import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 
+import java.util.List;
+
 public interface IApiUserService {
 
     long countByToken(String token);
@@ -26,7 +28,7 @@ public interface IApiUserService {
 
     ApiUser getByUsername(String username);
 
-    WebUser getWebUser(Long pid);
+    List<WebUser> getWebUsers(Long pid);
 
     /**
      * DELETE
@@ -37,6 +39,4 @@ public interface IApiUserService {
      * UPDATE
      */
     void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
-
-    void updateWebUser(Long pid, WebUser webUser);
 }
