@@ -85,6 +85,8 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
         return webUserRepository.save(webUser);
     }
 
+    @Transactional
+    @Override
     public WebUser save(String username, Long chatId, String token) {
         WebUser webUser = new WebUser();
         webUser.setChatId(chatId);

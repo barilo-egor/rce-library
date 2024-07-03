@@ -29,6 +29,8 @@ public interface IWebUserService {
      * UPDATE
      */
 
+    WebUser save(String username, Long chatId, String token);
+
     void updateUsernameByPid(Long pid, String username);
 
     void updateUsername(String newUsername, String oldUsername);
