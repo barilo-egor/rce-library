@@ -20,7 +20,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
     @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
     List<Long> getListNewDeal(Long chatId, DealStatus dealStatus);
 
-    @Query("select pid from Deal where dealStatus='PAID'")
+    @Query("select pid from Deal where dealStatus='PAID' or dealStatus='AWAITING_VERIFICATION' or dealStatus='VERIFICATION_REJECTED' or dealStatus='VERIFICATION_RECEIVED'")
     List<Long> getPaidDealsPids();
 
     @Query("select case when count(d) > :countDeals then true else false end from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
