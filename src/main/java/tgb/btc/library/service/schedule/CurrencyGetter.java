@@ -56,6 +56,7 @@ public class CurrencyGetter implements ICurrencyGetter {
         try {
             setAvailableApis();
         } catch (ReadCourseException e) {
+            log.error("Ошибка при первичной установке АПИ курсов.", e);
             throw new BaseException(e.getMessage());
         }
         cryptoCourses.put(CryptoCurrency.USDT, BigDecimal.valueOf(Double.parseDouble(
@@ -129,7 +130,7 @@ public class CurrencyGetter implements ICurrencyGetter {
                 CryptoCurrency.MONERO);
         for (CryptoCurrency cryptoCurrency : cryptoCurrencies) {
             for (CryptoApi cryptoApi : CryptoApi.getCryptoApis(cryptoCurrency)) {
-                if (tryConnect(cryptoApi, cryptoCurrency))
+                if (tryConnect(cryptoApi, cryptoCurrency, currentCryptoUSDApis))
                     break;
             }
             if (!currentCryptoUSDApis.containsKey(cryptoCurrency))
@@ -138,7 +139,7 @@ public class CurrencyGetter implements ICurrencyGetter {
         List<CryptoCurrency> fiatCryptoCurrencies = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
         for (CryptoCurrency cryptoCurrency : fiatCryptoCurrencies) {
             for (CryptoApi cryptoApi : CryptoApi.getFiatCryptoApis(cryptoCurrency)) {
-                if (tryConnect(cryptoApi, cryptoCurrency))
+                if (tryConnect(cryptoApi, cryptoCurrency, currentCryptoRUBApis))
                     break;
             }
             if (!currentCryptoRUBApis.containsKey(cryptoCurrency))
@@ -146,11 +147,11 @@ public class CurrencyGetter implements ICurrencyGetter {
         }
     }
 
-    private boolean tryConnect(CryptoApi cryptoApi, CryptoCurrency cryptoCurrency) {
+    private boolean tryConnect(CryptoApi cryptoApi, CryptoCurrency cryptoCurrency, Map<CryptoCurrency, CryptoApi> apis) {
         log.debug("Попытка получения курса для {}.", cryptoApi.name());
         try {
             cryptoApi.getCourse();
-            currentCryptoUSDApis.put(cryptoCurrency, cryptoApi);
+            apis.put(cryptoCurrency, cryptoApi);
             log.debug("Курс {} получен, выбран для дальнейшего использования.", cryptoApi);
             return true;
         } catch (ReadFromUrlException ignored) {
