@@ -9,6 +9,7 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
 import tgb.btc.library.util.BigDecimalUtil;
 import tgb.btc.library.util.BulkDiscountUtil;
 import tgb.btc.library.util.properties.VariablePropertiesUtil;
@@ -22,18 +23,18 @@ import java.util.Objects;
 @Service
 public class CalculateService {
 
-    private CryptoCurrencyService cryptoCurrencyService;
-
     private PersonalDiscountsCache personalDiscountsCache;
+
+    private ICurrencyGetter currencyGetter;
+
+    @Autowired
+    public void setCurrencyGetter(ICurrencyGetter currencyGetter) {
+        this.currencyGetter = currencyGetter;
+    }
 
     @Autowired
     public void setPersonalDiscountsCache(PersonalDiscountsCache personalDiscountsCache) {
         this.personalDiscountsCache = personalDiscountsCache;
-    }
-
-    @Autowired
-    public void setCryptoCurrencyService(CryptoCurrencyService cryptoCurrencyService) {
-        this.cryptoCurrencyService = cryptoCurrencyService;
     }
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
@@ -44,7 +45,7 @@ public class CalculateService {
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
                                 DealType dealType, Boolean isEnteredInCrypto, boolean withCredited) {
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency));
 
         DealAmount dealAmount = new DealAmount();
         dealAmount.setChatId(chatId);
@@ -96,7 +97,7 @@ public class CalculateService {
     public DealAmount calculate(BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
             DealType dealType, Boolean isEnteredInCrypto, BigDecimal personalDiscount) {
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCurrencyService.getCurrency(cryptoCurrency));
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency));
         calculateData.setPersonalDiscount(personalDiscount);
 
         DealAmount dealAmount = new DealAmount();
