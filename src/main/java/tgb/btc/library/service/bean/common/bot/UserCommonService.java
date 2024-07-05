@@ -6,6 +6,8 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.interfaces.service.bean.common.bot.IUserCommonService;
 
+import java.util.Objects;
+
 @Service
 public class UserCommonService implements IUserCommonService {
 
@@ -21,4 +23,9 @@ public class UserCommonService implements IUserCommonService {
         return User.DEFAULT_STEP == readUserService.getStepByChatId(chatId);
     }
 
+    @Override
+    public boolean isReferralBalanceEmpty(Long chatId) {
+        Integer referralBalance = readUserService.getReferralBalanceByChatId(chatId);
+        return Objects.nonNull(referralBalance) && referralBalance == 0;
+    }
 }
