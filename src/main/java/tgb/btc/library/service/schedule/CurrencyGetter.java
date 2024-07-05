@@ -71,31 +71,16 @@ public class CurrencyGetter implements ICurrencyGetter {
             try {
                 switch (cryptoCurrency) {
                 case BITCOIN:
-                    boolean f = false;
-                    if (f)
-                        throw new ReadCourseException("qwe");
-                    cryptoCourses.put(cryptoCurrency, getCryptoCourse(cryptoCurrency));
-                    fiatCryptoCourses.put(cryptoCurrency, getFiatCryptoCourse(cryptoCurrency));
-                    break;
                 case LITECOIN:
-                    f = false;
-                    if (f)
-                        throw new ReadCourseException("qwe");
                     cryptoCourses.put(cryptoCurrency, getCryptoCourse(cryptoCurrency));
                     fiatCryptoCourses.put(cryptoCurrency, getFiatCryptoCourse(cryptoCurrency));
                     break;
                 case MONERO:
-                    f = false;
-                    if (f)
-                        throw new ReadCourseException("qwe");
                     cryptoCourses.put(cryptoCurrency, getCryptoCourse(cryptoCurrency));
                     break;
                 }
             } catch (ReadCourseException readCourseException) {
                 try {
-                    boolean f = false;
-                    if (f)
-                        throw new ReadUsdCourseException("qwe");
                     setAvailableApis();
                 } catch (ReadUsdCourseException readUsdEx) {
                     notifyError(readUsdEx.getCryptoCurrency(), cryptoCourses.get(readUsdEx.getCryptoCurrency()), USD);
@@ -144,14 +129,8 @@ public class CurrencyGetter implements ICurrencyGetter {
                 CryptoCurrency.MONERO);
         for (CryptoCurrency cryptoCurrency : cryptoCurrencies) {
             for (CryptoApi cryptoApi : CryptoApi.getCryptoApis(cryptoCurrency)) {
-                log.debug("Попытка получения курса для {}.", cryptoApi.name());
-                try {
-                    cryptoApi.getCourse();
-                    currentCryptoUSDApis.put(cryptoCurrency, cryptoApi);
+                if (tryConnect(cryptoApi, cryptoCurrency))
                     break;
-                } catch (ReadFromUrlException ignored) {
-                    log.debug("Не получилось взять курс для {}.", cryptoApi.name());
-                }
             }
             if (!currentCryptoUSDApis.containsKey(cryptoCurrency))
                 throw new ReadUsdCourseException(cryptoCurrency);
@@ -159,17 +138,24 @@ public class CurrencyGetter implements ICurrencyGetter {
         List<CryptoCurrency> fiatCryptoCurrencies = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
         for (CryptoCurrency cryptoCurrency : fiatCryptoCurrencies) {
             for (CryptoApi cryptoApi : CryptoApi.getFiatCryptoApis(cryptoCurrency)) {
-                log.debug("Попытка получения курса для {}.", cryptoApi.name());
-                try {
-                    cryptoApi.getCourse();
-                    currentCryptoRUBApis.put(cryptoCurrency, cryptoApi);
+                if (tryConnect(cryptoApi, cryptoCurrency))
                     break;
-                } catch (ReadFromUrlException ignored) {
-                    log.debug("Не получилось взять курс для {}.", cryptoApi.name());
-                }
-                if (!currentCryptoRUBApis.containsKey(cryptoCurrency))
-                    throw new ReadRubCourseException(cryptoCurrency);
             }
+            if (!currentCryptoRUBApis.containsKey(cryptoCurrency))
+                throw new ReadRubCourseException(cryptoCurrency);
+        }
+    }
+
+    private boolean tryConnect(CryptoApi cryptoApi, CryptoCurrency cryptoCurrency) {
+        log.debug("Попытка получения курса для {}.", cryptoApi.name());
+        try {
+            cryptoApi.getCourse();
+            currentCryptoUSDApis.put(cryptoCurrency, cryptoApi);
+            log.debug("Курс {} получен, выбран для дальнейшего использования.", cryptoApi);
+            return true;
+        } catch (ReadFromUrlException ignored) {
+            log.debug("Не получилось взять курс для {}.", cryptoApi.name());
+            return false;
         }
     }
 
