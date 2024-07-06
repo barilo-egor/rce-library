@@ -2,7 +2,6 @@ package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
@@ -35,7 +34,7 @@ public interface IReadUserService extends IBasePersistService<User> {
 
     List<Long> getAdminsChatIds();
 
-    List<Long> getChatIdsByRoles(Set<Role> roles);
+    List<Long> getChatIdsByRoles(Set<UserRole> roles);
 
     String getBufferVariable(Long chatId);
 

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.repository.BaseRepository;
@@ -84,7 +83,7 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     }
 
     @Override
-    public List<Long> getChatIdsByRoles(Set<Role> roles) {
+    public List<Long> getChatIdsByRoles(Set<UserRole> roles) {
         return readUserRepository.getChatIdsByRoles(roles);
     }
 

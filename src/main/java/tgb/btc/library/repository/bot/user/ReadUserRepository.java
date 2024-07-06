@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
-import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.repository.BaseRepository;
 
@@ -44,7 +43,7 @@ public interface ReadUserRepository extends BaseRepository<User> {
     List<Long> getAdminsChatIds();
 
     @Query("select chatId from User where userRole in (:roles)")
-    List<Long> getChatIdsByRoles(Set<Role> roles);
+    List<Long> getChatIdsByRoles(Set<UserRole> roles);
 
     @Query("select bufferVariable from User where chatId=:chatId")
     String getBufferVariable(Long chatId);
