@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.repository.BaseRepository;
@@ -14,6 +15,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -79,6 +81,11 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     @Override
     public List<Long> getAdminsChatIds() {
         return readUserRepository.getAdminsChatIds();
+    }
+
+    @Override
+    public List<Long> getChatIdsByRoles(Set<Role> roles) {
+        return readUserRepository.getChatIdsByRoles(roles);
     }
 
     @Override
