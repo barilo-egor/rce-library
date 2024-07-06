@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.user.ReadUserRepository;
@@ -52,7 +53,7 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
 
     @Override
     public boolean isAdminByChatId(Long chatId) {
-        return readUserRepository.isAdminByChatId(chatId);
+        return readUserRepository.getUserRoleByChatId(chatId).equals(UserRole.ADMIN);
     }
 
     @Override
@@ -81,8 +82,8 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     }
 
     @Override
-    public List<Long> getChatIdsNotAdminsAndIsActiveAndNotBanned() {
-        return readUserRepository.getChatIdsNotAdminsAndIsActiveAndNotBanned();
+    public List<Long> getChatIdsForMailing() {
+        return readUserRepository.getChatIdsForMailing(List.of(UserRole.USER));
     }
 
     @Override

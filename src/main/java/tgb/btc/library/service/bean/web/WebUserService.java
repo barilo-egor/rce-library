@@ -13,9 +13,9 @@ import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.web.RoleConstants;
+import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.interfaces.service.bean.web.IWebUserService;
 import tgb.btc.library.repository.BaseRepository;
-import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.repository.web.WebUserRepository;
@@ -35,11 +35,11 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
 
     private ApiUserRepository apiUserRepository;
 
-    private UserRepository userRepository;
+    private IReadUserService readUserService;
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void setReadUserService(IReadUserService readUserService) {
+        this.readUserService = readUserService;
     }
 
     @Autowired
@@ -99,7 +99,7 @@ public class WebUserService extends BasePersistService<WebUser> implements UserD
             roleConstants = RoleConstants.ROLE_API_CLIENT;
             apiUser = apiUserRepository.getByToken(token);
         }
-        else if (userRepository.isAdminByChatId(chatId)) roleConstants = RoleConstants.ROLE_OPERATOR;
+        else if (readUserService.isAdminByChatId(chatId)) roleConstants = RoleConstants.ROLE_OPERATOR;
         else roleConstants = RoleConstants.ROLE_USER;
         webUser.setRoles(roleRepository.getByName(roleConstants.name()));
         webUser = save(webUser);

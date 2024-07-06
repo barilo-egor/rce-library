@@ -32,7 +32,7 @@ public interface IReadUserService extends IBasePersistService<User> {
 
     String getBufferVariable(Long chatId);
 
-    List<Long> getChatIdsNotAdminsAndIsActiveAndNotBanned();
+    List<Long> getChatIdsForMailing();
 
     Boolean getIsBannedByChatId(Long chatId);
 

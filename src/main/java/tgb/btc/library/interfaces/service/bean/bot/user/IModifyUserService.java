@@ -1,8 +1,8 @@
 package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.IBasePersistService;
-import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
 
@@ -41,5 +41,5 @@ public interface IModifyUserService extends IBasePersistService<User> {
 
     void updateStepByChatId(Long chatId, Integer step);
 
-    void updateIsAdminByChatId(Long chatId, Boolean isAdmin);
+    void updateUserRoleByChatId(UserRole userRole, Long chatId);
 }

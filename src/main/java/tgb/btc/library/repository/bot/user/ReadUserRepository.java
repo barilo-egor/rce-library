@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.math.BigDecimal;
@@ -26,8 +27,8 @@ public interface ReadUserRepository extends BaseRepository<User> {
 
     boolean existsByChatId(Long chatId);
 
-    @Query("select isAdmin from User where chatId=:chatId")
-    boolean isAdminByChatId(Long chatId);
+    @Query("select userRole from User where chatId=:chatId")
+    UserRole getUserRoleByChatId(Long chatId);
 
     @Query("select referralBalance from User where chatId=:chatId")
     Integer getReferralBalanceByChatId(Long chatId);
@@ -37,14 +38,14 @@ public interface ReadUserRepository extends BaseRepository<User> {
 
     User getByChatId(Long chatId);
 
-    @Query("select chatId from User where isAdmin=true")
+    @Query("select chatId from User where userRole='ADMIN'")
     List<Long> getAdminsChatIds();
 
     @Query("select bufferVariable from User where chatId=:chatId")
     String getBufferVariable(Long chatId);
 
-    @Query("select chatId from User where isAdmin=false and isActive=true and isBanned=false")
-    List<Long> getChatIdsNotAdminsAndIsActiveAndNotBanned();
+    @Query("select chatId from User where userRole in(:roles) and isActive=true and isBanned=false")
+    List<Long> getChatIdsForMailing(List<UserRole> roles);
 
     @Query("select isBanned from User where chatId=:chatId")
     Boolean getIsBannedByChatId(Long chatId);

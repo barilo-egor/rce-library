@@ -37,9 +37,6 @@ public class User extends BasePersist {
     @Column(name = "REGISTRATION_DATE", nullable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "IS_ADMIN", nullable = false)
-    private Boolean isAdmin;
-
     @Column(name = "LOTTERY_COUNT")
     private Integer lotteryCount;
 
@@ -121,14 +118,6 @@ public class User extends BasePersist {
 
     public void setRegistrationDate(LocalDateTime dateTime) {
         this.registrationDate = dateTime;
-    }
-
-    public Boolean getAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(Boolean admin) {
-        isAdmin = admin;
     }
 
     public Integer getLotteryCount() {

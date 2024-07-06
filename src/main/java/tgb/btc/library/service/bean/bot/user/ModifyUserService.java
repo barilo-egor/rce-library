@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.user.ModifyUserRepository;
@@ -103,8 +104,8 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     }
 
     @Override
-    public void updateIsAdminByChatId(Long chatId, Boolean isAdmin) {
-        modifyUserRepository.updateIsAdminByChatId(chatId, isAdmin);
+    public void updateUserRoleByChatId(UserRole userRole, Long chatId) {
+        modifyUserRepository.updateUserRoleByChatId(userRole, chatId);
     }
 
 }
