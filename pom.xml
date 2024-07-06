@@ -12,7 +12,7 @@
 
     <groupId>tgb.btc</groupId>
     <artifactId>rce-library</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>tgb.btc</groupId>
             <artifactId>rce-api</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 </project>
