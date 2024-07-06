@@ -2,6 +2,7 @@ package tgb.btc.library.service.schedule;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotificationsAPI;
@@ -66,8 +67,9 @@ public class CurrencyGetter implements ICurrencyGetter {
         log.debug("Автоматическое получения курса загружено в контекст.");
     }
 
-    @Scheduled(fixedRate = 15000)
-    private void updateCourses() {
+    @Scheduled(fixedRate = 30000)
+    @Async
+    public void updateCourses() {
         for (CryptoCurrency cryptoCurrency : CryptoCurrency.values()) {
             try {
                 switch (cryptoCurrency) {
@@ -81,6 +83,8 @@ public class CurrencyGetter implements ICurrencyGetter {
                     break;
                 }
             } catch (ReadCourseException readCourseException) {
+                log.error("Ошибка при получении курса для {}:", cryptoCurrency.name());
+                log.error("Ошибка при получении курса.", readCourseException);
                 try {
                     setAvailableApis();
                 } catch (ReadUsdCourseException readUsdEx) {

@@ -9,4 +9,6 @@ public interface ICurrencyGetter {
     BigDecimal getCourseCurrency(CryptoCurrency cryptoCurrency);
 
     BigDecimal getCourseCurrency(FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency);
+
+    void updateCourses();
 }
