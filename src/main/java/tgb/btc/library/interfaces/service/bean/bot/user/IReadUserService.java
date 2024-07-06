@@ -2,6 +2,7 @@ package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
@@ -21,6 +22,8 @@ public interface IReadUserService extends IBasePersistService<User> {
     boolean existsByChatId(Long chatId);
 
     boolean isAdminByChatId(Long chatId);
+
+    UserRole getUserRoleByChatId(Long chatId);
 
     Integer getReferralBalanceByChatId(Long chatId);
 

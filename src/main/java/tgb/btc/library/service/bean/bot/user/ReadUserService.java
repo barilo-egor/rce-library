@@ -57,6 +57,11 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     }
 
     @Override
+    public UserRole getUserRoleByChatId(Long chatId) {
+        return readUserRepository.getUserRoleByChatId(chatId);
+    }
+
+    @Override
     public Integer getReferralBalanceByChatId(Long chatId) {
         return readUserRepository.getReferralBalanceByChatId(chatId);
     }
