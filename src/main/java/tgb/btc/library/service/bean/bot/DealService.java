@@ -21,9 +21,10 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
+import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
-import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.process.CalculateService;
@@ -46,19 +47,29 @@ public class DealService extends BasePersistService<Deal> {
 
     private DealRepository dealRepository;
 
-    private UserRepository userRepository;
-
     private BanningUserService banningUserService;
 
     private PaymentRequisiteService paymentRequisiteService;
 
-    private UserService userService;
+    private IReadUserService readUserService;
+
+    private IModifyUserService modifyUserService;
 
     private CalculateService calculateService;
 
     private IReviewPriseService reviewPriseService;
 
     private INotifier notifier;
+
+    @Autowired
+    public void setModifyUserService(IModifyUserService modifyUserService) {
+        this.modifyUserService = modifyUserService;
+    }
+
+    @Autowired
+    public void setReadUserService(IReadUserService readUserService) {
+        this.readUserService = readUserService;
+    }
 
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
@@ -68,11 +79,6 @@ public class DealService extends BasePersistService<Deal> {
     @Autowired(required = false)
     public void setReviewPriseService(IReviewPriseService reviewPriseService) {
         this.reviewPriseService = reviewPriseService;
-    }
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 
     @Autowired
@@ -88,11 +94,6 @@ public class DealService extends BasePersistService<Deal> {
     @Autowired
     public void setBanningUserService(BanningUserService banningUserService) {
         this.banningUserService = banningUserService;
-    }
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 
     @Autowired
@@ -146,9 +147,9 @@ public class DealService extends BasePersistService<Deal> {
         deal.setCreateType(CreateType.BOT);
         deal.setDateTime(LocalDateTime.now());
         deal.setDealType(dealType);
-        deal.setUser(userRepository.findByChatId(chatId));
+        deal.setUser(readUserService.findByChatId(chatId));
         Deal savedDeal = save(deal);
-        userRepository.updateCurrentDealByChatId(savedDeal.getPid(), chatId);
+        modifyUserService.updateCurrentDealByChatId(savedDeal.getPid(), chatId);
         return savedDeal;
     }
 
@@ -160,7 +161,7 @@ public class DealService extends BasePersistService<Deal> {
     public void deleteDeal(Long dealPid, Boolean isBanUser) {
         Long userChatId = getUserChatIdByDealPid(dealPid);
         deleteById(dealPid);
-        userRepository.updateCurrentDealByChatId(null, userChatId);
+        modifyUserService.updateCurrentDealByChatId(null, userChatId);
         if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
         DealDeleteScheduler.deleteCryptoDeal(dealPid);
     }
@@ -198,10 +199,10 @@ public class DealService extends BasePersistService<Deal> {
         if (Objects.nonNull(user.getLotteryCount())) user.setLotteryCount(user.getLotteryCount() + 1);
         else user.setLotteryCount(1);
         user.setCurrentDeal(null);
-        userService.save(user);
+        modifyUserService.save(user);
         if (user.getFromChatId() != null) {
-            User refUser = userService.findByChatId(user.getFromChatId());
-            BigDecimal refUserReferralPercent = userRepository.getReferralPercentByChatId(refUser.getChatId());
+            User refUser = readUserService.findByChatId(user.getFromChatId());
+            BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
             boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
             BigDecimal referralPercent = isGeneralReferralPercent
                     ? BigDecimal.valueOf(VariablePropertiesUtil.getDouble(VariableType.REFERRAL_PERCENT))
@@ -213,10 +214,10 @@ public class DealService extends BasePersistService<Deal> {
                 sumToAdd = sumToAdd.divide(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
             }
             Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
-            userService.updateReferralBalanceByChatId(total, refUser.getChatId());
+            modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
             if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
                 notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
-            userService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
+            modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
         }
         String message;
         if (!DealType.isBuy(deal.getDealType())) {

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.properties.VariableType;
+import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.bot.DealRepository;
-import tgb.btc.library.service.bean.bot.UserService;
 import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +26,14 @@ public class DealDeleteScheduler {
 
     private DealRepository dealRepository;
 
-    private UserService userService;
+    private IModifyUserService modifyUserService;
 
     private INotifier notifier;
+
+    @Autowired
+    public void setModifyUserService(IModifyUserService modifyUserService) {
+        this.modifyUserService = modifyUserService;
+    }
 
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
@@ -38,11 +43,6 @@ public class DealDeleteScheduler {
     @PostConstruct
     public void post() {
         log.info("Автоматическое удаление недействительных заявок загружено в контекст.");
-    }
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 
     @Autowired
@@ -78,7 +78,7 @@ public class DealDeleteScheduler {
             if (isDealNotActive(dealPid, dealActiveTime)) {
                 Long chatId = dealRepository.getUserChatIdByDealPid(dealPid);
                 dealRepository.deleteById(dealPid);
-                userService.updateCurrentDealByChatId(null, chatId);
+                modifyUserService.updateCurrentDealByChatId(null, chatId);
                 deleteCryptoDeal(dealPid);
                 if (Objects.nonNull(notifier)) notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
                 log.debug("Автоматически удалена заявка №" + dealPid + " по истечению " + dealActiveTime + " минут.");
