@@ -12,7 +12,7 @@
 
     <groupId>tgb.btc</groupId>
     <artifactId>rce-library</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -22,44 +22,108 @@
 
     <profiles>
         <profile>
-            <id>local-getting-libraries</id>
+            <id>windows</id>
             <activation>
-                <file>
-                    <exists>config/local.properties</exists>
-                </file>
+                <os>
+                    <family>Windows</family>
+                </os>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>tgb.btc</groupId>
-                    <artifactId>rce-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>pre-clean-install-windows</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <exec executable="mvn.cmd">
+                                            <arg value="clean"/>
+                                            <arg value="install"/>
+                                            <arg value="-f"/>
+                                            <arg value="../rce-api/pom.xml"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
-            <id>jitpack-getting-libraries</id>
+            <id>unix-lib</id>
             <activation>
-                <file>
-                    <missing>config/local.properties</missing>
-                </file>
+                <os>
+                    <family>unix</family>
+                </os>
             </activation>
-            <repositories>
-                <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
-                </repository>
-            </repositories>
-            <dependencies>
-                <dependency>
-                    <groupId>com.github.barilo-egor</groupId>
-                    <artifactId>rce-api</artifactId>
-                    <version>77b5f2ea18</version>
-                </dependency>
-            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <source>11</source>
+                            <target>11</target>
+                            <fork>true</fork>
+                            <executable>/usr/lib/jvm/java-1.11.0-openjdk-amd64/bin/javac</executable> <!--PATH TO JAVAC -->
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>pre-clean-install-windows</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <exec executable="mvn">
+                                            <arg value="clean"/>
+                                            <arg value="install"/>
+                                            <arg value="-f"/>
+                                            <arg value="../rce-api/pom.xml"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.35.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev20230212-2.0.0</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -83,10 +147,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.15.3</version>
@@ -105,6 +165,26 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20231013</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>tgb.btc</groupId>
+            <artifactId>rce-api</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 </project>

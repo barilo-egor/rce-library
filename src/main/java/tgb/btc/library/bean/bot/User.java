@@ -3,7 +3,9 @@ package tgb.btc.library.bean.bot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.ICommand;
 
 import javax.persistence.*;
@@ -35,17 +37,14 @@ public class User extends BasePersist {
     @Column(name = "REGISTRATION_DATE", nullable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "IS_ADMIN", nullable = false)
-    private Boolean isAdmin;
-
     @Column(name = "LOTTERY_COUNT")
     private Integer lotteryCount;
 
     @Column(name = "FROM_CHAT_ID")
     private Long fromChatId;
 
-    @Column(name = "REFERRAL_BALANCE")
-    private Integer referralBalance;
+    @Column(name = "REFERRAL_BALANCE", nullable = false)
+    private Integer referralBalance = 0;
 
     @Column(name = "CHARGES")
     private Integer charges;
@@ -67,6 +66,11 @@ public class User extends BasePersist {
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<ReferralUser> referralUsers;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "USER_ROLE", unique = true)
+    @ColumnDefault("USER")
+    private UserRole userRole;
 
     public User(Long pid) {
         this.setPid(pid);
@@ -114,14 +118,6 @@ public class User extends BasePersist {
 
     public void setRegistrationDate(LocalDateTime dateTime) {
         this.registrationDate = dateTime;
-    }
-
-    public Boolean getAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(Boolean admin) {
-        isAdmin = admin;
     }
 
     public Integer getLotteryCount() {
@@ -207,5 +203,13 @@ public class User extends BasePersist {
 
     public static boolean isDefault(int step) {
         return step == DEFAULT_STEP;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 }

@@ -25,6 +25,9 @@ public interface UserDiscountRepository extends BaseRepository<UserDiscount> {
 
     Long countByUser_Pid(Long userPid);
 
+    @Query("from UserDiscount where user.chatId=:chatId")
+    UserDiscount getByUserChatId(Long chatId);
+
 
     /** UPDATE **/
     @Query("update UserDiscount set isRankDiscountOn=:isRankDiscountOn where user.pid=:pid")

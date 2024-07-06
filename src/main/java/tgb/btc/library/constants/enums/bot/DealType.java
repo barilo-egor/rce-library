@@ -2,10 +2,12 @@ package tgb.btc.library.constants.enums.bot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.StringUtils;
 import tgb.btc.library.exception.EnumTypeNotFoundException;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Function;
 
 public enum DealType implements ObjectNodeConvertable<DealType> {
@@ -72,5 +74,16 @@ public enum DealType implements ObjectNodeConvertable<DealType> {
         return dealType -> new ObjectMapper().createObjectNode()
                 .put("name", dealType.name())
                 .put("nominative", dealType.getNominative());
+    }
+
+    public static DealType valueOfNullable(String name) {
+        if (Objects.isNull(name)) return null;
+        DealType dealType;
+        try {
+            dealType = DealType.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            dealType = null;
+        }
+        return dealType;
     }
 }

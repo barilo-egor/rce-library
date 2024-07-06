@@ -2,7 +2,9 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Review;
+import tgb.btc.library.interfaces.service.bean.bot.IReviewService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.ReviewRepository;
 import tgb.btc.library.service.bean.BasePersistService;
@@ -10,14 +12,19 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
-public class ReviewService extends BasePersistService<Review> {
+@Transactional
+public class ReviewService extends BasePersistService<Review> implements IReviewService {
 
-    private final ReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewService(BaseRepository<Review> baseRepository, ReviewRepository reviewRepository) {
-        super(baseRepository);
+    public void setReviewRepository(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
+    }
+
+    @Override
+    protected BaseRepository<Review> getBaseRepository() {
+        return reviewRepository;
     }
 
     public List<Review> findAll() {

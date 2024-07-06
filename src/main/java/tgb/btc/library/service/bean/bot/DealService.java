@@ -12,6 +12,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -40,9 +41,10 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@Transactional
 public class DealService extends BasePersistService<Deal> {
 
-    private final DealRepository dealRepository;
+    private DealRepository dealRepository;
 
     private UserRepository userRepository;
 
@@ -94,8 +96,7 @@ public class DealService extends BasePersistService<Deal> {
     }
 
     @Autowired
-    public DealService(BaseRepository<Deal> baseRepository, DealRepository dealRepository) {
-        super(baseRepository);
+    public void setDealRepository(DealRepository dealRepository) {
         this.dealRepository = dealRepository;
     }
 
@@ -119,16 +120,8 @@ public class DealService extends BasePersistService<Deal> {
         dealRepository.updatePaymentTypeByPid(paymentType, pid);
     }
 
-    public Long getPidActiveDealByChatId(Long chatId) {
-        return dealRepository.getPidActiveDealByChatId(chatId);
-    }
-
     public Long getCountPassedByUserChatId(Long chatId) {
         return dealRepository.getCountPassedByUserChatId(chatId);
-    }
-
-    public List<Long> getActiveDealPids() {
-        return dealRepository.getActiveDealPids();
     }
 
     public Long getUserChatIdByDealPid(Long pid) {
@@ -147,19 +140,11 @@ public class DealService extends BasePersistService<Deal> {
         return dealRepository.getDealTypeByPid(pid);
     }
 
-    @Transactional(readOnly = true)
-    public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
-        Deal deal = getByPid(dealPid);
-        return new ArrayList<>(deal.getPaymentReceipts());
-    }
-
     public Deal createNewDeal(DealType dealType, Long chatId) {
         Deal deal = new Deal();
         deal.setDealStatus(DealStatus.NEW);
-        deal.setActive(false);
-        deal.setPassed(false);
+        deal.setCreateType(CreateType.BOT);
         deal.setDateTime(LocalDateTime.now());
-        deal.setDate(LocalDate.now());
         deal.setDealType(dealType);
         deal.setUser(userRepository.findByChatId(chatId));
         Deal savedDeal = save(deal);
@@ -184,9 +169,6 @@ public class DealService extends BasePersistService<Deal> {
     public void confirm(Long dealPid) {
         Deal deal = getByPid(dealPid);
         User user = deal.getUser();
-
-        deal.setActive(false);
-        deal.setPassed(true);
 
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
@@ -261,4 +243,17 @@ public class DealService extends BasePersistService<Deal> {
 
         if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
     }
+
+
+    @Transactional(readOnly = true)
+    public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
+        Deal deal = getByPid(dealPid);
+        return new ArrayList<>(deal.getPaymentReceipts());
+    }
+
+    @Override
+    protected BaseRepository<Deal> getBaseRepository() {
+        return dealRepository;
+    }
+
 }

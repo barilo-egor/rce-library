@@ -8,15 +8,20 @@ import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.IPaymentTypeService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 import tgb.btc.library.repository.bot.PaymentTypeRepository;
 import tgb.btc.library.repository.bot.UserRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class PaymentTypeService {
+@Transactional
+public class PaymentTypeService extends BasePersistService<PaymentType> implements IPaymentTypeService {
 
     private PaymentTypeRepository paymentTypeRepository;
 
@@ -62,12 +67,67 @@ public class PaymentTypeService {
         return paymentTypeList.get(0);
     }
 
+    @Override
+    protected BaseRepository<PaymentType> getBaseRepository() {
+        return paymentTypeRepository;
+    }
+
     public List<PaymentType> findAll() {
         return paymentTypeRepository.findAll();
     }
 
     public PaymentType getByPid(Long pid) {
         return paymentTypeRepository.getByPid(pid);
+    }
+
+    @Override
+    public List<PaymentType> getByDealType(DealType dealType) {
+        return paymentTypeRepository.getByDealType(dealType);
+    }
+
+    @Override
+    public List<PaymentType> getByDealTypeAndFiatCurrency(DealType dealType, FiatCurrency fiatCurrency) {
+        return paymentTypeRepository.getByDealTypeAndFiatCurrency(dealType, fiatCurrency);
+    }
+
+    @Override
+    public long countByDealTypeAndFiatCurrency(DealType dealType, FiatCurrency fiatCurrency) {
+        return paymentTypeRepository.countByDealTypeAndFiatCurrency(dealType, fiatCurrency);
+    }
+
+    @Override
+    public List<PaymentType> getByDealTypeAndIsOnAndFiatCurrency(DealType dealType, Boolean isOn, FiatCurrency fiatCurrency) {
+        return paymentTypeRepository.getByDealTypeAndIsOnAndFiatCurrency(dealType, isOn, fiatCurrency);
+    }
+
+    @Override
+    public Integer countByDealTypeAndIsOnAndFiatCurrency(DealType dealType, Boolean isOn, FiatCurrency fiatCurrency) {
+        return paymentTypeRepository.countByDealTypeAndIsOnAndFiatCurrency(dealType, isOn, fiatCurrency);
+    }
+
+    @Override
+    public DealType getDealTypeByPid(Long pid) {
+        return paymentTypeRepository.getDealTypeByPid(pid);
+    }
+
+    @Override
+    public long countByNameLike(String name) {
+        return paymentTypeRepository.countByNameLike(name);
+    }
+
+    @Override
+    public void updateIsOnByPid(Boolean isOn, Long pid) {
+        paymentTypeRepository.updateIsOnByPid(isOn, pid);
+    }
+
+    @Override
+    public void updateMinSumByPid(BigDecimal minSum, Long pid) {
+        paymentTypeRepository.updateMinSumByPid(minSum, pid);
+    }
+
+    @Override
+    public void updateIsDynamicOnByPid(Boolean isDynamicOn, Long pid) {
+        paymentTypeRepository.updateIsDynamicOnByPid(isDynamicOn, pid);
     }
 
     @Transactional

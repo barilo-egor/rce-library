@@ -3,11 +3,15 @@ package tgb.btc.library.service.bean.bot;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
+import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
+import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +20,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class PaymentRequisiteService {
+@Transactional
+public class PaymentRequisiteService extends BasePersistService<PaymentRequisite> implements IPaymentRequisiteService {
 
     private PaymentRequisiteRepository paymentRequisiteRepository;
 
@@ -59,6 +64,7 @@ public class PaymentRequisiteService {
         }
     }
 
+    @Override
     public String getRequisite(PaymentType paymentType) {
         List<PaymentRequisite> paymentRequisite = paymentRequisiteRepository.getByPaymentType_Pid(paymentType.getPid());
         if (CollectionUtils.isEmpty(paymentRequisite)) {
@@ -79,4 +85,50 @@ public class PaymentRequisiteService {
         Integer order = getOrder(paymentType.getPid());
         return turnedRequisites.get(order).getRequisite();
     }
+
+    @Override
+    public List<PaymentRequisite> getByPaymentType(PaymentType paymentType) {
+        return paymentRequisiteRepository.getByPaymentType(paymentType);
+    }
+
+    @Override
+    public long getCountByPaymentType(PaymentType paymentType) {
+        return paymentRequisiteRepository.getCountByPaymentType(paymentType);
+    }
+
+    @Override
+    public List<PaymentRequisite> getByPaymentType_Pid(Long paymentTypePid) {
+        return paymentRequisiteRepository.getByPaymentType_Pid(paymentTypePid);
+    }
+
+    @Override
+    public PaymentType getPaymentTypeByPid(Long pid) {
+        return paymentRequisiteRepository.getPaymentTypeByPid(pid);
+    }
+
+    @Override
+    public String getRequisiteByPaymentTypePidAndOrder(Long paymentPid, Integer requisiteOrder) {
+        return paymentRequisiteRepository.getRequisiteByPaymentTypePidAndOrder(paymentPid, requisiteOrder);
+    }
+
+    @Override
+    public Integer countByPaymentTypePidAndIsOn(Long paymentTypePid) {
+        return paymentRequisiteRepository.countByPaymentTypePidAndIsOn(paymentTypePid);
+    }
+
+    @Override
+    public void updateRequisiteByPid(String requisite, Long pid) {
+        paymentRequisiteRepository.updateRequisiteByPid(requisite, pid);
+    }
+
+    @Override
+    public void deleteByPaymentTypePid(Long paymentTypePid) {
+        paymentRequisiteRepository.deleteByPaymentTypePid(paymentTypePid);
+    }
+
+    @Override
+    protected BaseRepository<PaymentRequisite> getBaseRepository() {
+        return paymentRequisiteRepository;
+    }
+
 }

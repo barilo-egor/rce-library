@@ -3,11 +3,14 @@ package tgb.btc.library.bean.web;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.BasePersist;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "WEB_USER")
@@ -23,6 +26,8 @@ public class WebUser extends BasePersist implements UserDetails {
     private Boolean isEnabled;
 
     private Long chatId;
+
+    private Boolean soundEnabled;
 
     public WebUser() {
     }
@@ -57,6 +62,7 @@ public class WebUser extends BasePersist implements UserDetails {
     }
 
     public Set<Role> getRoles() {
+        if (CollectionUtils.isEmpty(roles)) return new HashSet<>();
         return roles;
     }
 
@@ -92,4 +98,27 @@ public class WebUser extends BasePersist implements UserDetails {
     public void setChatId(Long chatId) {
         this.chatId = chatId;
     }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public Boolean getSoundEnabled() {
+        return soundEnabled;
+    }
+
+    public void setSoundEnabled(Boolean soundEnabled) {
+        this.soundEnabled = soundEnabled;
+    }
+
+    @Override
+    public String toString() {
+        return "WebUser{" +
+                "username='" + username + '\'' +
+                ", isEnabled=" + isEnabled +
+                ", chatId=" + chatId +
+                ", roles=" + getRoles().stream().map(Role::getName).collect(Collectors.joining(",")) +
+                '}';
+    }
+
 }

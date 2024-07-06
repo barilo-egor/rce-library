@@ -2,7 +2,9 @@ package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.WithdrawalRequest;
+import tgb.btc.library.interfaces.service.bean.bot.IWithdrawalRequestService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.WithdrawalRequestRepository;
 import tgb.btc.library.service.bean.BasePersistService;
@@ -10,15 +12,21 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
-public class WithdrawalRequestService extends BasePersistService<WithdrawalRequest> {
+@Transactional
+public class WithdrawalRequestService extends BasePersistService<WithdrawalRequest> implements
+        IWithdrawalRequestService {
 
-    private final WithdrawalRequestRepository withdrawalRequestRepository;
+    private WithdrawalRequestRepository withdrawalRequestRepository;
 
     @Autowired
-    public WithdrawalRequestService(BaseRepository<WithdrawalRequest> baseRepository,
-                                    WithdrawalRequestRepository withdrawalRequestRepository) {
-        super(baseRepository);
+    public void setWithdrawalRequestRepository(
+            WithdrawalRequestRepository withdrawalRequestRepository) {
         this.withdrawalRequestRepository = withdrawalRequestRepository;
+    }
+
+    @Override
+    protected BaseRepository<WithdrawalRequest> getBaseRepository() {
+        return withdrawalRequestRepository;
     }
 
     public List<WithdrawalRequest> findAll() {
@@ -40,4 +48,10 @@ public class WithdrawalRequestService extends BasePersistService<WithdrawalReque
     public Long getPidByUserChatId(Long chatId) {
         return withdrawalRequestRepository.getPidByUserChatId(chatId);
     }
+
+    @Override
+    public void deleteByUser_ChatId(Long userChatId) {
+        withdrawalRequestRepository.deleteByUser_ChatId(userChatId);
+    }
+
 }

@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "DEAL")
@@ -25,10 +26,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "DATE_TIME")
     private LocalDateTime dateTime;
-
-    @Deprecated
-    @Column(name = "DATE")
-    private LocalDate date;
 
     @ManyToOne
     private PaymentType paymentType;
@@ -44,19 +41,6 @@ public class Deal extends BasePersist {
 
     @Column(name = "VERIFICATION_PHOTO")
     private String verificationPhoto;
-
-    @Column(name = "USER_CHECK")
-    @Deprecated
-    private String userCheck;
-
-    @Column(name = "IS_ACTIVE")
-    private Boolean isActive;
-
-    @Column(name = "IS_PASSED")
-    private Boolean isPassed;
-
-    @Column(name = "IS_CURRENT")
-    private Boolean isCurrent;
 
     @Column(name = "IS_USED_PROMO")
     private Boolean isUsedPromo;
@@ -85,9 +69,6 @@ public class Deal extends BasePersist {
     @Column(name = "ORIGINAL_PRICE")
     private BigDecimal originalPrice;
 
-    @Column(name = "BULK_APPLIED")
-    private Boolean isBulkApplied;
-
     @Column(name = "IS_PERSONAL_APPLIED")
     private Boolean isPersonalApplied;
 
@@ -109,12 +90,16 @@ public class Deal extends BasePersist {
     @Column(name = "CREDITED_AMOUNT")
     private BigDecimal creditedAmount;
 
-    public Boolean getCurrent() {
-        return isCurrent;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "CREATE_TYPE", columnDefinition = "varchar(20) default 'BOT'")
+    private CreateType createType;
+
+    public CreateType getCreateType() {
+        return createType;
     }
 
-    public void setCurrent(Boolean current) {
-        isCurrent = current;
+    public void setCreateType(CreateType createType) {
+        this.createType = createType;
     }
 
     public FiatCurrency getFiatCurrency() {
@@ -123,30 +108,6 @@ public class Deal extends BasePersist {
 
     public void setFiatCurrency(FiatCurrency fiatCurrency) {
         this.fiatCurrency = fiatCurrency;
-    }
-
-    public String getUserCheck() {
-        return userCheck;
-    }
-
-    public void setUserCheck(String check) {
-        this.userCheck = check;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Boolean getPassed() {
-        return isPassed;
-    }
-
-    public void setPassed(Boolean passed) {
-        isPassed = passed;
     }
 
     public User getUser() {
@@ -229,14 +190,6 @@ public class Deal extends BasePersist {
         this.dealType = dealType;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
     public Boolean getUsedReferralDiscount() {
         return isUsedReferralDiscount;
     }
@@ -275,14 +228,6 @@ public class Deal extends BasePersist {
 
     public void setOriginalPrice(BigDecimal originalPrice) {
         this.originalPrice = originalPrice;
-    }
-
-    public Boolean getBulkApplied() {
-        return isBulkApplied;
-    }
-
-    public void setBulkApplied(Boolean bulkApplied) {
-        isBulkApplied = bulkApplied;
     }
 
     public Boolean getPersonalApplied() {
@@ -324,4 +269,16 @@ public class Deal extends BasePersist {
     public void setCreditedAmount(BigDecimal creditedAmount) {
         this.creditedAmount = creditedAmount;
     }
+
+    public String manualToString() {
+        return "Deal{" +
+                ", cryptoAmount=" + cryptoAmount +
+                ", amount=" + amount +
+                ", cryptoCurrency=" + (Objects.nonNull(cryptoCurrency) ? cryptoCurrency.name() : "null") +
+                ", dealType=" + (Objects.nonNull(dealType) ? dealType.name() : "null") +
+                ", fiatCurrency=" + (Objects.nonNull(fiatCurrency) ? fiatCurrency.name() : "null") +
+                ", dealStatus=" + (Objects.nonNull(dealStatus) ? dealStatus.name() : "null") +
+                '}';
+    }
+
 }
