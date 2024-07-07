@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tgb.btc.api.library.IReviewPriseService;
+import tgb.btc.api.library.IReviewPriseProcessService;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
@@ -57,7 +57,7 @@ public class DealService extends BasePersistService<Deal> {
 
     private CalculateService calculateService;
 
-    private IReviewPriseService reviewPriseService;
+    private IReviewPriseProcessService reviewPriseService;
 
     private INotifier notifier;
 
@@ -77,7 +77,7 @@ public class DealService extends BasePersistService<Deal> {
     }
 
     @Autowired(required = false)
-    public void setReviewPriseService(IReviewPriseService reviewPriseService) {
+    public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
         this.reviewPriseService = reviewPriseService;
     }
 

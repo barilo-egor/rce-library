@@ -4,7 +4,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tgb.btc.api.library.IReviewPriseService;
+import tgb.btc.api.library.IReviewPriseProcessService;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
@@ -58,10 +58,10 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private INotifier notifier;
 
-    private IReviewPriseService reviewPriseService;
+    private IReviewPriseProcessService reviewPriseService;
 
     @Autowired(required = false)
-    public void setReviewPriseService(IReviewPriseService reviewPriseService) {
+    public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
         this.reviewPriseService = reviewPriseService;
     }
 
