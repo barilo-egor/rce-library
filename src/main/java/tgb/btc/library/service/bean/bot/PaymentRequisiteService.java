@@ -51,7 +51,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
                 PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order);
             } else {
                 Integer paymentTypeRequisitesSize = paymentRequisiteRepository.countByPaymentTypePidAndIsOn(paymentTypePid);
-                if (Objects.isNull(paymentTypeRequisitesSize) || paymentTypeRequisitesSize.equals(order + 1))
+                if (Objects.isNull(paymentTypeRequisitesSize) || order + 1 >= paymentTypeRequisitesSize)
                     PAYMENT_REQUISITE_ORDER.put(paymentTypePid, 0);
                 else PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order + 1);
             }
