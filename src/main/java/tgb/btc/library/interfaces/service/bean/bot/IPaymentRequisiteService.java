@@ -16,7 +16,7 @@ public interface IPaymentRequisiteService extends IBasePersistService<PaymentReq
 
     PaymentType getPaymentTypeByPid(Long pid);
 
-    String getRequisiteByPaymentTypePidAndOrder(Long paymentPid, Integer requisiteOrder);
+    String getRequisiteByPaymentTypePidAndOrder(Long paymentPid);
 
     Integer countByPaymentTypePidAndIsOn(Long paymentTypePid);
 

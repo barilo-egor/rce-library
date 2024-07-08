@@ -107,8 +107,8 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     }
 
     @Override
-    public String getRequisiteByPaymentTypePidAndOrder(Long paymentPid, Integer requisiteOrder) {
-        return paymentRequisiteRepository.getRequisiteByPaymentTypePidAndOrder(paymentPid, requisiteOrder);
+    public String getRequisiteByPaymentTypePidAndOrder(Long paymentPid) {
+        return paymentRequisiteRepository.getRequisiteByPaymentTypePidAndOrder(paymentPid);
     }
 
     @Override
