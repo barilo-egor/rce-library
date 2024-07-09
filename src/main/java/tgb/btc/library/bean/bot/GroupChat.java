@@ -46,5 +46,6 @@ public class GroupChat extends BasePersist {
     @Getter
     @Setter
     @Column(nullable = false)
+    @ColumnDefault("true")
     private Boolean isSendMessageEnabled;
 }
