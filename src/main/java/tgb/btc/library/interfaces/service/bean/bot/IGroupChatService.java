@@ -37,4 +37,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     boolean existsByChatId(Long chatId);
 
     void deleteIfExistsByChatId(Long chatId);
+
+    boolean isDealRequest(Long chatId);
 }

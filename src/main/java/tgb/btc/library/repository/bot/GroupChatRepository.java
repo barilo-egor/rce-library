@@ -49,4 +49,6 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     List<GroupChat> getAllByType(GroupChatType type);
 
     GroupChat getByChatId(Long chatId);
+
+    long countByTypeAndChatId(GroupChatType type, Long chatId);
 }

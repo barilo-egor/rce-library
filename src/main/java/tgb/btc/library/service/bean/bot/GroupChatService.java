@@ -137,6 +137,11 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
             deleteByChatId(chatId);
     }
 
+    @Override
+    public boolean isDealRequest(Long chatId) {
+        return groupChatRepository.countByTypeAndChatId(GroupChatType.DEAL_REQUEST, chatId) > 0;
+    }
+
     private void deleteByChatId(Long chatId) {
         groupChatRepository.delete(groupChatRepository.getByChatId(chatId));
     }
