@@ -19,4 +19,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     void updateTitleByChatId(Long chatId, String title);
 
     void setDefaultByPid(Long pid);
+
+    GroupChat getDefault();
 }

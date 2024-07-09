@@ -73,4 +73,9 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
         groupChatRepository.setDefaultByPid(pid);
     }
 
+    @Override
+    public GroupChat getDefault() {
+        return groupChatRepository.getDefault();
+    }
+
 }
