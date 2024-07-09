@@ -89,4 +89,9 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     public boolean hasDefault() {
         return groupChatRepository.getDefault().isPresent();
     }
+
+    @Override
+    public void deleteByChatId(Long chatId) {
+        groupChatRepository.delete(groupChatRepository.getByChatId(chatId));
+    }
 }

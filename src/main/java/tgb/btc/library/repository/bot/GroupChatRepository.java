@@ -37,4 +37,6 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
 
     @Query("from GroupChat where isDefault=true")
     Optional<GroupChat> getDefault();
+
+    GroupChat getByChatId(Long chatId);
 }

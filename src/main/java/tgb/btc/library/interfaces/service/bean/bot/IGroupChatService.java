@@ -23,4 +23,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     Optional<GroupChat> getDefault();
 
     boolean hasDefault();
+
+    void deleteByChatId(Long chatId);
 }
