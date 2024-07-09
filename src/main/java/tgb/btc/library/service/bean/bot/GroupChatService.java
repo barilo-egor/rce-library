@@ -41,6 +41,7 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
                 .title(title)
                 .isDefault(isDefault)
                 .registerDateTime(LocalDateTime.now())
+                .isSendMessageEnabled(true)
                 .build());
     }
 
