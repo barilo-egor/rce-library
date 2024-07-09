@@ -28,6 +28,8 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
     void updateTypeByChatId(GroupChatType type, Long chatId);
 
+    void updateTypeByPid(GroupChatType type, Long pid);
+
     void dropDealRequestDefault();
 
     boolean hasDealRequests();

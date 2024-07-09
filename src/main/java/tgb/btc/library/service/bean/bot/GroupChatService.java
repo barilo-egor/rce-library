@@ -102,6 +102,17 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
+    @Transactional
+    public void updateTypeByPid(GroupChatType type, Long pid) {
+        if (GroupChatType.DEAL_REQUEST.equals(type) && hasDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name() + " групп. "
+                    + "Будет установлена группа pid={}", pid);
+            dropDealRequestDefault();
+        }
+        groupChatRepository.updateTypeByPid(type, pid);
+    }
+
+    @Override
     public void dropDealRequestDefault() {
         groupChatRepository.dropDealRequestDefault();
     }

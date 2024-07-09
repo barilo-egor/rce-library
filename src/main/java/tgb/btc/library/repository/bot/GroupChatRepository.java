@@ -34,6 +34,10 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     void updateTypeByChatId(GroupChatType type, Long chatId);
 
     @Modifying
+    @Query("update GroupChat set type=:type where pid=:pid")
+    void updateTypeByPid(GroupChatType type, Long pid);
+
+    @Modifying
     @Query("update GroupChat set isSendMessageEnabled=:isSendMessageEnabled where chatId=:chatId")
     void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId);
 
