@@ -21,4 +21,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     void setDefaultByPid(Long pid);
 
     Optional<GroupChat> getDefault();
+
+    boolean hasDefault();
 }

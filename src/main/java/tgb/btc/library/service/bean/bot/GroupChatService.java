@@ -1,11 +1,14 @@
 package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
+import tgb.btc.library.constants.strings.CacheNames;
 import tgb.btc.library.interfaces.service.bean.bot.IGroupChatService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.GroupChatRepository;
@@ -30,6 +33,7 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.HAS_DEFAULT_GROUP_CHAT, allEntries = true)
     public GroupChat register(Long chatId, String title, MemberStatus memberStatus) {
         Boolean isDefault = null;
         if (groupChatRepository.count() == 0)
@@ -78,4 +82,9 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
         return groupChatRepository.getDefault();
     }
 
+    @Override
+    @Cacheable(CacheNames.HAS_DEFAULT_GROUP_CHAT)
+    public boolean hasDefault() {
+        return groupChatRepository.getDefault().isPresent();
+    }
 }
