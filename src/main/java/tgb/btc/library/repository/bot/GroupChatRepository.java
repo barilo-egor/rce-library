@@ -10,6 +10,9 @@ import tgb.btc.library.repository.BaseRepository;
 @Repository
 public interface GroupChatRepository extends BaseRepository<GroupChat> {
 
+    /**
+     * UPDATE
+     */
     @Modifying
     @Query("update GroupChat set memberStatus=:memberStatus where chatId=:chatId")
     void updateMemberStatusByChatId(Long chatId, MemberStatus memberStatus);
@@ -17,4 +20,19 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     @Modifying
     @Query("update GroupChat set title=:title where chatId=:chatId")
     void updateTitleByChatId(Long chatId, String title);
+
+    @Modifying
+    @Query("update GroupChat set isDefault=null where isDefault=true")
+    void dropDefault();
+
+    @Modifying
+    @Query("update GroupChat set isDefault=true where pid=:pid")
+    void setDefaultByPid(Long pid);
+
+    /**
+     * SELECT
+     */
+
+    @Query("from GroupChat where isDefault=true")
+    GroupChat getDefault();
 }

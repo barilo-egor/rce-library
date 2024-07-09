@@ -3,6 +3,7 @@ package tgb.btc.library.service.bean.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
 import tgb.btc.library.interfaces.service.bean.bot.IGroupChatService;
@@ -28,11 +29,16 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
+    @Transactional
     public GroupChat register(Long chatId, String title, MemberStatus memberStatus) {
+        Boolean isDefault = null;
+        if (groupChatRepository.count() == 0)
+            isDefault = true;
         return groupChatRepository.save(GroupChat.builder()
                 .chatId(chatId)
                 .memberStatus(memberStatus)
                 .title(title)
+                .isDefault(isDefault)
                 .build());
     }
 
@@ -58,6 +64,13 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     @Override
     public void updateTitleByChatId(Long chatId, String title) {
         groupChatRepository.updateTitleByChatId(chatId, title);
+    }
+
+    @Override
+    @Transactional
+    public void setDefaultByPid(Long pid) {
+        groupChatRepository.dropDefault();
+        groupChatRepository.setDefaultByPid(pid);
     }
 
 }

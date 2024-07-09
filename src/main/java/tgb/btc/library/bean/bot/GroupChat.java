@@ -37,4 +37,9 @@ public class GroupChat extends BasePersist {
     @Getter
     @Setter
     private String title;
+
+    @Getter
+    @Setter
+    @Column(unique = true)
+    private Boolean isDefault;
 }
