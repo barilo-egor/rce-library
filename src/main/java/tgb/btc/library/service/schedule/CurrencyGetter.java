@@ -42,7 +42,7 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     private INotificationsAPI notificationsAPI;
 
-    @Autowired
+    @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
     }
@@ -123,7 +123,8 @@ public class CurrencyGetter implements ICurrencyGetter {
                             + course
                             + "\nВыключите обмен для " + cryptoCurrency.name() + ", если курс сильно устарел.";
             notificationsAPI.sendNotify(message);
-            notifier.notifyAdmins(message);
+            if (Objects.nonNull(notifier)
+                notifier.notifyAdmins(message);
             lastErrorSendTime = LocalDateTime.now();
         }
     }
