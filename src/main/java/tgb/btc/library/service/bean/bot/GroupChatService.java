@@ -74,7 +74,7 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
-    public GroupChat getDefault() {
+    public Optional<GroupChat> getDefault() {
         return groupChatRepository.getDefault();
     }
 

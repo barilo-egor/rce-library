@@ -7,6 +7,8 @@ import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.Optional;
+
 @Repository
 public interface GroupChatRepository extends BaseRepository<GroupChat> {
 
@@ -34,5 +36,5 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
      */
 
     @Query("from GroupChat where isDefault=true")
-    GroupChat getDefault();
+    Optional<GroupChat> getDefault();
 }
