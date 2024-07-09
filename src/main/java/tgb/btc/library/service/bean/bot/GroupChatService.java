@@ -89,4 +89,9 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     public void deleteByChatId(Long chatId) {
         groupChatRepository.delete(groupChatRepository.getByChatId(chatId));
     }
+
+    @Override
+    public void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId) {
+        groupChatRepository.updateIsSendMessageEnabledByChatId(isSendMessageEnabled, chatId);
+    }
 }
