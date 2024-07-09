@@ -14,6 +14,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.GroupChatRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -43,6 +44,7 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
                 .memberStatus(memberStatus)
                 .title(title)
                 .isDefault(isDefault)
+                .registerDateTime(LocalDateTime.now())
                 .build());
     }
 
