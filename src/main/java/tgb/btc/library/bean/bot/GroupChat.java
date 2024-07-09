@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.MemberStatus;
+import tgb.btc.library.constants.enums.bot.GroupChatType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,8 +41,9 @@ public class GroupChat extends BasePersist {
 
     @Getter
     @Setter
-    @Column(unique = true)
-    private Boolean isDefault;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'DEFAULT'")
+    private GroupChatType type;
 
     @Getter
     @Setter

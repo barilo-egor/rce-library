@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
+import tgb.btc.library.constants.enums.bot.GroupChatType;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.util.Optional;
@@ -24,12 +25,12 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     void updateTitleByChatId(Long chatId, String title);
 
     @Modifying
-    @Query("update GroupChat set isDefault=null where isDefault=true")
-    void dropDefault();
+    @Query("update GroupChat set type='DEFAULT' where type='DEAL_REQUEST'")
+    void dropDealRequestDefault();
 
     @Modifying
-    @Query("update GroupChat set isDefault=true where pid=:pid")
-    void setDefaultByPid(Long pid);
+    @Query("update GroupChat set type=:type where chatId=:chatId")
+    void updateTypeByChatId(GroupChatType type, Long chatId);
 
     @Modifying
     @Query("update GroupChat set isSendMessageEnabled=:isSendMessageEnabled where chatId=:chatId")
@@ -38,9 +39,7 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     /**
      * SELECT
      */
-
-    @Query("from GroupChat where isDefault=true")
-    Optional<GroupChat> getDefault();
+    Optional<GroupChat> getByType(GroupChatType type);
 
     GroupChat getByChatId(Long chatId);
 }

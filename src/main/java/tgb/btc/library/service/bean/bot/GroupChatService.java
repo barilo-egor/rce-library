@@ -1,11 +1,13 @@
 package tgb.btc.library.service.bean.bot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
+import tgb.btc.library.constants.enums.bot.GroupChatType;
 import tgb.btc.library.interfaces.service.bean.bot.IGroupChatService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.GroupChatRepository;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class GroupChatService extends BasePersistService<GroupChat> implements IGroupChatService {
 
     private GroupChatRepository groupChatRepository;
@@ -31,15 +34,17 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
 
     @Override
     @Transactional
-    public GroupChat register(Long chatId, String title, MemberStatus memberStatus) {
-        Boolean isDefault = null;
-        if (groupChatRepository.count() == 0)
-            isDefault = true;
+    public GroupChat register(Long chatId, String title, MemberStatus memberStatus, GroupChatType groupChatType) {
+        if (GroupChatType.DEAL_REQUEST.equals(groupChatType) && hasDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name()
+                    + " групп при создании новой. Будет установлена группа chatid={}", chatId);
+            dropDealRequestDefault();
+        }
         return groupChatRepository.save(GroupChat.builder()
                 .chatId(chatId)
                 .memberStatus(memberStatus)
                 .title(title)
-                .isDefault(isDefault)
+                .type(groupChatType)
                 .registerDateTime(LocalDateTime.now())
                 .isSendMessageEnabled(true)
                 .build());
@@ -70,23 +75,6 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
-    @Transactional
-    public void setDefaultByPid(Long pid) {
-        groupChatRepository.dropDefault();
-        groupChatRepository.setDefaultByPid(pid);
-    }
-
-    @Override
-    public Optional<GroupChat> getDefault() {
-        return groupChatRepository.getDefault();
-    }
-
-    @Override
-    public boolean hasDefault() {
-        return groupChatRepository.getDefault().isPresent();
-    }
-
-    @Override
     public void deleteByChatId(Long chatId) {
         groupChatRepository.delete(groupChatRepository.getByChatId(chatId));
     }
@@ -95,4 +83,33 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     public void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId) {
         groupChatRepository.updateIsSendMessageEnabledByChatId(isSendMessageEnabled, chatId);
     }
+
+    @Override
+    public Optional<GroupChat> getByType(GroupChatType type) {
+        return groupChatRepository.getByType(type);
+    }
+
+    @Override
+    @Transactional
+    public void updateTypeByChatId(GroupChatType type, Long chatId) {
+        if (GroupChatType.DEAL_REQUEST.equals(type) && hasDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name() + " групп. "
+                    + "Будет установлена группа chatid={}", chatId);
+            dropDealRequestDefault();
+        }
+        groupChatRepository.updateTypeByChatId(type, chatId);
+    }
+
+    @Override
+    public void dropDealRequestDefault() {
+        groupChatRepository.dropDealRequestDefault();
+    }
+
+    @Override
+    public boolean hasDealRequests() {
+        return groupChatRepository.exists(Example.of(GroupChat.builder()
+                .type(GroupChatType.DEAL_REQUEST)
+                .build()));
+    }
+
 }

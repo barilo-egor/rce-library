@@ -2,13 +2,14 @@ package tgb.btc.library.interfaces.service.bean.bot;
 
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.constants.enums.MemberStatus;
+import tgb.btc.library.constants.enums.bot.GroupChatType;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.Optional;
 
 public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
-    GroupChat register(Long chatId, String title, MemberStatus memberStatus);
+    GroupChat register(Long chatId, String title, MemberStatus memberStatus, GroupChatType groupChatType);
 
     boolean isExists(Long chatId);
 
@@ -18,13 +19,15 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
     void updateTitleByChatId(Long chatId, String title);
 
-    void setDefaultByPid(Long pid);
-
-    Optional<GroupChat> getDefault();
-
-    boolean hasDefault();
-
     void deleteByChatId(Long chatId);
 
     void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId);
+
+    Optional<GroupChat> getByType(GroupChatType type);
+
+    void updateTypeByChatId(GroupChatType type, Long chatId);
+
+    void dropDealRequestDefault();
+
+    boolean hasDealRequests();
 }
