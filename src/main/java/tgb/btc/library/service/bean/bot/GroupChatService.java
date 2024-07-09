@@ -129,4 +129,10 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
         return groupChatRepository.getAllByType(type);
     }
 
+    @Override
+    public boolean existsByChatId(Long chatId) {
+        return groupChatRepository.exists(Example.of(GroupChat.builder()
+                .chatId(chatId)
+                .build()));
+    }
 }

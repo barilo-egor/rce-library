@@ -35,4 +35,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     boolean hasDealRequests();
 
     List<GroupChat> getAllByType(GroupChatType type);
+
+    boolean existsByChatId(Long chatId);
 }
