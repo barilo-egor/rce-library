@@ -123,7 +123,7 @@ public class CurrencyGetter implements ICurrencyGetter {
                             + course
                             + "\nВыключите обмен для " + cryptoCurrency.name() + ", если курс сильно устарел.";
             notificationsAPI.sendNotify(message);
-            if (Objects.nonNull(notifier)
+            if (Objects.nonNull(notifier))
                 notifier.notifyAdmins(message);
             lastErrorSendTime = LocalDateTime.now();
         }
