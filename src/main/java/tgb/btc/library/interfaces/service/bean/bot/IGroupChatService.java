@@ -20,8 +20,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
     void updateTitleByChatId(Long chatId, String title);
 
-    void deleteByChatId(Long chatId);
-
     void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId);
 
     Optional<GroupChat> getByType(GroupChatType type);
@@ -37,4 +35,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     List<GroupChat> getAllByType(GroupChatType type);
 
     boolean existsByChatId(Long chatId);
+
+    void deleteIfExistsByChatId(Long chatId);
 }
