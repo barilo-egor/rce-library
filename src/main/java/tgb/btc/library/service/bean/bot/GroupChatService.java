@@ -14,6 +14,7 @@ import tgb.btc.library.repository.bot.GroupChatRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -110,6 +111,11 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
         return groupChatRepository.exists(Example.of(GroupChat.builder()
                 .type(GroupChatType.DEAL_REQUEST)
                 .build()));
+    }
+
+    @Override
+    public List<GroupChat> getAllByType(GroupChatType type) {
+        return groupChatRepository.getAllByType(type);
     }
 
 }

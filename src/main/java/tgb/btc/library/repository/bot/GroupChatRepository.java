@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.MemberStatus;
 import tgb.btc.library.constants.enums.bot.GroupChatType;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -40,6 +41,8 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
      * SELECT
      */
     Optional<GroupChat> getByType(GroupChatType type);
+
+    List<GroupChat> getAllByType(GroupChatType type);
 
     GroupChat getByChatId(Long chatId);
 }

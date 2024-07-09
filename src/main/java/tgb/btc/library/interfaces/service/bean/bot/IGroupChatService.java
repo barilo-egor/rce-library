@@ -5,6 +5,7 @@ import tgb.btc.library.constants.enums.MemberStatus;
 import tgb.btc.library.constants.enums.bot.GroupChatType;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IGroupChatService extends IBasePersistService<GroupChat> {
@@ -30,4 +31,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
     void dropDealRequestDefault();
 
     boolean hasDealRequests();
+
+    List<GroupChat> getAllByType(GroupChatType type);
 }
