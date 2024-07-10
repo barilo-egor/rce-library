@@ -18,7 +18,7 @@ public enum ApiDealStatus implements ObjectNodeConvertable<ApiDealStatus> {
 
     private final String color;
 
-    public static final List<ApiDealStatus> ALREADY_PAID_DEAL_STATUSES = List.of(PAID, ACCEPTED, DECLINED);
+    public static final List<ApiDealStatus> CONFIRMED_STATUSES = List.of(ACCEPTED, DECLINED);
 
     ApiDealStatus(String description, String color) {
         this.description = description;
