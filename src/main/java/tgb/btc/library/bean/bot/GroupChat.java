@@ -61,4 +61,10 @@ public class GroupChat extends BasePersist implements JsonConvertable {
                 .put("pid", this.getPid());
     }
 
+    public static GroupChat empty() {
+        return GroupChat.builder()
+                .title("Отсутствует")
+                .build();
+    }
+
 }
