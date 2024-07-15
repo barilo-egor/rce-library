@@ -3,7 +3,7 @@ package tgb.btc.library.service.process;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.RPSElement;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 
@@ -68,13 +68,13 @@ public class RPSService {
         sb.append("Против: ").append(element.getSymbol()).append(System.lineSeparator());
         if (Boolean.TRUE.equals(result)) {
             modifyUserService.updateReferralBalanceByChatId(readUserService.getReferralBalanceByChatId(chatId) + Integer.parseInt(sum), chatId);
-            sb.append(PropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator())
-                    .append(PropertiesPath.RPS_MESSAGE.getString("win.sum")).append(" ").append(sum).append("₽");
+            sb.append(IPropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator())
+                    .append(IPropertiesPath.RPS_MESSAGE.getString("win.sum")).append(" ").append(sum).append("₽");
         } else if (Objects.nonNull(result)) {
             modifyUserService.updateReferralBalanceByChatId(readUserService.getReferralBalanceByChatId(chatId) - Integer.parseInt(sum), chatId);
-            sb.append(PropertiesPath.RPS_MESSAGE.getString("lose")).append(System.lineSeparator());
+            sb.append(IPropertiesPath.RPS_MESSAGE.getString("lose")).append(System.lineSeparator());
         } else {
-            sb.append(PropertiesPath.RPS_MESSAGE.getString("draw"));
+            sb.append(IPropertiesPath.RPS_MESSAGE.getString("draw"));
         }
         return sb.toString();
     }

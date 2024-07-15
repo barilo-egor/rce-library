@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 
@@ -19,7 +19,7 @@ public class VariablePropertiesUtil {
     public static String getVariable(VariableType variableType) {
         String text;
         try {
-            text = PropertiesPath.VARIABLE_PROPERTIES.getString(variableType.getKey());
+            text = IPropertiesPath.VARIABLE_PROPERTIES.getString(variableType.getKey());
         } catch (Exception e) {
             throw new BaseException("Переменная по ключу " + variableType.getKey() + " не найдена.");
         }
@@ -36,7 +36,7 @@ public class VariablePropertiesUtil {
                 + dealType.getKey() + "."
                 + cryptoCurrency.getShortName();
         try {
-            text = PropertiesPath.VARIABLE_PROPERTIES.getString(variableType.getKey() + "."
+            text = IPropertiesPath.VARIABLE_PROPERTIES.getString(variableType.getKey() + "."
                     + fiatCurrency.getCode() + "."
                     + dealType.getKey() + "."
                     + cryptoCurrency.getShortName());
@@ -54,7 +54,7 @@ public class VariablePropertiesUtil {
                 + dealType.getKey() + "."
                 + cryptoCurrency.getShortName();
         try {
-            text = PropertiesPath.VARIABLE_PROPERTIES.getString(key);
+            text = IPropertiesPath.VARIABLE_PROPERTIES.getString(key);
         } catch (Exception e) {
             throw new BaseException("Переменная по ключу " + key + " не найдена.");
         }
@@ -115,14 +115,14 @@ public class VariablePropertiesUtil {
     }
 
     public static BigDecimal getBigDecimal(String key) {
-        return PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal(key);
+        return IPropertiesPath.VARIABLE_PROPERTIES.getBigDecimal(key);
     }
 
     public static Double getDouble(String key) {
-        return PropertiesPath.VARIABLE_PROPERTIES.getDouble(key);
+        return IPropertiesPath.VARIABLE_PROPERTIES.getDouble(key);
     }
 
     public static String getWallet(CryptoCurrency cryptoCurrency) {
-        return PropertiesPath.VARIABLE_PROPERTIES.getString(VariableType.WALLET.getKey(cryptoCurrency));
+        return IPropertiesPath.VARIABLE_PROPERTIES.getString(VariableType.WALLET.getKey(cryptoCurrency));
     }
 }

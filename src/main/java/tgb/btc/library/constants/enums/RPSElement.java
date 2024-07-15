@@ -1,12 +1,12 @@
 package tgb.btc.library.constants.enums;
 
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 
 public enum RPSElement {
 
-    ROCK(PropertiesPath.RPS_MESSAGE.getString("rock")),
-    PAPER(PropertiesPath.RPS_MESSAGE.getString("paper")),
-    SCISSORS(PropertiesPath.RPS_MESSAGE.getString("scissors"));
+    ROCK(IPropertiesPath.RPS_MESSAGE.getString("rock")),
+    PAPER(IPropertiesPath.RPS_MESSAGE.getString("paper")),
+    SCISSORS(IPropertiesPath.RPS_MESSAGE.getString("scissors"));
 
     private final String symbol;
 

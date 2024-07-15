@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 import tgb.btc.library.vo.properties.PropertiesValue;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class PropertiesService {
         this.cacheManager = cacheManager;
     }
 
-    public void updateProperties(PropertiesPath propertiesPath, List<PropertiesValue> values) {
+    public void updateProperties(IPropertiesPath propertiesPath, List<PropertiesValue> values) {
         values.forEach(value -> {
             log.trace(String.format("Файл %s. Изменение свойсва: %s", propertiesPath.getFileName(), value));
             propertiesPath.setProperty(value.getKey(), value.getValue());
@@ -30,7 +30,7 @@ public class PropertiesService {
         cacheManager.getCacheNames().forEach(name -> Objects.requireNonNull(cacheManager.getCache(name)).clear());
     }
 
-    public List<PropertiesValue> getPropertiesValues(PropertiesPath propertiesPath, List<String> keys) {
+    public List<PropertiesValue> getPropertiesValues(IPropertiesPath propertiesPath, List<String> keys) {
         return keys.stream().map(key -> {
             log.trace(String.format("Файл %s. Получение свойсва: %s", propertiesPath.getFileName(), key));
             return new PropertiesValue(key, propertiesPath.getString(key));

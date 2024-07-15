@@ -1,6 +1,6 @@
 package tgb.btc.library.constants.enums;
 
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 import tgb.btc.library.interfaces.Module;
 
 public enum RPS implements Module {
@@ -11,7 +11,7 @@ public enum RPS implements Module {
 
     @Override
     public boolean isCurrent() {
-        return this.equals(valueOf(PropertiesPath.GAMES_PROPERTIES.getString("rock.paper.scissors", "NONE")));
+        return this.equals(valueOf(IPropertiesPath.GAMES_PROPERTIES.getString("rock.paper.scissors", "NONE")));
     }
 
 }

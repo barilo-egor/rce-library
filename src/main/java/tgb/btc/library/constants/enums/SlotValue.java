@@ -1,6 +1,6 @@
 package tgb.btc.library.constants.enums;
 
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.constants.enums.properties.IPropertiesPath;
 
 public enum SlotValue {
 
@@ -20,11 +20,11 @@ public enum SlotValue {
     }
 
     public String getTripleAmount() {
-        return PropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".triple"));
+        return IPropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".triple"));
     }
 
     public String getDoubleAmount() {
-        return PropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".double"));
+        return IPropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".double"));
     }
 
     public SlotValue[] getThree() {
