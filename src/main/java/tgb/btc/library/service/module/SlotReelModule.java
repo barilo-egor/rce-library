@@ -1,6 +1,7 @@
 package tgb.btc.library.service.module;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.SlotReelType;
@@ -28,6 +29,8 @@ public class SlotReelModule implements IModule<SlotReelType> {
         if (Objects.nonNull(current))
             return current;
         String type = gamesPropertiesReader.getString("slot.reel");
+        if (StringUtils.isEmpty(type))
+            throw new BaseException("Проперти slot.reel из games.properties не найдено.");
         try {
             SlotReelType slotReelType = SlotReelType.valueOf(type);
             current = slotReelType;
@@ -35,7 +38,7 @@ public class SlotReelModule implements IModule<SlotReelType> {
         } catch (IllegalArgumentException e) {
             String message = "В проперти slot.reel из games.properties установлено невалидное значение.";
             log.error(message);
-            throw new BaseException(message);
+            throw new BaseException(message, e);
         }
     }
 }
