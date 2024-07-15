@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.SlotValue;
-import tgb.btc.library.constants.enums.properties.IPropertiesPath;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.vo.slotReel.ScrollResult;
 
 import java.util.Arrays;
@@ -59,7 +59,7 @@ public class SlotReelService {
 
     @Cacheable("slotReelStartMessage")
     public String startMessage() {
-        return IPropertiesPath.SLOT_REEL_MESSAGE.getString("start") + System.lineSeparator() + System.lineSeparator() +
+        return PropertiesPath.SLOT_REEL_MESSAGE.getString("start") + System.lineSeparator() + System.lineSeparator() +
                 getStartMessageRow(SlotValue.SEVEN.getThree(), SlotValue.SEVEN.getTripleAmount()) +
                 getStartMessageRow(SlotValue.LEMON.getThree(), SlotValue.LEMON.getTripleAmount()) +
                 getStartMessageRow(SlotValue.CHERRY.getThree(), SlotValue.CHERRY.getTripleAmount()) +
@@ -69,8 +69,8 @@ public class SlotReelService {
                 getStartMessageRow(SlotValue.LEMON.getTwo(), SlotValue.LEMON.getDoubleAmount()) +
                 getStartMessageRow(SlotValue.CHERRY.getTwo(), SlotValue.CHERRY.getDoubleAmount()) +
                 getStartMessageRow(new SlotValue[]{SlotValue.BAR}, SlotValue.BAR.getDoubleAmount()) +
-                System.lineSeparator() + IPropertiesPath.SLOT_REEL_MESSAGE.getString("try.cost") + " " +
-                IPropertiesPath.SLOT_REEL_PROPERTIES.getString("try") + "₽";
+                System.lineSeparator() + PropertiesPath.SLOT_REEL_MESSAGE.getString("try.cost") + " " +
+                PropertiesPath.SLOT_REEL_PROPERTIES.getString("try") + "₽";
     }
 
     private String getStartMessageRow(SlotValue[] slotValues, String amount) {

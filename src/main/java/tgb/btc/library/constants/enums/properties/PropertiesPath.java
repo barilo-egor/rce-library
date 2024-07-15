@@ -2,7 +2,7 @@ package tgb.btc.library.constants.enums.properties;
 
 import tgb.btc.library.util.system.IPropertiesReader;
 
-public enum IPropertiesPath implements IPropertiesReader {
+public enum PropertiesPath implements IPropertiesReader {
     CONFIG_PROPERTIES("config/system/config.properties", ','),
     BOT_PROPERTIES("config/bot/bot.properties", ','),
     MESSAGE_PROPERTIES("config/message.properties", ','),
@@ -35,7 +35,7 @@ public enum IPropertiesPath implements IPropertiesReader {
 
     private final char listDelimiter;
 
-    IPropertiesPath(String fileName, char listDelimiter) {
+    PropertiesPath(String fileName, char listDelimiter) {
         this.fileName = fileName;
         this.listDelimiter = listDelimiter;
     }

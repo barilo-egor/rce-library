@@ -1,6 +1,6 @@
 package tgb.btc.library.util;
 
-import tgb.btc.library.constants.enums.properties.IPropertiesPath;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ public final class SystemUtil {
 
     public static boolean isDev() {
         if (Objects.isNull(IS_DEV)) {
-            String instance = IPropertiesPath.CONFIG_PROPERTIES.getString("instance");
+            String instance = PropertiesPath.CONFIG_PROPERTIES.getString("instance");
             IS_DEV = "dev".equals(instance);
         }
         return IS_DEV;

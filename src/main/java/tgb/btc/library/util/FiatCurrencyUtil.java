@@ -3,7 +3,7 @@ package tgb.btc.library.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.IPropertiesPath;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.BaseException;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public final class FiatCurrencyUtil {
     private static final boolean IS_FEW;
 
     static {
-        FIAT_CURRENCIES = Arrays.stream(IPropertiesPath.CONFIG_PROPERTIES.getStringArray("bot.fiat.currencies"))
+        FIAT_CURRENCIES = Arrays.stream(PropertiesPath.CONFIG_PROPERTIES.getStringArray("bot.fiat.currencies"))
                 .map(FiatCurrency::valueOf)
                 .collect(Collectors.toList());
         log.info("Загружено " + FIAT_CURRENCIES.size() + " фиатных валют: "
