@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 
 @Service
-public class ButtonsDesignPropertiesReader extends PropertiesReader {
+public class FunctionsPropertiesReader extends PropertiesReader {
 
     @Override
     protected PropertiesPath getPropertiesPath() {
-        return PropertiesPath.BUTTONS_DESIGN_PROPERTIES;
+        return PropertiesPath.FUNCTIONS_PROPERTIES;
     }
 
 }

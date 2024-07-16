@@ -7,13 +7,8 @@ import tgb.btc.library.constants.enums.properties.PropertiesPath;
 public class CryptoCurrencyDesignPropertiesReader extends PropertiesReader {
 
     @Override
-    protected String getFileName() {
-        return PropertiesPath.CRYPTO_CURRENCIES_DESIGN_PROPERTIES.getFileName();
-    }
-
-    @Override
-    protected char getListDelimiter() {
-        return PropertiesPath.CRYPTO_CURRENCIES_DESIGN_PROPERTIES.getListDelimiter();
+    protected PropertiesPath getPropertiesPath() {
+        return PropertiesPath.CRYPTO_CURRENCIES_DESIGN_PROPERTIES;
     }
 
 }

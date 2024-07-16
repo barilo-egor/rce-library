@@ -6,6 +6,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import tgb.btc.library.constants.enums.properties.PropertiesPath;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public abstract class PropertiesReader {
     }
 
     public String[] getStringArray(String key) {
-        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), this.getListDelimiter());
+        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), getPropertiesPath().getListDelimiter());
     }
 
     public List<String> getStringList(String key) {
@@ -78,7 +79,7 @@ public abstract class PropertiesReader {
         try {
             return StringUtils.isNotBlank(getString(key));
         } catch (Exception e) {
-            log.error("Ошибки при вызове PropertiesEnum.isNotBlankSafely для " + getFileName(), e);
+            log.error("Ошибки при вызове PropertiesEnum.isNotBlankSafely для " + getPropertiesPath().getFileName(), e);
             return false;
         }
     }
@@ -112,7 +113,7 @@ public abstract class PropertiesReader {
     }
 
     public boolean isExist() {
-        return new File(this.getFileName()).exists();
+        return new File(getPropertiesPath().getFileName()).exists();
     }
 
     private PropertiesConfiguration getInstance() {
@@ -123,21 +124,20 @@ public abstract class PropertiesReader {
     }
 
     protected void load() {
+        PropertiesPath propertiesPath = getPropertiesPath();
         try {
             instance = new PropertiesConfiguration();
-            instance.setFileName(getFileName());
-            instance.setListDelimiter(getListDelimiter());
+            instance.setFileName(propertiesPath.getFileName());
+            instance.setListDelimiter(propertiesPath.getListDelimiter());
             instance.setDelimiterParsingDisabled(true);
             instance.setAutoSave(true);
             instance.load();
             instance.setReloadingStrategy(new FileChangedReloadingStrategy());
         } catch (ConfigurationException e) {
-            log.error("Произошла ошибка при чтении параметров из " + getFileName(), e);
-            throw new RuntimeException("Произошла ошибка при чтении параметров из " + getFileName(), e);
+            log.error("Произошла ошибка при чтении параметров из " + propertiesPath.getFileName(), e);
+            throw new RuntimeException("Произошла ошибка при чтении параметров из " + propertiesPath.getFileName(), e);
         }
     }
 
-    protected abstract String getFileName();
-
-    protected abstract char getListDelimiter();
+    protected abstract PropertiesPath getPropertiesPath();
 }
