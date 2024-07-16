@@ -9,6 +9,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ public class RoleService extends BasePersistService<Role> implements IRoleServic
         this.roleRepository = roleRepository;
     }
 
+    @PostConstruct
     public void initRoles() {
         List<String> rolesDBName = roleRepository.findAll().stream().map(Role::getName).collect(Collectors.toList());
         if (RoleConstants.values().length != rolesDBName.size()) {
