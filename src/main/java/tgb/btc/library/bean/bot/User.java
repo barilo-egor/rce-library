@@ -68,7 +68,7 @@ public class User extends BasePersist {
     private List<ReferralUser> referralUsers;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "USER_ROLE", unique = true)
+    @Column(name = "USER_ROLE")
     @ColumnDefault("'USER'")
     private UserRole userRole;
 
