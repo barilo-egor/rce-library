@@ -3,10 +3,11 @@ package tgb.btc.library.interfaces.service.bean.web;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
 
-public interface IApiUserService {
+public interface IApiUserService extends IBasePersistService<ApiUser> {
 
     long countByToken(String token);
 
