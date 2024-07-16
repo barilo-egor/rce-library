@@ -103,6 +103,7 @@ public class CurrencyGetter implements ICurrencyGetter {
                 message.append(cryptoCurrency.name()).append(" = ").append(cryptoCourses.get(cryptoCurrency)).append("\n");
             }
             notifier.notifyAdmins(message.toString());
+            isStartMessageSent = true;
         }
     }
 
