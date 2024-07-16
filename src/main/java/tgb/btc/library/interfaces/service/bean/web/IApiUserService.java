@@ -1,5 +1,6 @@
 package tgb.btc.library.interfaces.service.bean.web;
 
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
@@ -8,6 +9,9 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 import java.util.List;
 
 public interface IApiUserService extends IBasePersistService<ApiUser> {
+
+    @Transactional
+    String generateToken(String username);
 
     long countByToken(String token);
 

@@ -54,6 +54,7 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Transactional
+    @Override
     public String generateToken(String username) {
         ApiUser apiUser = apiUserRepository.getByUsername(username);
         String token = RandomStringUtils.randomAlphanumeric(42);
