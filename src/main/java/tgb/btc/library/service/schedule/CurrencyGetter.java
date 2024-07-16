@@ -42,6 +42,8 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     private INotificationsAPI notificationsAPI;
 
+    private boolean isStartMessageSent = false;
+
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
@@ -93,6 +95,14 @@ public class CurrencyGetter implements ICurrencyGetter {
                     notifyError(readRubEx.getCryptoCurrency(), fiatCryptoCourses.get(readRubEx.getCryptoCurrency()), RUB);
                 }
             }
+        }
+        if (!isStartMessageSent) {
+            StringBuilder message = new StringBuilder();
+            message.append("Курсы на старте приложения:\n");
+            for (CryptoCurrency cryptoCurrency : CryptoCurrency.values()) {
+                message.append(cryptoCurrency.name()).append(" = ").append(cryptoCourses.get(cryptoCurrency)).append("\n");
+            }
+            notifier.notifyAdmins(message.toString());
         }
     }
 
