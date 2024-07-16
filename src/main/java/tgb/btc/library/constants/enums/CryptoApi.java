@@ -53,7 +53,7 @@ public enum CryptoApi {
 
     public static final List<CryptoApi> LTS_USD = List.of(CryptoApi.LTC_USD_BINANCE, CryptoApi.LTC_USD_BLOCKCHAIN);
 
-    public static final List<CryptoApi> XMR_USD = List.of(CryptoApi.XMR_USD_BINANCE, CryptoApi.XMR_USD_KRAKEN);
+    public static final List<CryptoApi> XMR_USD = List.of(CryptoApi.XMR_USD_KRAKEN);
 
     public static final List<CryptoApi> BTC_RUB = List.of(CryptoApi.BTC_RUB_BINANCE, CryptoApi.BTC_RUB_COINGECKO);
 
