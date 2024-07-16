@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.repository.bot.DealRepository;
-import tgb.btc.library.service.bean.bot.DealService;
 
 import java.util.Map;
 import java.util.Objects;

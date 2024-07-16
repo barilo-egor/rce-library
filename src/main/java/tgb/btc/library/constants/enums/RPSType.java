@@ -3,7 +3,7 @@ package tgb.btc.library.constants.enums;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.interfaces.Module;
 
-public enum RPS implements Module {
+public enum RPSType implements Module {
 
     NONE,
     STANDARD,

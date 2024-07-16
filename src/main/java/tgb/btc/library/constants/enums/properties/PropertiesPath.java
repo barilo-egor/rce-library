@@ -1,8 +1,8 @@
 package tgb.btc.library.constants.enums.properties;
 
-import tgb.btc.library.util.system.PropertiesReader;
+import tgb.btc.library.util.system.IPropertiesReader;
 
-public enum PropertiesPath implements PropertiesReader {
+public enum PropertiesPath implements IPropertiesReader {
     CONFIG_PROPERTIES("config/system/config.properties", ','),
     BOT_PROPERTIES("config/bot/bot.properties", ','),
     MESSAGE_PROPERTIES("config/message.properties", ','),

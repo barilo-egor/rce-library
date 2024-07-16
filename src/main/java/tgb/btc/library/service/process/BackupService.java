@@ -1,22 +1,16 @@
 package tgb.btc.library.service.process;
 
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.DriveScopes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.conditional.BackupCondition;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.BackupException;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 

@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface PropertiesReader {
+public interface IPropertiesReader {
 
-    Logger logger = LoggerFactory.getLogger(PropertiesReader.class);
+    Logger logger = LoggerFactory.getLogger(IPropertiesReader.class);
 
     String getFileName();
 
@@ -124,23 +124,23 @@ public interface PropertiesReader {
     }
 
     class ReaderSupport {
-        private static final Map<PropertiesReader, PropertiesConfiguration> properties = new HashMap<>();
+        private static final Map<IPropertiesReader, PropertiesConfiguration> properties = new HashMap<>();
 
-        private static PropertiesConfiguration getInstance(PropertiesReader propertiesReader) {
-            PropertiesConfiguration instance = properties.get(propertiesReader);
+        private static PropertiesConfiguration getInstance(IPropertiesReader IPropertiesReader) {
+            PropertiesConfiguration instance = properties.get(IPropertiesReader);
             if (instance == null) {
                 try {
                     instance = new PropertiesConfiguration();
-                    instance.setFileName(propertiesReader.getFileName());
-                    instance.setListDelimiter(propertiesReader.getListDelimiter());
+                    instance.setFileName(IPropertiesReader.getFileName());
+                    instance.setListDelimiter(IPropertiesReader.getListDelimiter());
                     instance.setDelimiterParsingDisabled(true);
                     instance.setAutoSave(true);
                     instance.load();
                     instance.setReloadingStrategy(new FileChangedReloadingStrategy());
-                    properties.put(propertiesReader, instance);
+                    properties.put(IPropertiesReader, instance);
                 } catch (ConfigurationException e) {
-                    logger.error("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
-                    throw new RuntimeException("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
+                    logger.error("Произошла ошибка при чтении параметров из " + IPropertiesReader.getFileName(), e);
+                    throw new RuntimeException("Произошла ошибка при чтении параметров из " + IPropertiesReader.getFileName(), e);
                 }
             }
             return instance;
