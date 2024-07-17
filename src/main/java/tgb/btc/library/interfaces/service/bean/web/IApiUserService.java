@@ -11,6 +11,9 @@ import java.util.List;
 public interface IApiUserService extends IBasePersistService<ApiUser> {
 
     @Transactional
+    void delete(String deleteUserId, String newUserId);
+
+    @Transactional
     String generateToken(String username);
 
     long countByToken(String token);

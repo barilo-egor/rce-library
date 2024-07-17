@@ -38,6 +38,7 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Transactional
+    @Override
     public void delete(String deleteUserId, String newUserId) {
         ApiUser apiUser = null;
         if (Objects.nonNull(newUserId)) {
