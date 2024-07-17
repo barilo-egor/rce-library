@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.interfaces.enums.IDeliveryTypeService;
 import tgb.btc.library.service.properties.DesignPropertiesReader;
+import tgb.btc.library.vo.enums.DeliveryTypeVO;
 
 import javax.annotation.PostConstruct;
 import java.util.EnumMap;
@@ -31,7 +32,13 @@ public class DeliveryTypeService implements IDeliveryTypeService {
         }
     }
 
+    @Override
     public String getDisplayName(DeliveryType deliveryType) {
         return StringUtils.defaultString(displayNames.get(deliveryType), deliveryType.name());
+    }
+
+    @Override
+    public DeliveryTypeVO getVO(DeliveryType deliveryType) {
+        return new DeliveryTypeVO(deliveryType.name(), getDisplayName(deliveryType));
     }
 }
