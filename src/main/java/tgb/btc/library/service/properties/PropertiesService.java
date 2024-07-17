@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.interfaces.service.properties.IPropertiesService;
 import tgb.btc.library.vo.properties.PropertiesValue;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class PropertiesService {
+public class PropertiesService implements IPropertiesService {
 
     private CacheManager cacheManager;
 
@@ -22,6 +23,7 @@ public class PropertiesService {
         this.cacheManager = cacheManager;
     }
 
+    @Override
     public void updateProperties(PropertiesPath propertiesPath, List<PropertiesValue> values) {
         values.forEach(value -> {
             log.trace(String.format("Файл %s. Изменение свойсва: %s", propertiesPath.getFileName(), value));
@@ -30,6 +32,7 @@ public class PropertiesService {
         cacheManager.getCacheNames().forEach(name -> Objects.requireNonNull(cacheManager.getCache(name)).clear());
     }
 
+    @Override
     public List<PropertiesValue> getPropertiesValues(PropertiesPath propertiesPath, List<String> keys) {
         return keys.stream().map(key -> {
             log.trace(String.format("Файл %s. Получение свойсва: %s", propertiesPath.getFileName(), key));
