@@ -40,6 +40,10 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
             log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name()
                     + " групп при создании новой. Будет установлена группа chatid={}", chatId);
             dropDealRequestDefault();
+        } else if (GroupChatType.API_DEAL_REQUEST.equals(groupChatType) && hasApiDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.API_DEAL_REQUEST.name()
+                    + " групп при создании новой. Будет установлена группа chatid={}", chatId);
+            dropApiDealRequestDefault();
         }
         return groupChatRepository.save(GroupChat.builder()
                 .chatId(chatId)
@@ -92,6 +96,10 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
             log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name() + " групп. "
                     + "Будет установлена группа chatid={}", chatId);
             dropDealRequestDefault();
+        } else if (GroupChatType.API_DEAL_REQUEST.equals(type) && hasApiDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.API_DEAL_REQUEST.name()
+                    + " групп при создании новой. Будет установлена группа chatid={}", chatId);
+            dropApiDealRequestDefault();
         }
         groupChatRepository.updateTypeByChatId(type, chatId);
     }
@@ -103,6 +111,10 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
             log.debug("Обнаружено несколько " + GroupChatType.DEAL_REQUEST.name() + " групп. "
                     + "Будет установлена группа pid={}", pid);
             dropDealRequestDefault();
+        } else if (GroupChatType.API_DEAL_REQUEST.equals(type) && hasApiDealRequests()) {
+            log.debug("Обнаружено несколько " + GroupChatType.API_DEAL_REQUEST.name() + " групп. "
+                    + "Будет установлена группа pid={}", pid);
+            dropApiDealRequestDefault();
         }
         groupChatRepository.updateTypeByPid(type, pid);
     }
@@ -113,9 +125,23 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
+    public void dropApiDealRequestDefault() {
+        groupChatRepository.dropApiDealRequestDefault();
+    }
+
+    @Override
     public boolean hasDealRequests() {
+        return existsByType(GroupChatType.DEAL_REQUEST);
+    }
+
+    @Override
+    public boolean hasApiDealRequests() {
+        return existsByType(GroupChatType.API_DEAL_REQUEST);
+    }
+
+    private boolean existsByType(GroupChatType groupChatType) {
         return groupChatRepository.exists(Example.of(GroupChat.builder()
-                .type(GroupChatType.DEAL_REQUEST)
+                .type(groupChatType)
                 .build()));
     }
 

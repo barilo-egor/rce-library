@@ -30,6 +30,10 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     void dropDealRequestDefault();
 
     @Modifying
+    @Query("update GroupChat set type='DEFAULT' where type='API_DEAL_REQUEST'")
+    void dropApiDealRequestDefault();
+
+    @Modifying
     @Query("update GroupChat set type=:type where chatId=:chatId")
     void updateTypeByChatId(GroupChatType type, Long chatId);
 

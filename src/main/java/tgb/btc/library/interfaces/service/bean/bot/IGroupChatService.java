@@ -30,7 +30,11 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
     void dropDealRequestDefault();
 
+    void dropApiDealRequestDefault();
+
     boolean hasDealRequests();
+
+    boolean hasApiDealRequests();
 
     List<GroupChat> getAllByType(GroupChatType type);
 
