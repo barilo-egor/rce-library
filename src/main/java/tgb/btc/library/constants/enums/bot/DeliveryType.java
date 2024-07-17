@@ -2,12 +2,13 @@ package tgb.btc.library.constants.enums.bot;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
 import java.util.function.Function;
 
-public enum DeliveryType implements ObjectNodeConvertable<DeliveryType> {
+public enum DeliveryType implements ObjectNodeConvertable<DeliveryType>, JsonConvertable {
     VIP(PropertiesPath.DESIGN_PROPERTIES.getString("VIP")),
     STANDARD(PropertiesPath.DESIGN_PROPERTIES.getString("STANDARD"));
 
@@ -26,5 +27,12 @@ public enum DeliveryType implements ObjectNodeConvertable<DeliveryType> {
         return deliveryType ->  JacksonUtil.getEmpty()
                 .put("name", deliveryType.name())
                 .put("displayName", deliveryType.getDisplayName());
+    }
+
+    @Override
+    public ObjectNode map() {
+        return JacksonUtil.getEmpty()
+                .put("name", this.name())
+                .put("displayName", this.getDisplayName());
     }
 }
