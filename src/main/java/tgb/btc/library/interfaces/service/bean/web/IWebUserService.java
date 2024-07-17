@@ -2,10 +2,11 @@ package tgb.btc.library.interfaces.service.bean.web;
 
 import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.bean.web.WebUser;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
 
-public interface IWebUserService {
+public interface IWebUserService extends IBasePersistService<WebUser> {
 
     int countByUsername(String username);
 
