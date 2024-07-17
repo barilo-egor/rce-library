@@ -96,6 +96,14 @@ public class JacksonUtil {
         return result;
     }
 
+    public static <T> ObjectNode pagingData(List<T> list, long total, Function<T, ObjectNode> mapper) {
+        ObjectNode result = getEmpty();
+        result.put("success", true);
+        result.put("total", total);
+        result.set("items", toArrayNode(list, mapper));
+        return result;
+    }
+
     public static void pagingData(ObjectNode node, long total) {
         node.put("success", true);
         node.put("total", total);
