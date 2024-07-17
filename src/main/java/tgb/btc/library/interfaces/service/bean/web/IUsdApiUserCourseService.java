@@ -1,5 +1,8 @@
 package tgb.btc.library.interfaces.service.bean.web;
 
-public interface IUsdApiUserCourseService {
+import tgb.btc.library.bean.web.api.UsdApiUserCourse;
+import tgb.btc.library.interfaces.service.IBasePersistService;
+
+public interface IUsdApiUserCourseService extends IBasePersistService<UsdApiUserCourse> {
 
 }
