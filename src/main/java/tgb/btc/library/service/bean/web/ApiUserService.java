@@ -33,6 +33,7 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
         this.apiUserRepository = apiUserRepository;
     }
 
+    @Override
     public boolean isExistsById(String id) {
         return apiUserRepository.countById(id) > 0;
     }

@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface IApiUserService extends IBasePersistService<ApiUser> {
 
+    boolean isExistsById(String id);
+
     @Transactional
     void delete(String deleteUserId, String newUserId);
 
