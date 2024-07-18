@@ -9,6 +9,7 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.enums.ICryptoApiService;
 import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
 import tgb.btc.library.util.BigDecimalUtil;
 import tgb.btc.library.util.BulkDiscountUtil;
@@ -26,6 +27,13 @@ public class CalculateService {
     private PersonalDiscountsCache personalDiscountsCache;
 
     private ICurrencyGetter currencyGetter;
+
+    private ICryptoApiService cryptoApiService;
+
+    @Autowired
+    public void setCryptoApiService(ICryptoApiService cryptoApiService) {
+        this.cryptoApiService = cryptoApiService;
+    }
 
     @Autowired
     public void setCurrencyGetter(ICurrencyGetter currencyGetter) {
@@ -297,7 +305,7 @@ public class CalculateService {
         if (Objects.nonNull(usdRubManualCourse)) {
             return usdRubManualCourse;
         }
-        return CryptoApi.USD_RUB_EXCHANGERATE.getCourse();
+        return cryptoApiService.getCourse(CryptoApi.USD_RUB_EXCHANGERATE);
     }
 
 }

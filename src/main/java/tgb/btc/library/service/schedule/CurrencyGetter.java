@@ -12,6 +12,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.*;
+import tgb.btc.library.interfaces.enums.ICryptoApiService;
 import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
 import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
@@ -42,7 +43,14 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     private INotificationsAPI notificationsAPI;
 
+    private ICryptoApiService cryptoApiService;
+
     private boolean isStartMessageSent = false;
+
+    @Autowired
+    public void setCryptoApiService(ICryptoApiService cryptoApiService) {
+        this.cryptoApiService = cryptoApiService;
+    }
 
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
@@ -109,7 +117,7 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     public BigDecimal getCryptoCourse(CryptoCurrency cryptoCurrency) {
         try {
-            return currentCryptoUSDApis.get(cryptoCurrency).getCourse();
+            return cryptoApiService.getCourse(currentCryptoUSDApis.get(cryptoCurrency));
         } catch (ReadFromUrlException e) {
             throw new ReadUsdCourseException(cryptoCurrency);
         }
@@ -117,7 +125,7 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     public BigDecimal getFiatCryptoCourse(CryptoCurrency cryptoCurrency) {
         try {
-            return currentCryptoUSDApis.get(cryptoCurrency).getCourse();
+            return cryptoApiService.getCourse(currentCryptoUSDApis.get(cryptoCurrency));
         } catch (ReadFromUrlException e) {
             throw new ReadUsdCourseException(cryptoCurrency);
         }
@@ -166,7 +174,7 @@ public class CurrencyGetter implements ICurrencyGetter {
     private boolean tryConnect(CryptoApi cryptoApi, CryptoCurrency cryptoCurrency, Map<CryptoCurrency, CryptoApi> apis) {
         log.debug("Попытка получения курса для {}.", cryptoApi.name());
         try {
-            cryptoApi.getCourse();
+            cryptoApiService.getCourse(cryptoApi);
             apis.put(cryptoCurrency, cryptoApi);
             log.debug("Курс {} получен, выбран для дальнейшего использования.", cryptoApi);
             return true;
