@@ -8,9 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.conditional.BackupCondition;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
-import tgb.btc.library.repository.bot.UserRepository;
 import tgb.btc.library.service.process.BackupService;
+import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +24,11 @@ public class BackupScheduler {
 
     private INotifier notifier;
 
-    private UserRepository userRepository;
+    private ConfigPropertiesReader configPropertiesReader;
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void setConfigPropertiesReader(ConfigPropertiesReader configPropertiesReader) {
+        this.configPropertiesReader = configPropertiesReader;
     }
 
     @Autowired
@@ -44,7 +43,7 @@ public class BackupScheduler {
 
     @Scheduled(cron = "0 0 03 * * *")
     public void runBackup() {
-        String strChatIds = PropertiesPath.CONFIG_PROPERTIES.getString("backup.chatIds");
+        String strChatIds = configPropertiesReader.getString("backup.chatIds");
         if (StringUtils.isBlank(strChatIds)) {
             log.info("Не найден ни один chatId для рассылки ежедневного бэкапа.");
             return;
