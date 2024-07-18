@@ -1,14 +1,16 @@
-package tgb.btc.library.util;
+package tgb.btc.library.service.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.PropertyValueNotFoundException;
+import tgb.btc.library.interfaces.util.IBulkDiscountService;
 import tgb.btc.library.vo.BulkDiscount;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,27 +18,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
-public final class BulkDiscountUtil {
+@Service
+public class BulkDiscountService implements IBulkDiscountService {
 
-    public static final List<BulkDiscount> BULK_DISCOUNTS = new ArrayList<>();
+    public final List<BulkDiscount> bulkDiscounts = new ArrayList<>();
 
-    private BulkDiscountUtil() {
-    }
-
-    public static BigDecimal getPercentBySum(BigDecimal sum, FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency) {
-        for (BulkDiscount bulkDiscount : BULK_DISCOUNTS.stream()
-                .filter(bulkDiscount -> bulkDiscount.getFiatCurrency().equals(fiatCurrency)
-                        && bulkDiscount.getDealType().equals(dealType)
-                        && bulkDiscount.getCryptoCurrency().equals(cryptoCurrency))
-                .collect(Collectors.toList())) {
-            if (BigDecimal.valueOf(bulkDiscount.getSum()).compareTo(sum) < 1)
-                return BigDecimal.valueOf(bulkDiscount.getPercent());
-        }
-        return BigDecimal.ZERO;
-    }
-
-    static {
+    @PostConstruct
+    private void init() {
         for (String key : PropertiesPath.BULK_DISCOUNT_PROPERTIES.getKeys()) {
             int sum;
             if (StringUtils.isBlank(key)) {
@@ -57,7 +45,7 @@ public final class BulkDiscountUtil {
             } catch (NumberFormatException e) {
                 throw new PropertyValueNotFoundException("Не корректное значение для ключа " + key + ".");
             }
-            BULK_DISCOUNTS.add(BulkDiscount.builder()
+            bulkDiscounts.add(BulkDiscount.builder()
                     .percent(percent)
                     .sum(sum)
                     .fiatCurrency(FiatCurrency.getByCode(key.split("\\.")[0]))
@@ -65,7 +53,35 @@ public final class BulkDiscountUtil {
                     .cryptoCurrency(CryptoCurrency.fromShortName(key.split("\\.")[2]))
                     .build());
         }
-        BULK_DISCOUNTS.sort(Comparator.comparingInt(BulkDiscount::getSum));
-        Collections.reverse(BULK_DISCOUNTS);
+        bulkDiscounts.sort(Comparator.comparingInt(BulkDiscount::getSum));
+        Collections.reverse(bulkDiscounts);
+    }
+
+    @Override
+    public BigDecimal getPercentBySum(BigDecimal sum, FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency) {
+        for (BulkDiscount bulkDiscount : bulkDiscounts.stream()
+                .filter(bulkDiscount -> bulkDiscount.getFiatCurrency().equals(fiatCurrency)
+                        && bulkDiscount.getDealType().equals(dealType)
+                        && bulkDiscount.getCryptoCurrency().equals(cryptoCurrency))
+                .collect(Collectors.toList())) {
+            if (BigDecimal.valueOf(bulkDiscount.getSum()).compareTo(sum) < 1)
+                return BigDecimal.valueOf(bulkDiscount.getPercent());
+        }
+        return BigDecimal.ZERO;
+    }
+
+    @Override
+    public void clear() {
+        bulkDiscounts.clear();
+    }
+
+    @Override
+    public void add(BulkDiscount bulkDiscount) {
+        bulkDiscounts.add(bulkDiscount);
+    }
+
+    @Override
+    public void reverse() {
+        Collections.reverse(bulkDiscounts);
     }
 }
