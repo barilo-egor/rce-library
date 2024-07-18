@@ -33,7 +33,7 @@ public class BigDecimalService implements IBigDecimalService {
     public BigDecimal divideHalfUp(BigDecimal a, BigDecimal b) {
         if (b.compareTo(BigDecimal.ZERO) == 0) throw new ArithmeticException("Деление на ноль.");
         if (a.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
-        return setScaleHalfUp(a.divide(b, RoundingMode.HALF_UP));
+        return setScaleHalfUp(a.divide(b, getScale(), RoundingMode.HALF_UP));
     }
 
     @Override

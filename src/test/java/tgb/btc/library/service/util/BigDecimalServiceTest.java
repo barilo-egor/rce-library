@@ -59,7 +59,8 @@ class BigDecimalServiceTest {
                 Arguments.of(0, new BigDecimal(5), new BigDecimal(2), new BigDecimal("3")),
                 Arguments.of(1, new BigDecimal("5.5"), new BigDecimal(2), new BigDecimal("2.8")),
                 Arguments.of(0, new BigDecimal("6.8"), new BigDecimal(2), new BigDecimal("3")),
-                Arguments.of(2, new BigDecimal("6.468"), new BigDecimal(2), new BigDecimal("3.23"))
+                Arguments.of(2, new BigDecimal("6.468"), new BigDecimal(2), new BigDecimal("3.23")),
+                Arguments.of(8, new BigDecimal("0.5"), new BigDecimal(108), new BigDecimal("0.00462963"))
         );
     }
 
