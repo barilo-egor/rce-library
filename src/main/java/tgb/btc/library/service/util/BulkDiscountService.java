@@ -1,13 +1,14 @@
 package tgb.btc.library.service.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.PropertyValueNotFoundException;
 import tgb.btc.library.interfaces.util.IBulkDiscountService;
+import tgb.btc.library.service.properties.BulkDiscountPropertiesReader;
 import tgb.btc.library.vo.BulkDiscount;
 
 import javax.annotation.PostConstruct;
@@ -21,11 +22,18 @@ import java.util.stream.Collectors;
 @Service
 public class BulkDiscountService implements IBulkDiscountService {
 
+    private BulkDiscountPropertiesReader bulkDiscountPropertiesReader;
+
+    @Autowired
+    public void setBulkDiscountPropertiesReader(BulkDiscountPropertiesReader bulkDiscountPropertiesReader) {
+        this.bulkDiscountPropertiesReader = bulkDiscountPropertiesReader;
+    }
+
     public final List<BulkDiscount> bulkDiscounts = new ArrayList<>();
 
     @PostConstruct
     private void init() {
-        for (String key : PropertiesPath.BULK_DISCOUNT_PROPERTIES.getKeys()) {
+        for (String key : bulkDiscountPropertiesReader.getKeys()) {
             int sum;
             if (StringUtils.isBlank(key)) {
                 throw new PropertyValueNotFoundException("Не указано название для одного из ключей" + key + ".");
@@ -35,7 +43,7 @@ public class BulkDiscountService implements IBulkDiscountService {
             } catch (NumberFormatException e) {
                 throw new PropertyValueNotFoundException("Не корректное название для ключа " + key + ".");
             }
-            String value = PropertiesPath.BULK_DISCOUNT_PROPERTIES.getString(key);
+            String value = bulkDiscountPropertiesReader.getString(key);
             if (StringUtils.isBlank(value)) {
                 throw new PropertyValueNotFoundException("Не указано значение для ключа " + key + ".");
             }

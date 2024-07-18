@@ -6,7 +6,6 @@ import tgb.btc.library.constants.enums.CryptoApi;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.enums.ICryptoApiService;
@@ -322,7 +321,7 @@ public class CalculateService {
     public BigDecimal getUSDToFiat(FiatCurrency fiatCurrency) {
         if (!FiatCurrency.RUB.equals(fiatCurrency))
             throw new BaseException("Реализация предусмотрена только для " + FiatCurrency.RUB.name());
-        BigDecimal usdRubManualCourse = PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("usd.rub.course");
+        BigDecimal usdRubManualCourse = variablePropertiesReader.getBigDecimal("usd.rub.course");
         if (Objects.nonNull(usdRubManualCourse)) {
             return usdRubManualCourse;
         }

@@ -1,12 +1,13 @@
 package tgb.btc.library.service.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.util.IFiatCurrencyService;
+import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -19,11 +20,18 @@ import java.util.stream.Collectors;
 public class FiatCurrencyService implements IFiatCurrencyService {
     private List<FiatCurrency> fiatCurrencies;
 
+    private ConfigPropertiesReader configPropertiesReader;
+
+    @Autowired
+    public void setConfigPropertiesReader(ConfigPropertiesReader configPropertiesReader) {
+        this.configPropertiesReader = configPropertiesReader;
+    }
+
     private boolean isFew;
 
     @PostConstruct
     private void init() {
-        fiatCurrencies = Arrays.stream(PropertiesPath.CONFIG_PROPERTIES.getStringArray("bot.fiat.currencies"))
+        fiatCurrencies = Arrays.stream(configPropertiesReader.getStringArray("bot.fiat.currencies"))
                 .map(FiatCurrency::valueOf)
                 .collect(Collectors.toList());
         log.info("Загружено " + fiatCurrencies.size() + " фиатных валют: "
