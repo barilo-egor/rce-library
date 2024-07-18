@@ -19,7 +19,7 @@ import tgb.btc.library.util.properties.VariablePropertiesUtil;
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,9 +33,9 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     public static final String RUB = "RUB";
 
-    private final Map<CryptoCurrency, CryptoApi> currentCryptoUSDApis = new HashMap<>();
+    private final Map<CryptoCurrency, CryptoApi> currentCryptoUSDApis = new EnumMap<>(CryptoCurrency.class);
 
-    private final Map<CryptoCurrency, CryptoApi> currentCryptoRUBApis = new HashMap<>();
+    private final Map<CryptoCurrency, CryptoApi> currentCryptoRUBApis =  new EnumMap<>(CryptoCurrency.class);
 
     private LocalDateTime lastErrorSendTime;
 
