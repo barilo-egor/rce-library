@@ -20,6 +20,7 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
@@ -27,7 +28,6 @@ import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.process.CalculateService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
-import tgb.btc.library.util.BigDecimalUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -60,6 +60,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private IReviewPriseProcessService reviewPriseService;
 
     private VariablePropertiesReader variablePropertiesReader;
+
+    private IBigDecimalService bigDecimalService;
+
+    @Autowired
+    public void setbigDecimalService(IBigDecimalService bigDecimalService) {
+        this.bigDecimalService = bigDecimalService;
+    }
 
     @Autowired
     public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
@@ -179,7 +186,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             BigDecimal referralPercent = isGeneralReferralPercent
                     ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
                     : refUserReferralPercent;
-            BigDecimal sumToAdd = BigDecimalUtil.multiplyHalfUp(deal.getAmount(),
+            BigDecimal sumToAdd = bigDecimalService.multiplyHalfUp(deal.getAmount(),
                     calculateService.getPercentsFactor(referralPercent));
             if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
                     && variablePropertiesReader.isNotBlank("course.byn.rub")) {
