@@ -10,7 +10,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.bot.DealRepository;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -29,6 +29,13 @@ public class DealDeleteScheduler {
     private IModifyUserService modifyUserService;
 
     private INotifier notifier;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
 
     @Autowired
     public void setModifyUserService(IModifyUserService modifyUserService) {
@@ -67,7 +74,7 @@ public class DealDeleteScheduler {
     @Async
     public void deleteOverdueDeals() {
         if (NEW_CRYPTO_DEALS_PIDS.isEmpty()) return;
-        Integer dealActiveTime = VariablePropertiesUtil.getInt(VariableType.DEAL_ACTIVE_TIME);
+        Integer dealActiveTime = variablePropertiesReader.getInt(VariableType.DEAL_ACTIVE_TIME);
         Map<Long, Integer> bufferDealsPids = new HashMap<>(NEW_CRYPTO_DEALS_PIDS);
         for (Map.Entry<Long, Integer> dealData : bufferDealsPids.entrySet()) {
             Long dealPid = dealData.getKey();

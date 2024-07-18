@@ -5,7 +5,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 
 import java.math.BigDecimal;
 
@@ -27,22 +27,23 @@ public class CalculateData {
 
     private BigDecimal bulkDiscount;
 
-    public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse) {
-        this.fix = VariablePropertiesUtil.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
-        this.usdCourse = VariablePropertiesUtil.getBigDecimal(VariableType.USD_COURSE, fiatCurrency, dealType, cryptoCurrency);
-        this.commission = VariablePropertiesUtil.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
-        this.fixCommission = VariablePropertiesUtil.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
-        this.transactionalCommission = VariablePropertiesUtil.getTransactionCommission(cryptoCurrency);
+    public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse,
+                         VariablePropertiesReader variablePropertiesReader) {
+        this.fix = variablePropertiesReader.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
+        this.usdCourse = variablePropertiesReader.getBigDecimal(VariableType.USD_COURSE, fiatCurrency, dealType, cryptoCurrency);
+        this.commission = variablePropertiesReader.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.fixCommission = variablePropertiesReader.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.transactionalCommission = variablePropertiesReader.getTransactionCommission(cryptoCurrency);
         this.cryptoCourse = cryptoCourse;
     }
 
     public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse,
-                         BigDecimal usdCourse, BigDecimal personalDiscount, BigDecimal bulkDiscount) {
-        this.fix = VariablePropertiesUtil.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
+                         BigDecimal usdCourse, BigDecimal personalDiscount, BigDecimal bulkDiscount, VariablePropertiesReader variablePropertiesReader) {
+        this.fix = variablePropertiesReader.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
         this.usdCourse = usdCourse;
-        this.commission = VariablePropertiesUtil.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
-        this.fixCommission = VariablePropertiesUtil.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
-        this.transactionalCommission = VariablePropertiesUtil.getTransactionCommission(cryptoCurrency);
+        this.commission = variablePropertiesReader.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.fixCommission = variablePropertiesReader.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.transactionalCommission = variablePropertiesReader.getTransactionCommission(cryptoCurrency);
         this.cryptoCourse = cryptoCourse;
         this.personalDiscount = personalDiscount;
         this.bulkDiscount = bulkDiscount;

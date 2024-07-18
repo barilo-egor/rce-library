@@ -28,9 +28,9 @@ import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.process.CalculateService;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
 import tgb.btc.library.util.BigDecimalUtil;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -60,6 +60,13 @@ public class DealService extends BasePersistService<Deal> {
     private IReviewPriseProcessService reviewPriseService;
 
     private INotifier notifier;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
 
     @Autowired
     public void setModifyUserService(IModifyUserService modifyUserService) {
@@ -205,7 +212,7 @@ public class DealService extends BasePersistService<Deal> {
             BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
             boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
             BigDecimal referralPercent = isGeneralReferralPercent
-                    ? BigDecimal.valueOf(VariablePropertiesUtil.getDouble(VariableType.REFERRAL_PERCENT))
+                    ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
                     : refUserReferralPercent;
             BigDecimal sumToAdd = BigDecimalUtil.multiplyHalfUp(deal.getAmount(),
                     calculateService.getPercentsFactor(referralPercent));

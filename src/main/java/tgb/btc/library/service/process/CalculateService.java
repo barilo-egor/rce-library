@@ -11,9 +11,9 @@ import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.enums.ICryptoApiService;
 import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.util.BigDecimalUtil;
 import tgb.btc.library.util.BulkDiscountUtil;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
 import tgb.btc.library.vo.calculate.CalculateData;
 import tgb.btc.library.vo.calculate.CalculateDataForm;
 import tgb.btc.library.vo.calculate.DealAmount;
@@ -29,6 +29,13 @@ public class CalculateService {
     private ICurrencyGetter currencyGetter;
 
     private ICryptoApiService cryptoApiService;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
 
     @Autowired
     public void setCryptoApiService(ICryptoApiService cryptoApiService) {
@@ -53,7 +60,7 @@ public class CalculateService {
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
                                 DealType dealType, Boolean isEnteredInCrypto, boolean withCredited) {
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency));
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency), variablePropertiesReader);
 
         DealAmount dealAmount = new DealAmount();
         dealAmount.setChatId(chatId);
@@ -83,7 +90,7 @@ public class CalculateService {
         DealType dealType = calculateDataForm.getDealType();
         CalculateData calculateData = new CalculateData(fiatCurrency, dealType, cryptoCurrency,
                 calculateDataForm.getCryptoCourse(), calculateDataForm.getUsdCourse(),
-                calculateDataForm.getPersonalDiscount(), calculateDataForm.getBulkDiscount());
+                calculateDataForm.getPersonalDiscount(), calculateDataForm.getBulkDiscount(), variablePropertiesReader);
 
         DealAmount dealAmount = new DealAmount();
         dealAmount.setDealType(dealType);
@@ -105,7 +112,7 @@ public class CalculateService {
     public DealAmount calculate(BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
             DealType dealType, Boolean isEnteredInCrypto, BigDecimal personalDiscount) {
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency));
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency), variablePropertiesReader);
         calculateData.setPersonalDiscount(personalDiscount);
 
         DealAmount dealAmount = new DealAmount();
@@ -127,7 +134,7 @@ public class CalculateService {
 
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {
         return !CryptoCurrency.BITCOIN.equals(cryptoCurrency)
-                || enteredAmount.compareTo(VariablePropertiesUtil.getBigDecimal(VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey())) < 0;
+                || enteredAmount.compareTo(variablePropertiesReader.getBigDecimal(VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey())) < 0;
     }
 
     private void calculateCryptoAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency, boolean withCredited) {

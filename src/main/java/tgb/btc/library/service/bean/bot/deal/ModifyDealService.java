@@ -12,7 +12,6 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.*;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
@@ -26,9 +25,9 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.process.CalculateService;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
 import tgb.btc.library.util.BigDecimalUtil;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -59,6 +58,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private INotifier notifier;
 
     private IReviewPriseProcessService reviewPriseService;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
 
     @Autowired(required = false)
     public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
@@ -141,8 +147,8 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
             BigDecimal sumWithDiscount;
             if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.rub.byn")) {
-                referralBalance = referralBalance.multiply(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.rub.byn"));
+                    && variablePropertiesReader.isNotBlank("course.rub.byn")) {
+                referralBalance = referralBalance.multiply(variablePropertiesReader.getBigDecimal("course.rub.byn"));
             }
             if (referralBalance.compareTo(deal.getOriginalPrice()) < 1) {
                 sumWithDiscount = deal.getOriginalPrice().subtract(referralBalance);
@@ -151,8 +157,8 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
                 sumWithDiscount = BigDecimal.ZERO;
                 referralBalance = referralBalance.subtract(deal.getOriginalPrice()).setScale(0, RoundingMode.HALF_UP);
                 if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                        && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.byn.rub")) {
-                    referralBalance = referralBalance.divide(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
+                        && variablePropertiesReader.isNotBlank("course.byn.rub")) {
+                    referralBalance = referralBalance.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
                 }
             }
             user.setReferralBalance(referralBalance.intValue());
@@ -171,13 +177,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
             boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
             BigDecimal referralPercent = isGeneralReferralPercent
-                    ? BigDecimal.valueOf(VariablePropertiesUtil.getDouble(VariableType.REFERRAL_PERCENT))
+                    ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
                     : refUserReferralPercent;
             BigDecimal sumToAdd = BigDecimalUtil.multiplyHalfUp(deal.getAmount(),
                     calculateService.getPercentsFactor(referralPercent));
             if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.byn.rub")) {
-                sumToAdd = sumToAdd.divide(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
+                    && variablePropertiesReader.isNotBlank("course.byn.rub")) {
+                sumToAdd = sumToAdd.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
             }
             Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
             modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());

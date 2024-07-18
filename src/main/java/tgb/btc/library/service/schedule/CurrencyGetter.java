@@ -14,7 +14,7 @@ import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.*;
 import tgb.btc.library.interfaces.enums.ICryptoApiService;
 import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -45,7 +45,14 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     private ICryptoApiService cryptoApiService;
 
+    private VariablePropertiesReader variablePropertiesReader;
+
     private boolean isStartMessageSent = false;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
 
     @Autowired
     public void setCryptoApiService(ICryptoApiService cryptoApiService) {
@@ -71,7 +78,7 @@ public class CurrencyGetter implements ICurrencyGetter {
             throw new BaseException(e.getMessage());
         }
         cryptoCourses.put(CryptoCurrency.USDT, BigDecimal.valueOf(Double.parseDouble(
-                VariablePropertiesUtil.getVariable(VariableType.USDT_COURSE)))
+                variablePropertiesReader.getVariable(VariableType.USDT_COURSE)))
         );
         updateCourses();
         log.debug("Автоматическое получения курса загружено в контекст.");
