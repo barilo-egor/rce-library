@@ -3,9 +3,6 @@ package tgb.btc.library.service.module;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,7 +12,6 @@ import tgb.btc.library.service.properties.GamesPropertiesReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,28 +26,26 @@ class RPSModuleTest {
     @Test
     @DisplayName("Должен закешировать инстанс.")
     void getCurrentCache() {
-        doReturn("NONE").when(gamesPropertiesReader).getString("rock.paper.scissors");
+        doReturn("NONE").when(gamesPropertiesReader).getString("rock.paper.scissors", RPSType.NONE.name());
         rpsModule.getCurrent();
         rpsModule.getCurrent();
-        verify(gamesPropertiesReader, times(1)).getString("rock.paper.scissors");
-        verify(gamesPropertiesReader, times(1)).getString(anyString());
+        verify(gamesPropertiesReader, times(1)).getString("rock.paper.scissors", RPSType.NONE.name());
     }
 
     @Test
     @DisplayName("Получение NONE с инстансом и без.")
     void getCurrentNone() {
-        doReturn("NONE").when(gamesPropertiesReader).getString("rock.paper.scissors");
+        doReturn("NONE").when(gamesPropertiesReader).getString("rock.paper.scissors", RPSType.NONE.name());
         RPSType expected = RPSType.NONE;
         assertEquals(expected, rpsModule.getCurrent());
         assertEquals(expected, rpsModule.getCurrent());
-        verify(gamesPropertiesReader, times(1)).getString("rock.paper.scissors");
-        verify(gamesPropertiesReader, times(1)).getString(anyString());
+        verify(gamesPropertiesReader, times(1)).getString("rock.paper.scissors", RPSType.NONE.name());
     }
 
     @Test
     @DisplayName("Получение STANDARD.")
     void getCurrentStandard() {
-        doReturn("STANDARD").when(gamesPropertiesReader).getString("rock.paper.scissors");
+        doReturn("STANDARD").when(gamesPropertiesReader).getString("rock.paper.scissors", RPSType.NONE.name());
         RPSType expected = RPSType.STANDARD;
         assertEquals(expected, rpsModule.getCurrent());
     }
@@ -59,7 +53,7 @@ class RPSModuleTest {
     @Test
     @DisplayName("Получение STANDARD_ADMIN.")
     void getCurrentStandardAdmin() {
-        doReturn("STANDARD_ADMIN").when(gamesPropertiesReader).getString("rock.paper.scissors");
+        doReturn("STANDARD_ADMIN").when(gamesPropertiesReader).getString("rock.paper.scissors", RPSType.NONE.name());
         RPSType expected = RPSType.STANDARD_ADMIN;
         assertEquals(expected, rpsModule.getCurrent());
     }
@@ -67,17 +61,8 @@ class RPSModuleTest {
     @Test
     @DisplayName("Должен бросить исключение при невалидном значении.")
     void getCurrentNotValid() {
-        doReturn("qwe").when(gamesPropertiesReader).getString("rock.paper.scissors");
+        doReturn("qwe").when(gamesPropertiesReader).getString("rock.paper.scissors", RPSType.NONE.name());
         BaseException baseException = assertThrows(BaseException.class, () -> rpsModule.getCurrent());
         assertEquals(baseException.getCause().getClass(), IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
-    @DisplayName("Должен бросить исключение при не найденном значении.")
-    @NullSource
-    @EmptySource
-    void getCurrentNoValue(String value) {
-        doReturn(value).when(gamesPropertiesReader).getString("rock.paper.scissors");
-        assertThrows(BaseException.class, () -> rpsModule.getCurrent());
     }
 }
