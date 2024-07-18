@@ -1,7 +1,6 @@
 package tgb.btc.library.service.module;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.DeliveryKind;
@@ -28,9 +27,7 @@ public class DeliveryKindModule implements IModule<DeliveryKind> {
     public DeliveryKind getCurrent() {
         if (Objects.nonNull(current))
             return current;
-        String type = modulesPropertiesReader.getString("delivery.kind");
-        if (StringUtils.isEmpty(type))
-            throw new BaseException("Проперти delivery.kind из modules.properties не найдено.");
+        String type = modulesPropertiesReader.getString("delivery.kind", DeliveryKind.NONE.name());
         try {
             DeliveryKind deliveryKind = DeliveryKind.valueOf(type);
             current = deliveryKind;

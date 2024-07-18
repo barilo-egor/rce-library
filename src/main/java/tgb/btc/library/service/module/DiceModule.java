@@ -1,7 +1,6 @@
 package tgb.btc.library.service.module;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.DiceType;
@@ -28,9 +27,7 @@ public class DiceModule implements IModule<DiceType> {
     public DiceType getCurrent() {
         if (Objects.nonNull(current))
             return current;
-        String type = gamesPropertiesReader.getString("dice");
-        if (StringUtils.isEmpty(type))
-            throw new BaseException("Проперти dice из games.properties не найдено.");
+        String type = gamesPropertiesReader.getString("dice", DiceType.NONE.name());
         try {
             DiceType diceType = DiceType.valueOf(type);
             current = diceType;

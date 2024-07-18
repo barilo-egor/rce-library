@@ -28,7 +28,7 @@ public class RPSModule implements IModule<RPSType> {
     public RPSType getCurrent() {
         if (Objects.nonNull(current))
             return current;
-        String type = gamesPropertiesReader.getString("rock.paper.scissors");
+        String type = gamesPropertiesReader.getString("rock.paper.scissors", RPSType.NONE.name());
         if (StringUtils.isEmpty(type))
             throw new BaseException("Проперти rock.paper.scissors из games.properties не найдено.");
         try {

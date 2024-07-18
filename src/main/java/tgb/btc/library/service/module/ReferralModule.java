@@ -1,7 +1,6 @@
 package tgb.btc.library.service.module;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.ReferralType;
@@ -28,9 +27,7 @@ public class ReferralModule implements IModule<ReferralType> {
     public ReferralType getCurrent() {
         if (Objects.nonNull(current))
             return current;
-        String type = modulesPropertiesReader.getString("referral.type");
-        if (StringUtils.isEmpty(type))
-            throw new BaseException("Проперти referral.type из modules.properties не найдено.");
+        String type = modulesPropertiesReader.getString("referral.type", ReferralType.NONE.name());
         try {
             ReferralType referralType = ReferralType.valueOf(type);
             current = referralType;

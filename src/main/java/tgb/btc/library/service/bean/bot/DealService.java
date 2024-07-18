@@ -20,6 +20,7 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.interfaces.util.IBigDecimalService;
@@ -63,6 +64,13 @@ public class DealService extends BasePersistService<Deal> {
     private VariablePropertiesReader variablePropertiesReader;
     
     private IBigDecimalService bigDecimalService;
+
+    private IModule<ReferralType> referralModule;
+
+    @Autowired
+    public void setReferralModule(IModule<ReferralType> referralModule) {
+        this.referralModule = referralModule;
+    }
 
     @Autowired
     public void setBigDecimalService(IBigDecimalService bigDecimalService) {
@@ -187,7 +195,7 @@ public class DealService extends BasePersistService<Deal> {
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
             BigDecimal sumWithDiscount;
-            if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
+            if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
                     && variablePropertiesReader.isNotBlank("course.rub.byn")) {
                 referralBalance = referralBalance.multiply(variablePropertiesReader.getBigDecimal("course.rub.byn"));
             }
@@ -197,7 +205,7 @@ public class DealService extends BasePersistService<Deal> {
             } else {
                 sumWithDiscount = BigDecimal.ZERO;
                 referralBalance = referralBalance.subtract(deal.getOriginalPrice()).setScale(0, RoundingMode.HALF_UP);
-                if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
+                if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
                         && variablePropertiesReader.isNotBlank("course.byn.rub")) {
                     referralBalance = referralBalance.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
                 }
@@ -222,7 +230,7 @@ public class DealService extends BasePersistService<Deal> {
                     : refUserReferralPercent;
             BigDecimal sumToAdd = bigDecimalService.multiplyHalfUp(deal.getAmount(),
                     calculateService.getPercentsFactor(referralPercent));
-            if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
+            if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
                     && variablePropertiesReader.isNotBlank("course.byn.rub")) {
                 sumToAdd = sumToAdd.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
             }
