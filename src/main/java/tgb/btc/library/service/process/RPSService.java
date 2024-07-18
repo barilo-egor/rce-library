@@ -6,6 +6,7 @@ import tgb.btc.library.constants.enums.RPSElement;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.service.properties.RPSMessagePropertiesReader;
 
 import java.util.Objects;
 
@@ -16,6 +17,12 @@ public class RPSService {
 
     private IReadUserService readUserService;
 
+    private RPSMessagePropertiesReader rpsMessagePropertiesReader;
+
+    public void setRpsMessagePropertiesReader(RPSMessagePropertiesReader rpsMessagePropertiesReader) {
+        this.rpsMessagePropertiesReader = rpsMessagePropertiesReader;
+    }
+
     @Autowired
     public void setReadUserService(IReadUserService readUserService) {
         this.readUserService = readUserService;
@@ -24,6 +31,10 @@ public class RPSService {
     @Autowired
     public void setModifyUserService(IModifyUserService modifyUserService) {
         this.modifyUserService = modifyUserService;
+    }
+
+    public String getSymbol(RPSElement rpsElement) {
+        return rpsMessagePropertiesReader.getString(rpsElement.name().toLowerCase());
     }
 
     private Boolean getResult(String name, RPSElement userElement, RPSElement element) {
@@ -64,8 +75,8 @@ public class RPSService {
         RPSElement element = RPSElement.getRandomElement();
         Boolean result = getResult(name, userElement, element);
         StringBuilder sb = new StringBuilder();
-        sb.append("Вы выбрали: ").append(userElement.getSymbol()).append(System.lineSeparator());
-        sb.append("Против: ").append(element.getSymbol()).append(System.lineSeparator());
+        sb.append("Вы выбрали: ").append(getSymbol(userElement)).append(System.lineSeparator());
+        sb.append("Против: ").append(getSymbol(element)).append(System.lineSeparator());
         if (Boolean.TRUE.equals(result)) {
             modifyUserService.updateReferralBalanceByChatId(readUserService.getReferralBalanceByChatId(chatId) + Integer.parseInt(sum), chatId);
             sb.append(PropertiesPath.RPS_MESSAGE.getString("win")).append(System.lineSeparator())
