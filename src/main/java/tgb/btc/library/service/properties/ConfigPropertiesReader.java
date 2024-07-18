@@ -10,4 +10,8 @@ public class ConfigPropertiesReader extends PropertiesReader {
     protected PropertiesPath getPropertiesPath() {
         return PropertiesPath.CONFIG_PROPERTIES;
     }
+
+    public boolean isDev() {
+        return "dev".equals(PropertiesPath.CONFIG_PROPERTIES.getString("instance"));
+    }
 }
