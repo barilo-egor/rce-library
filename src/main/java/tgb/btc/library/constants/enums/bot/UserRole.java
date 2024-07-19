@@ -1,9 +1,17 @@
 package tgb.btc.library.constants.enums.bot;
 
+import java.util.Set;
+
 public enum UserRole {
     USER("Пользователь"),
     OPERATOR("Оператор"),
     ADMIN("Администратор");
+
+    public static final Set<UserRole> USER_ACCESS = Set.of(UserRole.USER, UserRole.OPERATOR, UserRole.ADMIN);
+
+    public static final Set<UserRole> OPERATOR_ACCESS = Set.of(UserRole.OPERATOR, UserRole.ADMIN);
+
+    public static final Set<UserRole> ADMIN_ACCESS = Set.of(UserRole.ADMIN);
 
     private final String displayName;
 
