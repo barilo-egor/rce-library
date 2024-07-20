@@ -72,10 +72,12 @@ public class CalculateService {
 
     public DealAmount calculate(Long chatId, BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
                                 DealType dealType, Boolean isEnteredInCrypto, boolean withCredited) {
+        BigDecimal cryptoCourse = currencyGetter.getCourseCurrency(cryptoCurrency);
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency), variablePropertiesReader);
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCourse, variablePropertiesReader);
 
         DealAmount dealAmount = new DealAmount();
+        dealAmount.setCryptoCourse(cryptoCourse);
         dealAmount.setChatId(chatId);
         dealAmount.setDealType(dealType);
         if (Objects.nonNull(isEnteredInCrypto)) dealAmount.setEnteredInCrypto(isEnteredInCrypto);
@@ -106,6 +108,7 @@ public class CalculateService {
                 calculateDataForm.getPersonalDiscount(), calculateDataForm.getBulkDiscount(), variablePropertiesReader);
 
         DealAmount dealAmount = new DealAmount();
+        dealAmount.setCryptoCourse(calculateDataForm.getCryptoCourse());
         dealAmount.setDealType(dealType);
         dealAmount.setEnteredInCrypto(Objects.isNull(calculateDataForm.getAmount()));
         dealAmount.setCalculateData(calculateData);
@@ -124,11 +127,13 @@ public class CalculateService {
 
     public DealAmount calculate(BigDecimal enteredAmount, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency,
             DealType dealType, Boolean isEnteredInCrypto, BigDecimal personalDiscount) {
+        BigDecimal cryptoCourse = currencyGetter.getCourseCurrency(cryptoCurrency);
         CalculateData calculateData =
-                new CalculateData(fiatCurrency, dealType, cryptoCurrency, currencyGetter.getCourseCurrency(cryptoCurrency), variablePropertiesReader);
+                new CalculateData(fiatCurrency, dealType, cryptoCurrency, cryptoCourse, variablePropertiesReader);
         calculateData.setPersonalDiscount(personalDiscount);
 
         DealAmount dealAmount = new DealAmount();
+        dealAmount.setCryptoCourse(cryptoCourse);
         dealAmount.setDealType(dealType);
         if (Objects.nonNull(isEnteredInCrypto)) dealAmount.setEnteredInCrypto(isEnteredInCrypto);
         else dealAmount.setEnteredInCrypto(isEnteredInCrypto(cryptoCurrency, enteredAmount));

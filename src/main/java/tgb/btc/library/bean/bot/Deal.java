@@ -94,6 +94,17 @@ public class Deal extends BasePersist {
     @Column(name = "CREATE_TYPE", columnDefinition = "varchar(20) default 'BOT'")
     private CreateType createType;
 
+    @Column(name = "COURSE")
+    private BigDecimal course;
+
+    public BigDecimal getCourse() {
+        return course;
+    }
+
+    public void setCourse(BigDecimal course) {
+        this.course = course;
+    }
+
     public CreateType getCreateType() {
         return createType;
     }

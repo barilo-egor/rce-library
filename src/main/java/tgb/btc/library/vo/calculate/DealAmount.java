@@ -29,6 +29,16 @@ public class DealAmount {
 
     private BigDecimal creditedAmount;
 
+    private BigDecimal cryptoCourse;
+
+    public BigDecimal getCryptoCourse() {
+        return cryptoCourse;
+    }
+
+    public void setCryptoCourse(BigDecimal cryptoCourse) {
+        this.cryptoCourse = cryptoCourse;
+    }
+
     public DealType getDealType() {
         return dealType;
     }
@@ -99,6 +109,7 @@ public class DealAmount {
         deal.setCommission(commission);
         deal.setOriginalPrice(amount);
         deal.setCreditedAmount(creditedAmount);
+        deal.setCourse(cryptoCourse);
     }
 
     public BigDecimal getAmountWithoutCommission() {
