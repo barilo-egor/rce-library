@@ -40,6 +40,10 @@ public interface IApiUserService extends IBasePersistService<ApiUser> {
 
     List<WebUser> getWebUsers(Long pid);
 
+    ApiUser getByGroupChatPid(Long groupChatPid);
+
+    ApiUser getByGroupChatId(Long groupChatId);
+
     /**
      * DELETE
      */

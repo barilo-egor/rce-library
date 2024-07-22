@@ -30,10 +30,6 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     void dropDealRequestDefault();
 
     @Modifying
-    @Query("update GroupChat set type='DEFAULT' where type='API_DEAL_REQUEST'")
-    void dropApiDealRequestDefault();
-
-    @Modifying
     @Query("update GroupChat set type=:type where chatId=:chatId")
     void updateTypeByChatId(GroupChatType type, Long chatId);
 
@@ -54,5 +50,16 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
 
     GroupChat getByChatId(Long chatId);
 
+    @Query("select pid from GroupChat where chatId=:chatId")
+    Long getPidByChatId(Long chatId);
+
     long countByTypeAndChatId(GroupChatType type, Long chatId);
+
+
+    @Query("select user.groupChat from ApiUser user where user.pid=:apiUserPid")
+    Optional<GroupChat> getByApiUserPid(Long apiUserPid);
+
+    @Query("select user.groupChat.pid from ApiUser user where user.pid=:apiUserPid")
+    Optional<Long> getPidByApiUserPid(Long apiUserPid);
+
 }

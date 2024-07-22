@@ -125,6 +125,13 @@ public class ApiUser extends BasePersist implements JsonConvertable {
             ObjectNode fiatCurrencyNode = getFiatCurrency().mapFunction().apply(getFiatCurrency());
             result.set("fiatCurrency", fiatCurrencyNode);
         }
+        ObjectNode groupChatNode;
+        if (Objects.nonNull(getGroupChat())) {
+            groupChatNode = getGroupChat().map();
+        } else {
+            groupChatNode = GroupChat.empty().map();
+        }
+        result.set("groupChat", groupChatNode);
         usdApiUserCourseList.stream()
                 .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
                 .findFirst()

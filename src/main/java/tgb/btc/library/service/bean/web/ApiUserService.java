@@ -124,6 +124,16 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Override
+    public ApiUser getByGroupChatPid(Long groupChatPid) {
+        return apiUserRepository.getByGroupChatPid(groupChatPid);
+    }
+
+    @Override
+    public ApiUser getByGroupChatId(Long groupChatId) {
+        return apiUserRepository.getByGroupChatId(groupChatId);
+    }
+
+    @Override
     public void deleteById(String id) {
         apiUserRepository.deleteById(id);
     }
