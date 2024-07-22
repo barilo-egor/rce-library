@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
@@ -64,4 +65,8 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Modifying
     @Query("update ApiUser u set u.lastPaidDeal=:lastPaidDeal where u.pid=:userPid")
     void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
+
+    @Modifying
+    @Query("update ApiUser set groupChat = :groupChat where pid = :apiUserPid")
+    void updateGroupChat(GroupChat groupChat, Long apiUserPid);
 }
