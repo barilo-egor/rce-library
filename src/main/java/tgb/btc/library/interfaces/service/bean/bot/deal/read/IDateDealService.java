@@ -8,13 +8,11 @@ import java.util.List;
 
 public interface IDateDealService {
 
-    List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate);
+    List<Deal> getConfirmedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Deal> getByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Deal> getConfirmedByDateTimeBetween(LocalDateTime startDate);
 
-    List<Deal> getPassedByDate(LocalDate date);
+    List<Deal> getConfirmedByDateBetween(LocalDate startDate, LocalDate endDate);
 
-    List<Deal> getPassedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
-
-    List<Deal> getByDate(LocalDate dateTime);
+    List<Deal> getConfirmedByDateBetween(LocalDate startDate);
 }
