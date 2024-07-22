@@ -45,6 +45,12 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select u.webUsers from ApiUser u where u.pid=:pid")
     List<WebUser> getWebUsers(Long pid);
 
+    @Query("from ApiUser where groupChat.pid = :groupChatPid")
+    ApiUser getByGroupChatPid(Long groupChatPid);
+
+    @Query("from ApiUser where groupChat.chatId = :groupChatId")
+    ApiUser getByGroupChatId(Long groupChatId);
+
     /**
      * DELETE
      */
