@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IDealCountService {
 
-    Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus);
+    Integer getCountDealByChatIdAndNotInDealStatus(Long chatId, List<DealStatus> dealStatus);
 
     Long getCountConfirmedByUserChatId(Long chatId);
 

@@ -26,8 +26,8 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     }
 
     @Override
-    public Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus) {
-        return dealCountRepository.getCountDealByChatIdAndDealStatus(chatId, dealStatus);
+    public Integer getCountDealByChatIdAndNotInDealStatus(Long chatId, List<DealStatus> dealStatus) {
+        return dealCountRepository.getCountDealByChatIdAndNotInDealStatus(chatId, dealStatus);
     }
 
     @Override

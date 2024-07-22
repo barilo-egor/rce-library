@@ -12,7 +12,7 @@ import java.util.List;
 public interface DealCountRepository extends BaseRepository<Deal> {
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus not in :dealStatus")
-    Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus);
+    Integer getCountDealByChatIdAndNotInDealStatus(Long chatId, List<DealStatus> dealStatus);
 
     @Query("select count(d) from Deal d where d.dealStatus=:dealStatus and d.user.chatId=:chatId")
     Long getCountByDealStatusAndChatId(Long chatId, DealStatus dealStatus);
