@@ -13,6 +13,4 @@ public interface IDealCountService {
     Long getCountConfirmedByUserChatId(Long chatId);
 
     Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
-
-    Long getConfirmedDealsCountByUserChatId(Long chatId);
 }

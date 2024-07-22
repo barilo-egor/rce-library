@@ -41,11 +41,6 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     }
 
     @Override
-    public Long getConfirmedDealsCountByUserChatId(Long chatId) {
-        return dealCountRepository.getDealsCountByUserChatIdAndDealStatus(chatId, DealStatus.CONFIRMED);
-    }
-
-    @Override
     protected BaseRepository<Deal> getBaseRepository() {
         return dealCountRepository;
     }

@@ -17,6 +17,6 @@ public class DealCommonService implements IDealCommonService {
 
     @Override
     public boolean isFirstDeal(Long chatId) {
-        return dealCountService.getConfirmedDealsCountByUserChatId(chatId) < 1;
+        return dealCountService.getCountConfirmedByUserChatId(chatId) < 1;
     }
 }

@@ -19,7 +19,4 @@ public interface DealCountRepository extends BaseRepository<Deal> {
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
     Long getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(Long chatId, DealStatus dealStatus, DealType dealType, CryptoCurrency cryptoCurrency);
-
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
-    Long getDealsCountByUserChatIdAndDealStatus(Long chatId, DealStatus dealStatus);
 }
