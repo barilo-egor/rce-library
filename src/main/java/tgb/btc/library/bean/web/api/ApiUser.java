@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import org.apache.commons.lang.BooleanUtils;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
@@ -80,6 +81,11 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @OneToMany
     private List<WebUser> webUsers;
 
+    @OneToOne
+    @Getter
+    @Setter
+    private GroupChat groupChat;
+
     public List<WebUser> getWebUsers() {
         if (Objects.isNull(webUsers)) return new ArrayList<>();
         return webUsers;
@@ -116,8 +122,8 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .put("buyRequisite", getBuyRequisite())
                 .put("sellRequisite", getSellRequisite());
         if (Objects.nonNull(getFiatCurrency())) {
-            ObjectNode fiatCurrency = getFiatCurrency().mapFunction().apply(getFiatCurrency());
-            result.set("fiatCurrency", fiatCurrency);
+            ObjectNode fiatCurrencyNode = getFiatCurrency().mapFunction().apply(getFiatCurrency());
+            result.set("fiatCurrency", fiatCurrencyNode);
         }
         usdApiUserCourseList.stream()
                 .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
