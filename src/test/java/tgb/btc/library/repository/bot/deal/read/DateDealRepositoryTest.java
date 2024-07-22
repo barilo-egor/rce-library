@@ -9,7 +9,6 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.repository.bot.DealRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,9 +32,9 @@ class DateDealRepositoryTest {
                     .build()
             );
         }
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(2000, 1, 3),
-                LocalDate.of(2000, 1, 7)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(2000, 1, 3, 0, 0),
+                LocalDateTime.of(2000, 1, 7, 0, 0)
         );
         assertAll(
                 () -> assertEquals(5, actualDeals.size()),
@@ -59,9 +58,9 @@ class DateDealRepositoryTest {
                     .build()
             );
         }
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(1999, 5, 29),
-                LocalDate.of(2000, 1, 4)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(1999, 5, 29, 0, 0),
+                LocalDateTime.of(2000, 1, 4, 0, 0)
         );
         assertAll(
                 () -> assertEquals(4, actualDeals.size()),
@@ -84,9 +83,9 @@ class DateDealRepositoryTest {
                     .build()
             );
         }
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(2000, 1, 7),
-                LocalDate.of(2020, 1, 1)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(2000, 1, 7, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 0, 0)
         );
         assertAll(
                 () -> assertEquals(4, actualDeals.size()),
@@ -109,9 +108,9 @@ class DateDealRepositoryTest {
                     .build()
             );
         }
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(2000, 1, 7),
-                LocalDate.of(2000, 1, 7)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(2000, 1, 7, 0, 0),
+                LocalDateTime.of(2000, 1, 7, 0, 0)
         );
         assertAll(
                 () -> assertEquals(10, actualDeals.size()),
@@ -131,9 +130,9 @@ class DateDealRepositoryTest {
                     .build()
             );
         }
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(2015, 1, 7),
-                LocalDate.of(2020, 1, 1)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(2015, 1, 7, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 0, 0)
         );
         assertAll(
                 () -> assertEquals(0, actualDeals.size())
@@ -143,9 +142,9 @@ class DateDealRepositoryTest {
     @Test
     @DisplayName("Должен вернуть пустой лист при отсутствии сделок")
     void getByDateBetweenNoDeals() {
-        List<Deal> actualDeals = dealRepository.getConfirmedByDateBetween(
-                LocalDate.of(1980, 1, 1),
-                LocalDate.of(2020, 1, 1)
+        List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
+                LocalDateTime.of(1980, 1, 1, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 0, 0)
         );
         assertAll(
                 () -> assertEquals(0, actualDeals.size())
