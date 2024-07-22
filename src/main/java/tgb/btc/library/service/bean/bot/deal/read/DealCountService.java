@@ -26,28 +26,23 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     }
 
     @Override
-    public Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus) {
-        return dealCountRepository.getCountFinishedDeal(chatId, dealStatus);
+    public Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus) {
+        return dealCountRepository.getCountDealByChatIdAndDealStatus(chatId, dealStatus);
     }
 
     @Override
-    public Long getCountPassedByUserChatId(Long chatId) {
-        return dealCountRepository.getCountPassedByUserChatId(chatId);
+    public Long getCountConfirmedByUserChatId(Long chatId) {
+        return dealCountRepository.getCountByDealStatusAndChatId(chatId, DealStatus.CONFIRMED);
     }
 
     @Override
-    public Long getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency) {
-        return dealCountRepository.getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(chatId, dealType, cryptoCurrency);
+    public Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency) {
+        return dealCountRepository.getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(chatId, DealStatus.CONFIRMED, dealType, cryptoCurrency);
     }
 
     @Override
-    public Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType) {
-        return dealCountRepository.getPassedDealsCountByUserChatId(chatId, dealType);
-    }
-
-    @Override
-    public Long getPassedDealsCountByUserChatId(Long chatId) {
-        return dealCountRepository.getPassedDealsCountByUserChatId(chatId);
+    public Long getConfirmedDealsCountByUserChatId(Long chatId) {
+        return dealCountRepository.getDealsCountByUserChatIdAndDealStatus(chatId, DealStatus.CONFIRMED);
     }
 
     @Override

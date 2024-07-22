@@ -8,13 +8,11 @@ import java.util.List;
 
 public interface IDealCountService {
 
-    Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus);
+    Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus);
 
-    Long getCountPassedByUserChatId(Long chatId);
+    Long getCountConfirmedByUserChatId(Long chatId);
 
-    Long getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
+    Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
-    Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType);
-
-    Long getPassedDealsCountByUserChatId(Long chatId);
+    Long getConfirmedDealsCountByUserChatId(Long chatId);
 }

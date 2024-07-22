@@ -12,17 +12,14 @@ import java.util.List;
 public interface DealCountRepository extends BaseRepository<Deal> {
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus not in :dealStatus")
-    Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus);
+    Integer getCountDealByChatIdAndDealStatus(Long chatId, List<DealStatus> dealStatus);
 
-    @Query("select count(d) from Deal d where d.dealStatus='CONFIRMED' and d.user.chatId=:chatId")
-    Long getCountPassedByUserChatId(Long chatId);
+    @Query("select count(d) from Deal d where d.dealStatus=:dealStatus and d.user.chatId=:chatId")
+    Long getCountByDealStatusAndChatId(Long chatId, DealStatus dealStatus);
 
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
-    Long getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
+    Long getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(Long chatId, DealStatus dealStatus, DealType dealType, CryptoCurrency cryptoCurrency);
 
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType")
-    Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType);
-
-    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED'")
-    Long getPassedDealsCountByUserChatId(Long chatId);
+    @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
+    Long getDealsCountByUserChatIdAndDealStatus(Long chatId, DealStatus dealStatus);
 }
