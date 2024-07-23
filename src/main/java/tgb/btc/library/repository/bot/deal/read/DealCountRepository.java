@@ -7,6 +7,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.repository.BaseRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DealCountRepository extends BaseRepository<Deal> {
@@ -19,4 +20,8 @@ public interface DealCountRepository extends BaseRepository<Deal> {
 
     @Query("select count(d) from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency")
     Long getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(Long chatId, DealStatus dealStatus, DealType dealType, CryptoCurrency cryptoCurrency);
+
+    // TODO написать тест
+    @Query("select count(d) from Deal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.dealStatus=:dealStatus")
+    Integer getCountByDateTimeBetweenAndDealStatus(LocalDateTime startDate, LocalDateTime endDate, DealStatus dealStatus);
 }

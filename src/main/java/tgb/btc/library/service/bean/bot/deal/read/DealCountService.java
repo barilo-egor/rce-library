@@ -12,6 +12,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.read.DealCountRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,11 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     @Override
     public Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency) {
         return dealCountRepository.getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(chatId, DealStatus.CONFIRMED, dealType, cryptoCurrency);
+    }
+
+    @Override
+    public Integer getCountConfirmedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return dealCountRepository.getCountByDateTimeBetweenAndDealStatus(startDate, endDate, DealStatus.CONFIRMED);
     }
 
     @Override

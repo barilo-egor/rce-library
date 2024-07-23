@@ -4,6 +4,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IDealCountService {
@@ -13,4 +14,6 @@ public interface IDealCountService {
     Long getCountConfirmedByUserChatId(Long chatId);
 
     Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
+
+    Integer getCountConfirmedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
