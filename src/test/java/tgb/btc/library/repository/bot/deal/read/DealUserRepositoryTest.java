@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.repository.bot.DealRepository;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
+@Transactional
 class DealUserRepositoryTest {
 
     @Autowired
@@ -56,7 +58,7 @@ class DealUserRepositoryTest {
                 () -> assertEquals(chatId1, dealRepository.getUserChatIdByDealPid(dealPid1)),
                 () -> assertEquals(chatId2, dealRepository.getUserChatIdByDealPid(dealPid2)),
                 () -> assertNull(dealRepository.getUserChatIdByDealPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getUserChatIdByDealPid(100L))
+                () -> assertNull(dealRepository.getUserChatIdByDealPid(Long.MAX_VALUE))
         );
     }
 
@@ -66,7 +68,7 @@ class DealUserRepositoryTest {
                 () -> assertEquals(username1, dealRepository.getUserUsernameByDealPid(dealPid1)),
                 () -> assertEquals(username2, dealRepository.getUserUsernameByDealPid(dealPid2)),
                 () -> assertNull(dealRepository.getUserUsernameByDealPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getUserUsernameByDealPid(100L))
+                () -> assertNull(dealRepository.getUserUsernameByDealPid(Long.MAX_VALUE))
         );
     }
 }

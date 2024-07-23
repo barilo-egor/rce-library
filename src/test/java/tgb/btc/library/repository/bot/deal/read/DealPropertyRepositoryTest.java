@@ -55,7 +55,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(CryptoCurrency.BITCOIN, dealRepository.getCryptoCurrencyByPid(firstDealPid)),
                 () -> assertEquals(CryptoCurrency.MONERO, dealRepository.getCryptoCurrencyByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getCryptoCurrencyByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getCryptoCurrencyByPid(100L))
+                () -> assertNull(dealRepository.getCryptoCurrencyByPid(Long.MAX_VALUE))
         );
     }
 
@@ -65,7 +65,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0, new BigDecimal(10).compareTo(dealRepository.getCommissionByPid(firstDealPid))),
                 () -> assertEquals(0, new BigDecimal(50).compareTo(dealRepository.getCommissionByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getCommissionByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getCommissionByPid(100L))
+                () -> assertNull(dealRepository.getCommissionByPid(Long.MAX_VALUE))
         );
     }
 
@@ -75,7 +75,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0, new BigDecimal(20).compareTo(dealRepository.getAmountByPid(firstDealPid))),
                 () -> assertEquals(0, new BigDecimal(60).compareTo(dealRepository.getAmountByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getAmountByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getAmountByPid(100L))
+                () -> assertNull(dealRepository.getAmountByPid(Long.MAX_VALUE))
         );
     }
 
@@ -87,7 +87,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0,
                         new BigDecimal("0.5").compareTo(dealRepository.getCryptoAmountByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getCryptoAmountByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getCryptoAmountByPid(100L))
+                () -> assertNull(dealRepository.getCryptoAmountByPid(Long.MAX_VALUE))
         );
     }
 
@@ -97,7 +97,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0, new BigDecimal(30).compareTo(dealRepository.getDiscountByPid(firstDealPid))),
                 () -> assertEquals(0, new BigDecimal(70).compareTo(dealRepository.getDiscountByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getDiscountByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getDiscountByPid(100L))
+                () -> assertNull(dealRepository.getDiscountByPid(Long.MAX_VALUE))
         );
     }
 
@@ -107,7 +107,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(DealType.BUY, dealRepository.getDealTypeByPid(firstDealPid)),
                 () -> assertEquals(DealType.SELL, dealRepository.getDealTypeByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getDealTypeByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getDealTypeByPid(100L))
+                () -> assertNull(dealRepository.getDealTypeByPid(Long.MAX_VALUE))
         );
     }
 
@@ -119,7 +119,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0, LocalDateTime.of(2020, 11, 11, 1, 1)
                         .compareTo(dealRepository.getDateTimeByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getDateTimeByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getDateTimeByPid(100L))
+                () -> assertNull(dealRepository.getDateTimeByPid(Long.MAX_VALUE))
         );
     }
 
@@ -129,7 +129,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(FiatCurrency.BYN, dealRepository.getFiatCurrencyByPid(firstDealPid)),
                 () -> assertEquals(FiatCurrency.RUB, dealRepository.getFiatCurrencyByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getFiatCurrencyByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getFiatCurrencyByPid(100L))
+                () -> assertNull(dealRepository.getFiatCurrencyByPid(Long.MAX_VALUE))
         );
     }
 
@@ -141,7 +141,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals("additionalVerification2",
                         dealRepository.getAdditionalVerificationImageIdByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getAdditionalVerificationImageIdByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getAdditionalVerificationImageIdByPid(100L))
+                () -> assertNull(dealRepository.getAdditionalVerificationImageIdByPid(Long.MAX_VALUE))
         );
     }
 
@@ -151,7 +151,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(DeliveryType.STANDARD, dealRepository.getDeliveryTypeByPid(firstDealPid)),
                 () -> assertEquals(DeliveryType.VIP, dealRepository.getDeliveryTypeByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getDeliveryTypeByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getDeliveryTypeByPid(100L))
+                () -> assertNull(dealRepository.getDeliveryTypeByPid(Long.MAX_VALUE))
         );
     }
 
@@ -163,7 +163,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(0,
                         new BigDecimal(80).compareTo(dealRepository.getCreditedAmountByPid(secondDealPid))),
                 () -> assertNull(dealRepository.getCreditedAmountByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getCreditedAmountByPid(100L))
+                () -> assertNull(dealRepository.getCreditedAmountByPid(Long.MAX_VALUE))
         );
     }
 
@@ -173,7 +173,7 @@ class DealPropertyRepositoryTest {
                 () -> assertEquals(DealStatus.NEW, dealRepository.getDealStatusByPid(firstDealPid)),
                 () -> assertEquals(DealStatus.PAID, dealRepository.getDealStatusByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getDealStatusByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getDealStatusByPid(100L))
+                () -> assertNull(dealRepository.getDealStatusByPid(Long.MAX_VALUE))
         );
     }
 
@@ -183,7 +183,7 @@ class DealPropertyRepositoryTest {
                 () -> assertTrue(dealRepository.getIsUsedPromoByPid(firstDealPid)),
                 () -> assertFalse(dealRepository.getIsUsedPromoByPid(secondDealPid)),
                 () -> assertNull(dealRepository.getIsUsedPromoByPid(emptyDealPid)),
-                () -> assertNull(dealRepository.getIsUsedPromoByPid(100L))
+                () -> assertNull(dealRepository.getIsUsedPromoByPid(Long.MAX_VALUE))
         );
     }
 }
