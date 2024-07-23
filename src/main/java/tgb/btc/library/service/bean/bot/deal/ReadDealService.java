@@ -46,8 +46,8 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     }
 
     @Override
-    public List<Long> getListNewDeal(Long chatId, DealStatus dealStatus) {
-        return readDealRepository.getListNewDeal(chatId, dealStatus);
+    public List<Long> getPidsByChatIdAndStatus(Long chatId, DealStatus dealStatus) {
+        return readDealRepository.getPidsByChatIdAndStatus(chatId, dealStatus);
     }
 
     @Override

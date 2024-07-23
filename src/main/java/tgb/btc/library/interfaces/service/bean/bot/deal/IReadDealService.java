@@ -20,7 +20,7 @@ public interface IReadDealService extends IBasePersistService<Deal> {
     List<Deal> getDealsByPids(List<Long> pids);
 
     @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
-    List<Long> getListNewDeal(Long chatId, DealStatus dealStatus);
+    List<Long> getPidsByChatIdAndStatus(Long chatId, DealStatus dealStatus);
 
     @Query("select pid from Deal where dealStatus='PAID'")
     List<Long> getPaidDealsPids();
