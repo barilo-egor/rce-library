@@ -77,11 +77,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     }
 
     @Autowired
-    public void setbigDecimalService(IBigDecimalService bigDecimalService) {
-        this.bigDecimalService = bigDecimalService;
-    }
-
-    @Autowired
     public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
         this.variablePropertiesReader = variablePropertiesReader;
     }
