@@ -11,6 +11,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.repository.bot.DealRepository;
@@ -141,10 +142,10 @@ class ModifyDealRepositoryTest {
     @Test
     void updateDealStatusByPid() {
         Deal deal = dealRepository.findByPid(dealPid);
-        assertNull(deal.getCryptoCurrency());
-        dealRepository.updateCryptoCurrencyByPid(dealPid, CryptoCurrency.BITCOIN);
+        assertNull(deal.getDealStatus());
+        dealRepository.updateDealStatusByPid(DealStatus.CONFIRMED, dealPid);
         entityManager.clear();
-        assertEquals(CryptoCurrency.BITCOIN, dealRepository.findByPid(dealPid).getCryptoCurrency());
+        assertEquals(DealStatus.CONFIRMED, dealRepository.findByPid(dealPid).getDealStatus());
     }
 
     @Test
