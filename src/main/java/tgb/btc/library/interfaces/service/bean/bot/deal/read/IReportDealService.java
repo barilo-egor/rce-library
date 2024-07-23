@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface IReportDealService {
 
-    BigDecimal getCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
+    BigDecimal getConfirmedCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
 
-    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, CryptoCurrency cryptoCurrency,
-                                 FiatCurrency fiatCurrency);
+    BigDecimal getConfirmedTotalAmountSum(DealType dealType, LocalDateTime dateFrom, CryptoCurrency cryptoCurrency,
+                                          FiatCurrency fiatCurrency);
 
-    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
+    BigDecimal getConfirmedTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
 
     List<Object[]> findAllForUsersReport();
 }

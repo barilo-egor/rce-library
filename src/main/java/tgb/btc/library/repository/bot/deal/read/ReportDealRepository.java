@@ -14,10 +14,10 @@ import java.util.List;
 public interface ReportDealRepository extends BaseRepository<Deal> {
 
     @Query(value = "select sum(cryptoAmount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency")
-    BigDecimal getCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
+    BigDecimal getConfirmedCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency);
 
     @Query(value = "select sum(amount) from Deal where dealStatus='CONFIRMED' and dealType=:dealType and (dateTime between :dateFrom and :dateTo) and cryptoCurrency=:cryptoCurrency and fiatCurrency=:fiatCurrency")
-    BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
+    BigDecimal getConfirmedTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency);
 
     @Query(value = "select pid,user.pid,dealType,cryptoCurrency,cryptoAmount,fiatCurrency,amount from Deal where dealStatus='CONFIRMED'")
     List<Object[]> findAllForUsersReport();

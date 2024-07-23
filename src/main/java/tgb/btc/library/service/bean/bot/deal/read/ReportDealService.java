@@ -28,19 +28,19 @@ public class ReportDealService extends BasePersistService<Deal> implements IRepo
     }
 
     @Override
-    public BigDecimal getCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency) {
-        return reportDealRepository.getCryptoAmountSum(dealType, dateFrom, dateTo, cryptoCurrency);
+    public BigDecimal getConfirmedCryptoAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency) {
+        return reportDealRepository.getConfirmedCryptoAmountSum(dealType, dateFrom, dateTo, cryptoCurrency);
     }
 
     @Override
-    public BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, CryptoCurrency cryptoCurrency,
-                                        FiatCurrency fiatCurrency) {
-        return getTotalAmountSum(dealType, dateFrom, dateFrom, cryptoCurrency, fiatCurrency);
+    public BigDecimal getConfirmedTotalAmountSum(DealType dealType, LocalDateTime dateFrom, CryptoCurrency cryptoCurrency,
+                                                 FiatCurrency fiatCurrency) {
+        return getConfirmedTotalAmountSum(dealType, dateFrom, dateFrom, cryptoCurrency, fiatCurrency);
     }
 
     @Override
-    public BigDecimal getTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency) {
-        return reportDealRepository.getTotalAmountSum(dealType, dateFrom, dateTo, cryptoCurrency, fiatCurrency);
+    public BigDecimal getConfirmedTotalAmountSum(DealType dealType, LocalDateTime dateFrom, LocalDateTime dateTo, CryptoCurrency cryptoCurrency, FiatCurrency fiatCurrency) {
+        return reportDealRepository.getConfirmedTotalAmountSum(dealType, dateFrom, dateTo, cryptoCurrency, fiatCurrency);
     }
 
     @Override
