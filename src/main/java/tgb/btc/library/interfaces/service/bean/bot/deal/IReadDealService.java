@@ -6,10 +6,11 @@ import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
 
-public interface IReadDealService {
+public interface IReadDealService extends IBasePersistService<Deal> {
 
     Deal findByPid(Long pid);
 
