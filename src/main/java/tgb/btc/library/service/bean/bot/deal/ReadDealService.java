@@ -67,12 +67,6 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     }
 
     @Override
-    public void findAllByDealStatusNot(DealStatus dealStatus) {
-        readDealRepository.findAllByDealStatusNot(dealStatus);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
         Deal deal = findByPid(dealPid);
         return new ArrayList<>(deal.getPaymentReceipts());

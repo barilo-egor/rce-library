@@ -28,6 +28,4 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency)")
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
-
-    void findAllByDealStatusNot(DealStatus dealStatus);
 }
