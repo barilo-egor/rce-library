@@ -103,14 +103,14 @@ class DateDealRepositoryTest {
     void getByDateBetweenOneDay() {
         for (int i = 1; i <= 10; i++) {
             dealRepository.save(Deal.builder()
-                    .dateTime(LocalDateTime.of(2000, 1, 7, 0, 0))
+                    .dateTime(LocalDateTime.of(2000, 1, 7, 0, i))
                     .dealStatus(DealStatus.CONFIRMED)
                     .build()
             );
         }
         List<Deal> actualDeals = dealRepository.getConfirmedByDateTimeBetween(
                 LocalDateTime.of(2000, 1, 7, 0, 0),
-                LocalDateTime.of(2000, 1, 7, 0, 0)
+                LocalDateTime.of(2000, 1, 7, 23, 59)
         );
         assertAll(
                 () -> assertEquals(10, actualDeals.size()),
