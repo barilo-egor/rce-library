@@ -4,6 +4,8 @@ import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
@@ -36,6 +38,8 @@ public interface IApiUserService extends IBasePersistService<ApiUser> {
 
     Long getPidByUsername(String username);
 
+    FiatCurrency getFiatCurrencyByUsername(String username);
+
     ApiUser getByUsername(String username);
 
     List<WebUser> getWebUsers(Long pid);
@@ -53,4 +57,6 @@ public interface IApiUserService extends IBasePersistService<ApiUser> {
      * UPDATE
      */
     void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal);
+
+    CryptoCurrency findMostFrequentCryptoCurrency(Long apiUserPid);
 }

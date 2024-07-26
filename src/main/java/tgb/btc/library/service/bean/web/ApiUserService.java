@@ -7,12 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +26,13 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     private ApiUserRepository apiUserRepository;
 
     private ApiDealRepository apiDealRepository;
+
+    private EntityManager entityManager;
+
+    @Autowired
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Autowired
     public void setApiDealRepository(ApiDealRepository apiDealRepository) {
@@ -114,6 +125,11 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Override
+    public FiatCurrency getFiatCurrencyByUsername(String username) {
+        return apiUserRepository.getFiatCurrencyByUsername(username);
+    }
+
+    @Override
     public ApiUser getByUsername(String username) {
         return apiUserRepository.getByUsername(username);
     }
@@ -141,6 +157,19 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     @Override
     public void updateLastPidDeal(Long userPid, ApiDeal lastPaidDeal) {
         apiUserRepository.updateLastPidDeal(userPid, lastPaidDeal);
+    }
+
+    @Override
+    public CryptoCurrency findMostFrequentCryptoCurrency(Long apiUserPid) {
+        TypedQuery<CryptoCurrency> query = entityManager.createQuery("select apiDeal.cryptoCurrency from ApiDeal apiDeal " +
+                "where apiDeal.apiUser.pid=:apiUserPid group by apiDeal.cryptoCurrency " +
+                "order by count(apiDeal.cryptoCurrency) desc", CryptoCurrency.class);
+        query.setMaxResults(1);
+        List<CryptoCurrency> cryptoCurrencyList = query.getResultList();
+        if (cryptoCurrencyList.isEmpty()) {
+            return null;
+        }
+        return cryptoCurrencyList.get(0);
     }
 
     @Override
