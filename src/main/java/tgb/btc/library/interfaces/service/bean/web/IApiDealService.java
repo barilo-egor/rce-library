@@ -70,4 +70,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     void updateDealsApiUser(ApiUser apiUser, String oldApiUserId);
 
     void deleteByApiUserId(String apiUserId);
+
+    String getRequisiteFromLastDeal(String username);
 }

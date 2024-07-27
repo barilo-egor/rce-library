@@ -160,11 +160,14 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Override
-    public CryptoCurrency findMostFrequentCryptoCurrency(Long apiUserPid) {
+    public CryptoCurrency findMostFrequentCryptoCurrency(String username) {
         TypedQuery<CryptoCurrency> query = entityManager.createQuery("select apiDeal.cryptoCurrency from ApiDeal apiDeal " +
-                "where apiDeal.apiUser.pid=:apiUserPid group by apiDeal.cryptoCurrency " +
+                "join apiDeal.apiUser.webUsers webUsers " +
+                "where webUsers.username like :username " +
+                "group by apiDeal.cryptoCurrency " +
                 "order by count(apiDeal.cryptoCurrency) desc", CryptoCurrency.class);
         query.setMaxResults(1);
+        query.setParameter("username", username);
         List<CryptoCurrency> cryptoCurrencyList = query.getResultList();
         if (cryptoCurrencyList.isEmpty()) {
             return null;
