@@ -70,7 +70,8 @@ public class User extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "USER_ROLE")
     @ColumnDefault("'USER'")
-    private UserRole userRole;
+    @Builder.Default
+    private UserRole userRole = UserRole.USER;
 
     public User(Long pid) {
         this.setPid(pid);
