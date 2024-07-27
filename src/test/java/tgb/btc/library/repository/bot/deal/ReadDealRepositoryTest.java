@@ -5,17 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
+import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -100,6 +100,7 @@ class ReadDealRepositoryTest {
 
     @Test
     void getPaidDealsPids() {
+        assertEquals(0, dealRepository.getPaidDealsPids().size());
         Map<DealStatus, List<Deal>> deals = new EnumMap<>(DealStatus.class);
         for (DealStatus dealStatus : DealStatus.values()) {
             int randomDealsCount = RandomUtils.nextInt(10);
@@ -109,13 +110,101 @@ class ReadDealRepositoryTest {
             }
             deals.put(dealStatus, statusDeals);
         }
+        Set<Long> expected = new HashSet<>();
+        deals.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(DealStatus.PAID)
+                        || entry.getKey().equals(DealStatus.AWAITING_VERIFICATION)
+                        || entry.getKey().equals(DealStatus.VERIFICATION_REJECTED)
+                        || entry.getKey().equals(DealStatus.VERIFICATION_RECEIVED))
+                .forEach(entry -> expected.addAll(entry.getValue().stream()
+                        .map(BasePersist::getPid)
+                        .collect(Collectors.toSet())));
+        List<Long> actual = dealRepository.getPaidDealsPids();
+        assertAll(
+                () -> assertEquals(expected.size(), actual.size()),
+                () -> assertEquals(expected, new HashSet<>(actual))
+        );
+        List<Deal> allDeals = dealRepository.findAll();
+        Set<DealStatus> statusesToRemove = Set.of(DealStatus.PAID, DealStatus.AWAITING_VERIFICATION,
+                DealStatus.VERIFICATION_REJECTED, DealStatus.VERIFICATION_RECEIVED);
+        for (Deal deal : allDeals) {
+            if (statusesToRemove.contains(deal.getDealStatus())) {
+                dealRepository.delete(deal);
+            }
+        }
+        assertEquals(0, dealRepository.getPaidDealsPids().size());
     }
 
     @Test
     void dealsByUserChatIdIsExist() {
+        Long chatId1 = 12345678L;
+        Long chatId2 = 87654321L;
+        assertFalse(dealRepository.dealsByUserChatIdIsExist(123L, DealStatus.PAID, 1L));
+        User user1 = userRepository.save(User.builder().chatId(chatId1).isActive(true).isBanned(false)
+                .registrationDate(LocalDateTime.now()).referralBalance(0).build());
+        User user2 = userRepository.save(User.builder().chatId(chatId2).isActive(true).isBanned(false)
+                .registrationDate(LocalDateTime.now()).referralBalance(0).build());
+
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.PAID).build());
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.PAID).build());
+        dealRepository.save(Deal.builder().user(user1).dealStatus(DealStatus.VERIFICATION_REJECTED).build());
+        dealRepository.save(Deal.builder().user(user2).dealStatus(DealStatus.AWAITING_VERIFICATION).build());
+        dealRepository.save(Deal.builder().user(user2).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user2).dealStatus(DealStatus.CONFIRMED).build());
+        assertAll(
+                () -> assertTrue(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.CONFIRMED, 2L)),
+                () -> assertFalse(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.CONFIRMED, 3L)),
+                () -> assertFalse(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.CONFIRMED, 10L)),
+                () -> assertTrue(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.PAID, 1L)),
+                () -> assertFalse(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.PAID, 2L)),
+                () -> assertFalse(dealRepository.dealsByUserChatIdIsExist(chatId1, DealStatus.PAID, 10L)),
+                () -> assertTrue(dealRepository.dealsByUserChatIdIsExist(chatId2, DealStatus.CONFIRMED, 1L))
+        );
     }
 
     @Test
     void getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency() {
+        Long chatId1 = 12345678L;
+        Long chatId2 = 87654321L;
+        User user1 = userRepository.save(User.builder().chatId(chatId1).isActive(true).isBanned(false)
+                .registrationDate(LocalDateTime.now()).referralBalance(0).build());
+        User user2 = userRepository.save(User.builder().chatId(chatId2).isActive(true).isBanned(false)
+                .registrationDate(LocalDateTime.now()).referralBalance(0).build());
+
+        dealRepository.save(Deal.builder().wallet("wallet1").user(user1).dealType(DealType.BUY)
+                .cryptoCurrency(CryptoCurrency.BITCOIN).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().wallet("wallet2").user(user1).dealType(DealType.SELL)
+                .cryptoCurrency(CryptoCurrency.LITECOIN).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user2).dealType(DealType.BUY)
+                .cryptoCurrency(CryptoCurrency.USDT).dealStatus(DealStatus.CONFIRMED).build());
+        dealRepository.save(Deal.builder().user(user2).dealType(DealType.BUY)
+                .cryptoCurrency(CryptoCurrency.USDT).dealStatus(DealStatus.AWAITING_VERIFICATION).build());
+
+        assertAll(
+                () -> assertEquals("wallet1", dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        chatId1, DealType.BUY, CryptoCurrency.BITCOIN
+                )),
+                () -> assertEquals("wallet2", dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        chatId1, DealType.SELL, CryptoCurrency.LITECOIN
+                )),
+                () -> assertNull(dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        chatId2, DealType.BUY, CryptoCurrency.USDT
+                )),
+                () -> assertNull(dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        Long.MAX_VALUE, DealType.BUY, CryptoCurrency.BITCOIN
+                )),
+                () -> assertNull(dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        chatId2, DealType.BUY, CryptoCurrency.USDT
+                )),
+                () -> assertNull(dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        Long.MAX_VALUE, DealType.BUY, CryptoCurrency.USDT
+                )),
+                () -> assertNull(dealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(
+                        Long.MAX_VALUE, DealType.SELL, CryptoCurrency.USDT
+                ))
+        );
     }
 }

@@ -26,6 +26,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
     @Query("select case when count(d) > :countDeals then true else false end from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
     boolean dealsByUserChatIdIsExist(Long chatId, DealStatus dealStatus, Long countDeals);
 
-    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency)")
+    @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId " +
+            "and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency)")
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 }
