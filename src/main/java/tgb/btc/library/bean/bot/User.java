@@ -2,6 +2,7 @@ package tgb.btc.library.bean.bot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class User extends BasePersist {
 
     public static final int DEFAULT_STEP = 0;
