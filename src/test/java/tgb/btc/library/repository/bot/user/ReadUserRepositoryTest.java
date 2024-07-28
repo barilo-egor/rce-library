@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.bot.user;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -11,8 +12,8 @@ import tgb.btc.library.repository.bot.ReferralUserRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -197,17 +198,107 @@ class ReadUserRepositoryTest {
 
     @Test
     void getAdminsChatIds() {
-
+        assertEquals(new ArrayList<>(), userRepository.getAdminsChatIds());
+        userRepository.save(
+                User.builder()
+                        .isActive(true)
+                        .isBanned(false)
+                        .referralBalance(0)
+                        .userRole(UserRole.OPERATOR)
+                        .registrationDate(LocalDateTime.of(2000, 1, 1, 1, 3))
+                        .chatId(0L)
+                        .build()
+        );
+        int testTimesCountUser = testTimesCount * 3;
+        for (int i = 1; i <= testTimesCountUser; i++) {
+            userRepository.save(
+                    User.builder()
+                            .isActive(true)
+                            .isBanned(false)
+                            .referralBalance(0)
+                            .userRole(UserRole.USER)
+                            .registrationDate(LocalDateTime.of(2000, 1, 1, 1, 3))
+                            .chatId((long) i)
+                            .build()
+            );
+        }
+        Set<Long> expected = new HashSet<>();
+        for (int i = 1; i <= testTimesCount; i++) {
+            long chatId = (long) testTimesCountUser + i;
+            userRepository.save(
+                    User.builder()
+                            .isActive(true)
+                            .isBanned(false)
+                            .referralBalance(0)
+                            .userRole(UserRole.ADMIN)
+                            .registrationDate(LocalDateTime.of(2000, 1, 1, 1, 3))
+                            .chatId(chatId)
+                            .build()
+            );
+            expected.add(chatId);
+        }
+        assertEquals(expected, new HashSet<>(userRepository.getAdminsChatIds()));
     }
 
     @Test
     void getChatIdsByRoles() {
-
+        for (UserRole userRole : UserRole.values()) {
+            assertEquals(new ArrayList<>(), userRepository.getChatIdsByRoles(Set.of(userRole)));
+        }
+        assertEquals(new ArrayList<>(), userRepository.getChatIdsByRoles(Set.of(UserRole.values())));
+        Map<UserRole, Set<Long>> expected = new HashMap<>();
+        long chatIdCounter = 1;
+        for (UserRole userRole : UserRole.values()) {
+            Set<Long> expectedChatIds = new HashSet<>();
+            int count = RandomUtils.nextInt(10);
+            for (int i = 0; i < count; i++) {
+                userRepository.save(
+                        User.builder()
+                                .isActive(true)
+                                .isBanned(false)
+                                .referralBalance(0)
+                                .userRole(userRole)
+                                .registrationDate(LocalDateTime.of(2000, 1, 1, 1, 3))
+                                .chatId(chatIdCounter)
+                                .build()
+                );
+                expectedChatIds.add(chatIdCounter);
+                chatIdCounter++;
+            }
+            expected.put(userRole, expectedChatIds);
+        }
+        for (UserRole userRole : UserRole.values()) {
+            assertEquals(expected.get(userRole), new HashSet<>(userRepository.getChatIdsByRoles(Set.of(userRole))));
+            Set<UserRole> rolesWithoutCurrent = Arrays.stream(UserRole.values())
+                    .filter(role -> !userRole.equals(role))
+                    .collect(Collectors.toSet());
+            Set<Long> expectedChatIds = new HashSet<>();
+            for (UserRole notCurrentRole: rolesWithoutCurrent) {
+                expectedChatIds.addAll(expected.get(notCurrentRole));
+            }
+            assertEquals(expectedChatIds, new HashSet<>(userRepository.getChatIdsByRoles(rolesWithoutCurrent)));
+        }
     }
 
     @Test
     void getBufferVariable() {
+        for (long i = 1; i <= testTimesCount; i++) {
+            User user = getDefaultUser(i);
+            String expected = "bufferVariable" + i;
+            user.setBufferVariable(expected);
+            userRepository.save(user);
+            String actual = userRepository.getBufferVariable(i);
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+        }
+        assertNull(userRepository.getBufferVariable(Long.MAX_VALUE));
+    }
 
+    @Test
+    void getNullBufferVariable() {
+        User user = getDefaultUser(Long.MAX_VALUE);
+        userRepository.save(user);
+        assertNull(userRepository.getBufferVariable(Long.MAX_VALUE));
     }
 
     @Test
@@ -217,7 +308,16 @@ class ReadUserRepositoryTest {
 
     @Test
     void getIsBannedByChatId() {
-
+        for (long i = 1; i <= testTimesCount; i++) {
+            User user = getDefaultUser(i);
+            Boolean expected = RandomUtils.nextBoolean();
+            user.setBanned(expected);
+            userRepository.save(user);
+            Boolean actual = userRepository.getIsBannedByChatId(i);
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+        }
+        assertNull(userRepository.getIsBannedByChatId(Long.MAX_VALUE));
     }
 
     @Test
