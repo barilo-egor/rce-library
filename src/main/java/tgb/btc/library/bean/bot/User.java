@@ -213,4 +213,12 @@ public class User extends BasePersist {
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
+
+    public static User.UserBuilder getDefaultUser() {
+        return User.builder()
+                .isActive(true)
+                .isBanned(false)
+                .registrationDate(LocalDateTime.now())
+                .referralBalance(0);
+    }
 }
