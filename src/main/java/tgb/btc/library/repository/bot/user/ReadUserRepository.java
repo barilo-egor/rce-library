@@ -37,6 +37,7 @@ public interface ReadUserRepository extends BaseRepository<User> {
     @Query("select u.referralUsers from User u where u.chatId=:chatId")
     List<ReferralUser> getUserReferralsByChatId(Long chatId);
 
+    // TODO удалить,самый первый метод точно такой же
     User getByChatId(Long chatId);
 
     @Query("select chatId from User where userRole='ADMIN'")
