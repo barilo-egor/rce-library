@@ -1,6 +1,7 @@
 package tgb.btc.library.bean.web.api;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.ApiDealType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
@@ -48,12 +49,15 @@ public class ApiDeal extends BasePersist {
     private FiatCurrency fiatCurrency;
 
     @Enumerated(EnumType.STRING)
-    private ApiDealType apiDealType;
+    @ColumnDefault("'API'")
+    @Builder.Default
+    @Column(nullable = false)
+    private ApiDealType apiDealType = ApiDealType.API;
 
     /**
      * ID файла в ТГ
      */
-    @Column
+    @Column(nullable = false)
     private String checkImageId;
 
     public BigDecimal getAmountToPay() {
