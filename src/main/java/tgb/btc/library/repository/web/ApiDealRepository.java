@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.ApiDealType;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.repository.BaseRepository;
 
@@ -73,6 +74,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
 
     @Query("select count(d.pid) from ApiDeal d where d.apiUser.token=:token and d.pid=:dealPid")
     Long getCountByTokenAndPid(String token, Long dealPid);
+
+    @Query("select apiDealType from ApiDeal where pid=:pid")
+    ApiDealType getApiDealTypeByPid(Long pid);
 
     /**
      * UPDATE
