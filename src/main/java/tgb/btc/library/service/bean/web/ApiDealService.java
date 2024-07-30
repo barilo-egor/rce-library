@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.ApiDealType;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.interfaces.service.bean.web.IApiDealService;
 import tgb.btc.library.repository.BaseRepository;
@@ -223,6 +224,11 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
         return CollectionUtils.isEmpty(result)
                 ? StringUtils.EMPTY
                 : result.get(0);
+    }
+
+    @Override
+    public ApiDealType getApiDealTypeByPid(Long pid) {
+        return apiDealRepository.getApiDealTypeByPid(pid);
     }
 
     @Override
