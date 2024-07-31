@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.interfaces.service.bean.web.IApiDealService;
 import tgb.btc.library.repository.BaseRepository;
@@ -234,6 +235,11 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     @Override
     public String getCheckImageIdByPid(Long pid) {
         return apiDealRepository.getCheckImageIdByPid(pid);
+    }
+
+    @Override
+    public ReceiptFormat getReceiptFormatByPid(Long pid) {
+        return apiDealRepository.getReceiptFormatByPid(pid);
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.repository.BaseRepository;
 
@@ -80,6 +81,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
 
     @Query("select checkImageId from ApiDeal where pid=:pid")
     String getCheckImageIdByPid(Long pid);
+
+    @Query("select receiptFormat from ApiDeal where pid=:pid")
+    ReceiptFormat getReceiptFormatByPid(Long pid);
 
     /**
      * UPDATE

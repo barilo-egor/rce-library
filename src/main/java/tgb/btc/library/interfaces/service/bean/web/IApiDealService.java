@@ -3,6 +3,7 @@ package tgb.btc.library.interfaces.service.bean.web;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
@@ -77,4 +78,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     ApiDealType getApiDealTypeByPid(Long pid);
 
     String getCheckImageIdByPid(Long pid);
+
+    ReceiptFormat getReceiptFormatByPid(Long pid);
 }
