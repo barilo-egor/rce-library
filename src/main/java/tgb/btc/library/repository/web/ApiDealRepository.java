@@ -78,6 +78,9 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("select apiDealType from ApiDeal where pid=:pid")
     ApiDealType getApiDealTypeByPid(Long pid);
 
+    @Query("select checkImageId from ApiDeal where pid=:pid")
+    String getCheckImageIdByPid(Long pid);
+
     /**
      * UPDATE
      */

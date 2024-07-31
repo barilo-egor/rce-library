@@ -232,6 +232,11 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
+    public String getCheckImageIdByPid(Long pid) {
+        return apiDealRepository.getCheckImageIdByPid(pid);
+    }
+
+    @Override
     protected BaseRepository<ApiDeal> getBaseRepository() {
         return apiDealRepository;
     }

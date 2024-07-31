@@ -75,4 +75,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     String getRequisiteFromLastDeal(String username);
 
     ApiDealType getApiDealTypeByPid(Long pid);
+
+    String getCheckImageIdByPid(Long pid);
 }
