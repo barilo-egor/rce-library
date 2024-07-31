@@ -58,7 +58,7 @@ public class ApiDeal extends BasePersist {
     /**
      * ID файла в ТГ
      */
-    @Column(nullable = false)
+    @Column
     private String checkImageId;
 
     @Column
