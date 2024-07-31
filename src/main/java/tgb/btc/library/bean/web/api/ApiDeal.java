@@ -61,7 +61,8 @@ public class ApiDeal extends BasePersist {
     @Column(nullable = false)
     private String checkImageId;
 
-    @Column(nullable = false)
+    @Column
+    @Enumerated(EnumType.STRING)
     private ReceiptFormat receiptFormat;
 
     public BigDecimal getAmountToPay() {
