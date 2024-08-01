@@ -1,8 +1,6 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
@@ -18,8 +16,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "DEAL")
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Deal extends BasePersist {
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
@@ -97,94 +98,7 @@ public class Deal extends BasePersist {
     @Column(name = "COURSE")
     private BigDecimal course;
 
-    public BigDecimal getCourse() {
-        return course;
-    }
-
-    public void setCourse(BigDecimal course) {
-        this.course = course;
-    }
-
-    public CreateType getCreateType() {
-        return createType;
-    }
-
-    public void setCreateType(CreateType createType) {
-        this.createType = createType;
-    }
-
-    public FiatCurrency getFiatCurrency() {
-        return fiatCurrency;
-    }
-
-    public void setFiatCurrency(FiatCurrency fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public PaymentType getPaymentType() {
-        return paymentType;
-    }
-
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(String wallet) {
-        this.wallet = wallet;
-    }
-
-    public String getVerificationPhoto() {
-        return verificationPhoto;
-    }
-
-    public void setVerificationPhoto(String verificationPhoto) {
-        this.verificationPhoto = verificationPhoto;
-    }
-
-    public CryptoCurrency getCryptoCurrency() {
-        return cryptoCurrency;
-    }
-
-    public void setCryptoCurrency(CryptoCurrency cryptoCurrency) {
-        this.cryptoCurrency = cryptoCurrency;
-    }
-
-    public BigDecimal getCryptoAmount() {
-        return cryptoAmount;
-    }
-
-    public void setCryptoAmount(BigDecimal cryptoAmount) {
-        this.cryptoAmount = cryptoAmount;
-    }
-
+    // TODO заменить на сеттеры геттеры ломбока
     public Boolean getUsedPromo() {
         return isUsedPromo;
     }
@@ -193,52 +107,8 @@ public class Deal extends BasePersist {
         isUsedPromo = usedPromo;
     }
 
-    public DealType getDealType() {
-        return dealType;
-    }
-
-    public void setDealType(DealType dealType) {
-        this.dealType = dealType;
-    }
-
     public Boolean getUsedReferralDiscount() {
         return isUsedReferralDiscount;
-    }
-
-    public BigDecimal getCommission() {
-        return commission;
-    }
-
-    public void setCommission(BigDecimal commission) {
-        this.commission = commission;
-    }
-
-    public void setUsedReferralDiscount(Boolean usedReferralDiscount) {
-        isUsedReferralDiscount = usedReferralDiscount;
-    }
-
-    public List<PaymentReceipt> getPaymentReceipts() {
-        return paymentReceipts;
-    }
-
-    public void setPaymentReceipts(List<PaymentReceipt> paymentReceipts) {
-        this.paymentReceipts = paymentReceipts;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
-    public BigDecimal getOriginalPrice() {
-        return originalPrice;
-    }
-
-    public void setOriginalPrice(BigDecimal originalPrice) {
-        this.originalPrice = originalPrice;
     }
 
     public Boolean getPersonalApplied() {
@@ -247,38 +117,6 @@ public class Deal extends BasePersist {
 
     public void setPersonalApplied(Boolean personalApplied) {
         isPersonalApplied = personalApplied;
-    }
-
-    public DealStatus getDealStatus() {
-        return dealStatus;
-    }
-
-    public void setDealStatus(DealStatus dealStatus) {
-        this.dealStatus = dealStatus;
-    }
-
-    public String getAdditionalVerificationImageId() {
-        return additionalVerificationImageId;
-    }
-
-    public void setAdditionalVerificationImageId(String additionalVerificationImageId) {
-        this.additionalVerificationImageId = additionalVerificationImageId;
-    }
-
-    public DeliveryType getDeliveryType() {
-        return deliveryType;
-    }
-
-    public void setDeliveryType(DeliveryType deliveryType) {
-        this.deliveryType = deliveryType;
-    }
-
-    public BigDecimal getCreditedAmount() {
-        return creditedAmount;
-    }
-
-    public void setCreditedAmount(BigDecimal creditedAmount) {
-        this.creditedAmount = creditedAmount;
     }
 
     public String manualToString() {

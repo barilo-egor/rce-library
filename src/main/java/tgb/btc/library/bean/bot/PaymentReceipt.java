@@ -1,19 +1,19 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 
 import javax.persistence.*;
-import java.util.Objects;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "PAYMENT_RECEIPT")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class PaymentReceipt extends BasePersist {
 
     @Column(name = "RECEIPT", length = 1000)
@@ -25,43 +25,6 @@ public class PaymentReceipt extends BasePersist {
 
     @ManyToOne
     private Deal deal;
-
-    public Deal getDeal() {
-        return deal;
-    }
-
-    public void setDeal(Deal deal) {
-        this.deal = deal;
-    }
-
-    public String getReceipt() {
-        return receipt;
-    }
-
-    public void setReceipt(String receipt) {
-        this.receipt = receipt;
-    }
-
-    public ReceiptFormat getReceiptFormat() {
-        return receiptFormat;
-    }
-
-    public void setReceiptFormat(ReceiptFormat receiptFormat) {
-        this.receiptFormat = receiptFormat;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PaymentReceipt that = (PaymentReceipt) o;
-        return Objects.equals(receipt, that.receipt) && receiptFormat == that.receiptFormat;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(receipt, receiptFormat);
-    }
 
     @Override
     public String toString() {
