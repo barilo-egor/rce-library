@@ -1,8 +1,6 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 
 import javax.persistence.Column;
@@ -14,6 +12,9 @@ import javax.persistence.Table;
 @Table(name = "PAYMENT_REQUISITE")
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
+@EqualsAndHashCode(callSuper = true)
 @Builder
 public class PaymentRequisite extends BasePersist {
 
@@ -31,30 +32,6 @@ public class PaymentRequisite extends BasePersist {
 
     public PaymentRequisite(Long pid) {
         super(pid);
-    }
-
-    public PaymentType getPaymentType() {
-        return paymentType;
-    }
-
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
-
-    public String getRequisite() {
-        return requisite;
-    }
-
-    public void setRequisite(String requisite) {
-        this.requisite = requisite;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Boolean getOn() {
