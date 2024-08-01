@@ -1,7 +1,6 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 
 import javax.persistence.Column;
@@ -10,10 +9,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "LOTTERY_WIN")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Builder
 public class LotteryWin extends BasePersist {
 
     @ManyToOne
@@ -22,19 +25,4 @@ public class LotteryWin extends BasePersist {
     @Column(name = "WON_DATE_TIME")
     private LocalDateTime wonDateTime;
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getWonDateTime() {
-        return wonDateTime;
-    }
-
-    public void setWonDateTime(LocalDateTime localDateTime) {
-        this.wonDateTime = localDateTime;
-    }
 }
