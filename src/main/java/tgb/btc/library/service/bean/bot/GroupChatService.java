@@ -91,11 +91,6 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
     }
 
     @Override
-    public Optional<GroupChat> getByType(GroupChatType type) {
-        return groupChatRepository.getByType(type);
-    }
-
-    @Override
     @Transactional
     public void updateTypeByChatId(GroupChatType type, Long chatId) {
         if (GroupChatType.DEAL_REQUEST.equals(type) && hasDealRequests()) {

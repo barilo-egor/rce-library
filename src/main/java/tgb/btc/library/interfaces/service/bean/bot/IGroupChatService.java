@@ -22,8 +22,6 @@ public interface IGroupChatService extends IBasePersistService<GroupChat> {
 
     void updateIsSendMessageEnabledByChatId(Boolean isSendMessageEnabled, Long chatId);
 
-    Optional<GroupChat> getByType(GroupChatType type);
-
     void updateTypeByChatId(GroupChatType type, Long chatId);
 
     void updateTypeByPid(GroupChatType type, Long pid);

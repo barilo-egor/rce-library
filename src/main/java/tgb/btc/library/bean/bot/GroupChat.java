@@ -15,41 +15,32 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class GroupChat extends BasePersist implements JsonConvertable {
 
-    @Getter
-    @Setter
     @Column(unique = true, nullable = false)
     private Long chatId;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @ColumnDefault("'MEMBER'")
     private MemberStatus memberStatus;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private LocalDateTime registerDateTime;
 
-    @Getter
-    @Setter
     private String title;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'DEFAULT'")
     private GroupChatType type;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     @ColumnDefault("true")
     private Boolean isSendMessageEnabled;

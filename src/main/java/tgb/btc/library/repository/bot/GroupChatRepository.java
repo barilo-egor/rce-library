@@ -44,7 +44,6 @@ public interface GroupChatRepository extends BaseRepository<GroupChat> {
     /**
      * SELECT
      */
-    Optional<GroupChat> getByType(GroupChatType type);
 
     List<GroupChat> getAllByType(GroupChatType type);
 
