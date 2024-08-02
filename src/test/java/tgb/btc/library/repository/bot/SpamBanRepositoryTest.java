@@ -28,8 +28,6 @@ class SpamBanRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private final int spamBansCount = 10;
-
     private User user1;
 
     @BeforeEach
@@ -38,6 +36,7 @@ class SpamBanRepositoryTest {
                 .registrationDate(LocalDateTime.now()).referralBalance(0).build());
         User user2 = userRepository.save(User.builder().chatId(87654321L).isActive(true).isBanned(false)
                 .registrationDate(LocalDateTime.now()).referralBalance(0).build());
+        int spamBansCount = 10;
         for (int i = 0; i < spamBansCount; i++) {
             SpamBan spamBan = new SpamBan();
             User userToSet;
