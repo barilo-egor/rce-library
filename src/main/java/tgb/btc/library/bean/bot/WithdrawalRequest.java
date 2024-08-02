@@ -1,15 +1,19 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.Builder;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.WithdrawalRequestStatus;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "WITHDRAWAL_REQUEST")
 @Builder
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class WithdrawalRequest extends BasePersist {
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
@@ -23,60 +27,12 @@ public class WithdrawalRequest extends BasePersist {
     @Column(name = "IS_ACTIVE")
     private Boolean isActive;
 
-    public WithdrawalRequest() {
-    }
-
-    public WithdrawalRequest(User user, String phoneNumber, WithdrawalRequestStatus status, Boolean isActive) {
-        this.user = user;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-        this.isActive = isActive;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public WithdrawalRequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(WithdrawalRequestStatus status) {
-        this.status = status;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public Boolean getActive() {
         return isActive;
     }
 
     public void setActive(Boolean active) {
         isActive = active;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        WithdrawalRequest that = (WithdrawalRequest) o;
-        return Objects.equals(user, that.user) && Objects.equals(phoneNumber, that.phoneNumber) && status == that.status && Objects.equals(isActive, that.isActive);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), user, phoneNumber, status, isActive);
     }
 
     @Override
