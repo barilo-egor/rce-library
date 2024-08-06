@@ -27,6 +27,8 @@ public class CalculateData {
 
     private BigDecimal bulkDiscount;
 
+    private boolean isApplyBulk = true;
+
     public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse,
                          VariablePropertiesReader variablePropertiesReader) {
         this.fix = variablePropertiesReader.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
@@ -47,6 +49,20 @@ public class CalculateData {
         this.cryptoCourse = cryptoCourse;
         this.personalDiscount = personalDiscount;
         this.bulkDiscount = bulkDiscount;
+    }
+
+    public CalculateData(FiatCurrency fiatCurrency, DealType dealType, CryptoCurrency cryptoCurrency, BigDecimal cryptoCourse,
+                         BigDecimal usdCourse, BigDecimal personalDiscount, BigDecimal bulkDiscount, VariablePropertiesReader variablePropertiesReader,
+                         boolean isApplyBulk) {
+        this.fix = variablePropertiesReader.getBigDecimal(VariableType.FIX, fiatCurrency, dealType, cryptoCurrency);
+        this.usdCourse = usdCourse;
+        this.commission = variablePropertiesReader.getBigDecimal(VariableType.COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.fixCommission = variablePropertiesReader.getBigDecimal(VariableType.FIX_COMMISSION, fiatCurrency, dealType, cryptoCurrency);
+        this.transactionalCommission = variablePropertiesReader.getTransactionCommission(cryptoCurrency);
+        this.cryptoCourse = cryptoCourse;
+        this.personalDiscount = personalDiscount;
+        this.bulkDiscount = bulkDiscount;
+        this.isApplyBulk = isApplyBulk;
     }
 
     public BigDecimal getFix() {
@@ -79,5 +95,9 @@ public class CalculateData {
 
     public BigDecimal getBulkDiscount() {
         return bulkDiscount;
+    }
+
+    public boolean isApplyBulk() {
+        return isApplyBulk;
     }
 }
