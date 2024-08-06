@@ -26,6 +26,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class ApiUser extends BasePersist implements JsonConvertable {
 
     @Getter
@@ -142,30 +143,5 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .findFirst()
                 .ifPresent(course -> result.put("usdCourseRUB", course.getCourse()));
         return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ApiUser apiUser = (ApiUser) o;
-        return Objects.equals(id, apiUser.id) && Objects.equals(personalDiscount, apiUser.personalDiscount)
-                && Objects.equals(registrationDate, apiUser.registrationDate)
-                && Objects.equals(isBanned, apiUser.isBanned)
-                && Objects.equals(token, apiUser.token)
-                && Objects.equals(buyRequisite, apiUser.buyRequisite)
-                && Objects.equals(sellRequisite, apiUser.sellRequisite)
-                && fiatCurrency == apiUser.fiatCurrency
-                && Objects.equals(usdApiUserCourseList, apiUser.usdApiUserCourseList)
-                && Objects.equals(apiUserMinSum, apiUser.apiUserMinSum)
-                && Objects.equals(lastPaidDeal, apiUser.lastPaidDeal)
-                && Objects.equals(webUsers, apiUser.webUsers) && Objects.equals(groupChat, apiUser.groupChat);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, personalDiscount, registrationDate, isBanned, token, buyRequisite,
-                sellRequisite, fiatCurrency, usdApiUserCourseList, apiUserMinSum, lastPaidDeal, webUsers, groupChat);
     }
 }
