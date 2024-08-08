@@ -60,5 +60,5 @@ public interface IApiUserService extends IBasePersistService<ApiUser> {
 
     CryptoCurrency findMostFrequentCryptoCurrency(String username);
 
-    List<ApiUser> getByPaymentTypePid(Long paymentTypePid);
+    List<String> getIdByPaymentTypePid(Long paymentTypePid);
 }
