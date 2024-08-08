@@ -9,7 +9,6 @@ import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
@@ -109,7 +108,7 @@ public class ApiUser extends BasePersist implements JsonConvertable {
         return usdApiUserCourseList.stream()
                 .filter(course -> fiatCurrency.equals(course.getFiatCurrency()))
                 .findFirst()
-                .orElseThrow(() -> new BaseException("Не найден курс для валюты " + fiatCurrency.name()));
+                .orElse(null);
     }
 
     @Override
