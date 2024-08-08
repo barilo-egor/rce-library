@@ -1,4 +1,7 @@
 package tgb.btc.library.interfaces.service.bean.web;
 
-public interface IApiPaymentTypeService {
+import tgb.btc.library.bean.web.api.ApiPaymentType;
+import tgb.btc.library.interfaces.service.IBasePersistService;
+
+public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentType> {
 }
