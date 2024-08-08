@@ -87,6 +87,11 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @Setter
     private GroupChat groupChat;
 
+    @Getter
+    @Setter
+    @ManyToMany
+    private List<ApiPaymentType> paymentTypes;
+
     public List<WebUser> getWebUsers() {
         if (Objects.isNull(webUsers)) return new ArrayList<>();
         return webUsers;
