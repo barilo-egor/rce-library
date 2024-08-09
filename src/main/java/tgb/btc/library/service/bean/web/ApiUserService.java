@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
+import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.web.IApiPaymentTypeService;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
@@ -17,6 +20,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +32,13 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     private ApiDealRepository apiDealRepository;
 
     private EntityManager entityManager;
+
+    private IApiPaymentTypeService apiPaymentTypeService;
+
+    @Autowired
+    public void setApiPaymentTypeService(IApiPaymentTypeService apiPaymentTypeService) {
+        this.apiPaymentTypeService = apiPaymentTypeService;
+    }
 
     @Autowired
     public void setEntityManager(EntityManager entityManager) {
@@ -183,6 +194,43 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     @Override
     public List<String> getIdExcludePaymentTypePid(Long paymentTypePid) {
         return apiUserRepository.getIdExcludePaymentTypePid(paymentTypePid);
+    }
+
+    @Override
+    @Transactional
+    public void addPaymentType(Long apiUserPid, Long paymentTypePid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+        if (Objects.isNull(apiUser)) {
+            throw new BaseException("Апи пользователь по пиду " + apiUserPid + " не найден.");
+        }
+        if (Objects.nonNull(apiUser.getPaymentTypes()) && apiUser.getPaymentTypes().stream()
+                .anyMatch(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid))) {
+            throw new BaseException("Тип оплаты " + paymentTypePid + " уже привязан к апи пользователю " + apiUserPid);
+        }
+        ApiPaymentType apiPaymentType = apiPaymentTypeService.findById(paymentTypePid);
+        if (Objects.isNull(apiPaymentType)) {
+            throw new BaseException("Апи тип оплаты не найден по пиду " + paymentTypePid);
+        }
+        if (Objects.isNull(apiUser.getPaymentTypes())) {
+            apiUser.setPaymentTypes(new ArrayList<>());
+        }
+        apiUser.getPaymentTypes().add(apiPaymentType);
+        apiUserRepository.save(apiUser);
+    }
+
+    @Override
+    @Transactional
+    public void deletePaymentType(Long apiUserPid, Long paymentTypePid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+        if (Objects.isNull(apiUser)) {
+            throw new BaseException("Апи пользователь по пиду " + apiUserPid + " не найден.");
+        }
+        if (Objects.isNull(apiUser.getPaymentTypes()) || apiUser.getPaymentTypes().stream()
+                .noneMatch(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid))) {
+            throw new BaseException("Тип оплаты " + paymentTypePid + " не привязан к апи пользователю " + apiUserPid);
+        }
+        apiUser.getPaymentTypes().removeIf(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid));
+        apiUserRepository.save(apiUser);
     }
 
     @Override
