@@ -1,5 +1,6 @@
 package tgb.btc.library.bean.web.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.*;
 import tgb.btc.library.bean.BasePersist;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 public class ApiRequisite extends BasePersist {
 
     @ManyToOne
+    @JsonIgnore
     private ApiPaymentType apiPaymentType;
 
     private String requisite;
