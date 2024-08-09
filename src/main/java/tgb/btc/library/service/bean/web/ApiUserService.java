@@ -69,9 +69,7 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
         }
         List<ApiDeal> deals = apiDealRepository.getByApiUserId(deleteUserId);
         ApiUser finalApiUser = apiUser;
-        deals.forEach(deal -> {
-            deal.setApiUser(finalApiUser);
-        });
+        deals.forEach(deal -> deal.setApiUser(finalApiUser));
         apiDealRepository.saveAllAndFlush(deals);
         if (Objects.isNull(newUserId)) apiDealRepository.deleteAll(deals);
         apiUserRepository.deleteById(deleteUserId);
@@ -198,14 +196,14 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     @Override
     @Transactional
-    public void addPaymentType(Long apiUserPid, Long paymentTypePid) {
-        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+    public void addPaymentType(String apiUserId, Long paymentTypePid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserId);
         if (Objects.isNull(apiUser)) {
-            throw new BaseException("Апи пользователь по пиду " + apiUserPid + " не найден.");
+            throw new BaseException("Апи пользователь по id " + apiUserId + " не найден.");
         }
         if (Objects.nonNull(apiUser.getPaymentTypes()) && apiUser.getPaymentTypes().stream()
                 .anyMatch(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid))) {
-            throw new BaseException("Тип оплаты " + paymentTypePid + " уже привязан к апи пользователю " + apiUserPid);
+            throw new BaseException("Тип оплаты " + paymentTypePid + " уже привязан к апи пользователю " + apiUserId);
         }
         ApiPaymentType apiPaymentType = apiPaymentTypeService.findById(paymentTypePid);
         if (Objects.isNull(apiPaymentType)) {
@@ -220,14 +218,14 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     @Override
     @Transactional
-    public void deletePaymentType(Long apiUserPid, Long paymentTypePid) {
-        ApiUser apiUser = apiUserRepository.getById(apiUserPid);
+    public void deletePaymentType(String apiUserId, Long paymentTypePid) {
+        ApiUser apiUser = apiUserRepository.getById(apiUserId);
         if (Objects.isNull(apiUser)) {
-            throw new BaseException("Апи пользователь по пиду " + apiUserPid + " не найден.");
+            throw new BaseException("Апи пользователь по id " + apiUserId + " не найден.");
         }
         if (Objects.isNull(apiUser.getPaymentTypes()) || apiUser.getPaymentTypes().stream()
                 .noneMatch(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid))) {
-            throw new BaseException("Тип оплаты " + paymentTypePid + " не привязан к апи пользователю " + apiUserPid);
+            throw new BaseException("Тип оплаты " + paymentTypePid + " не привязан к апи пользователю id=" + apiUserId);
         }
         apiUser.getPaymentTypes().removeIf(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid));
         apiUserRepository.save(apiUser);
