@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.Modifying;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.exception.BaseException;
@@ -41,6 +42,10 @@ public abstract class BasePersistService<T extends BasePersist> implements IBase
 
     public List<T> findAll() {
         return getBaseRepository().findAll();
+    }
+
+    public List<T> findAll(Example<T> example) {
+        return getBaseRepository().findAll(example);
     }
 
     public boolean existsById(Long pid) {

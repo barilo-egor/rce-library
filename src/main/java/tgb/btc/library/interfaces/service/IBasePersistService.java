@@ -1,5 +1,6 @@
 package tgb.btc.library.interfaces.service;
 
+import org.springframework.data.domain.Example;
 import tgb.btc.library.bean.BasePersist;
 
 import java.util.Collection;
@@ -20,4 +21,6 @@ public interface IBasePersistService<T extends BasePersist> {
     T save(T t);
 
     List<T> findAll();
+
+    List<T> findAll(Example<T> example);
 }
