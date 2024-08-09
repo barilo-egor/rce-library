@@ -59,6 +59,9 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select u.id from ApiUser u join u.paymentTypes pt where pt.pid=:paymentTypePid")
     List<String> getIdByPaymentTypePid(Long paymentTypePid);
 
+    @Query("select u.id from ApiUser u join u.paymentTypes pt where pt.pid<>:paymentTypePid")
+    List<String> getIdExcludePaymentTypePid(Long paymentTypePid);
+
     /**
      * DELETE
      */

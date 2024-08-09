@@ -181,6 +181,11 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     }
 
     @Override
+    public List<String> getIdExcludePaymentTypePid(Long paymentTypePid) {
+        return apiUserRepository.getIdExcludePaymentTypePid(paymentTypePid);
+    }
+
+    @Override
     protected BaseRepository<ApiUser> getBaseRepository() {
         return apiUserRepository;
     }
