@@ -23,11 +23,14 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
 
     private String name;
 
+    private String comment;
+
     @Override
     public ObjectNode map() {
         return new ObjectMapper()
                 .createObjectNode()
                 .put("id", id)
-                .put("name", name);
+                .put("name", name)
+                .put("comment", comment);
     }
 }
