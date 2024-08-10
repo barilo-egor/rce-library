@@ -5,4 +5,6 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 
 public interface IApiRequisiteService extends IBasePersistService<ApiRequisite> {
     ApiRequisite save(Long paymentTypePid, String requisite);
+
+    ApiRequisite update(Long paymentRequisitePid, String requisite, Boolean isOn);
 }

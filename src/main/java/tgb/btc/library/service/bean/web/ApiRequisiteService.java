@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.ApiPaymentType;
@@ -16,9 +17,9 @@ import java.util.Objects;
 @Service
 public class ApiRequisiteService extends BasePersistService<ApiRequisite> implements IApiRequisiteService {
 
-    private ApiRequisiteRepository apiRequisiteRepository;
+    private final ApiRequisiteRepository apiRequisiteRepository;
 
-    private IApiPaymentTypeService apiPaymentTypeService;
+    private final IApiPaymentTypeService apiPaymentTypeService;
 
     @Autowired
     public ApiRequisiteService(ApiRequisiteRepository apiRequisiteRepository,
@@ -44,5 +45,18 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
                 .requisite(requisite)
                 .isOn(false)
                 .build());
+    }
+
+    @Override
+    public ApiRequisite update(Long paymentRequisitePid, String requisite, Boolean isOn) {
+        ApiRequisite apiRequisite = apiRequisiteRepository.findById(paymentRequisitePid)
+                .orElseThrow(() -> new BaseException("Апи реквизит pid=" + paymentRequisitePid + " не найден."));
+        if (StringUtils.isNotEmpty(requisite)) {
+            apiRequisite.setRequisite(requisite);
+        }
+        if (!Objects.isNull(isOn)) {
+            apiRequisite.setIsOn(isOn);
+        }
+        return save(apiRequisite);
     }
 }
