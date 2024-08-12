@@ -38,6 +38,6 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
         apiPaymentType.setId(id);
         apiPaymentType.setName(name);
         apiPaymentType.setComment(comment);
-        return apiPaymentType;
+        return apiPaymentTypeRepository.save(apiPaymentType);
     }
 }
