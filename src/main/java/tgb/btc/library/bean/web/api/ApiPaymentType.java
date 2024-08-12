@@ -46,7 +46,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
                 .put("id", id)
                 .put("name", name)
                 .put("comment", comment)
-                .put("dealType", dealType.getNominativeFirstLetterToUpper())
+                .put("dealType", dealType.getNominative())
                 .put("fiatCurrency", DealType.BUY.equals(dealType) ? fiatCurrency.name() : null)
                 .put("cryptoCurrency", DealType.SELL.equals(dealType) ? cryptoCurrency.name() : null)
                 .put("minSum", minSum);
