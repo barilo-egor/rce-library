@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentType> {
     List<ApiPaymentType> findAll(DealType dealType);
+
+    ApiPaymentType update(Long pid, String name, String id, String comment);
 }
