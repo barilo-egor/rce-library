@@ -27,6 +27,7 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
         return apiPaymentTypeRepository;
     }
 
+    @Override
     public List<ApiPaymentType> findAll(DealType dealType) {
         return apiPaymentTypeRepository.findAll(Example.of(ApiPaymentType.builder().dealType(dealType).build()));
     }
