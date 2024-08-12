@@ -9,10 +9,7 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "API_PAYMENT_TYPE")
@@ -31,6 +28,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     private String comment;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DealType dealType;
 
     @Enumerated(EnumType.STRING)
