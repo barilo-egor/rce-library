@@ -10,6 +10,8 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -28,10 +30,13 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
 
     private String comment;
 
+    @Enumerated(EnumType.STRING)
     private DealType dealType;
 
+    @Enumerated(EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
+    @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
     private Integer minSum;
