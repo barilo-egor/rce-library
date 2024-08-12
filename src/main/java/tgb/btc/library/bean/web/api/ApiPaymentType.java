@@ -34,6 +34,8 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
 
     private CryptoCurrency cryptoCurrency;
 
+    private Integer minSum;
+
     @Override
     public ObjectNode map() {
         return new ObjectMapper()
@@ -42,6 +44,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
                 .put("name", name)
                 .put("comment", comment)
                 .put("dealType", dealType.getNominativeFirstLetterToUpper())
-                .put("cryptoCurrency", cryptoCurrency.name());
+                .put("cryptoCurrency", cryptoCurrency.name())
+                .put("minSum", minSum);
     }
 }
