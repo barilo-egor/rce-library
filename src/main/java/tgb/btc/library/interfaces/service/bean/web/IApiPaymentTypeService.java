@@ -10,4 +10,6 @@ public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentTy
     List<ApiPaymentType> findAll(DealType dealType);
 
     ApiPaymentType update(Long pid, String name, String id, String comment);
+
+    void delete(Long pid);
 }
