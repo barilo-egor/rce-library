@@ -62,6 +62,9 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
     @Query("select u.id from ApiUser u left join u.paymentTypes pt on pt.pid = :paymentTypePid where pt is null")
     List<String> getIdExcludePaymentTypePid(Long paymentTypePid);
 
+    @Query("select id from ApiUser where lower(id) like lower(:query)")
+    List<String> getIdLikeQuery(String query);
+
     /**
      * DELETE
      */

@@ -237,4 +237,8 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
         return apiUserRepository;
     }
 
+    @Override
+    public List<String> getIdLikeQuery(String query) {
+        return apiUserRepository.getIdLikeQuery("%" + query + "%");
+    }
 }

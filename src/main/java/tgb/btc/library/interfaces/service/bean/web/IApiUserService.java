@@ -67,4 +67,6 @@ public interface IApiUserService extends IBasePersistService<ApiUser> {
     void addPaymentType(String apiUserId, Long paymentTypePid);
 
     void deletePaymentType(String apiUserId, Long paymentTypePid);
+
+    List<String> getIdLikeQuery(String query);
 }
