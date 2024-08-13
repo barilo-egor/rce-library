@@ -11,10 +11,10 @@ import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bean.web.IApiPaymentTypeService;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
+import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
@@ -23,6 +23,7 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ApiUserService extends BasePersistService<ApiUser> implements IApiUserService {
@@ -33,11 +34,11 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     private EntityManager entityManager;
 
-    private IApiPaymentTypeService apiPaymentTypeService;
+    private final ApiPaymentTypeRepository apiPaymentTypeRepository;
 
     @Autowired
-    public void setApiPaymentTypeService(IApiPaymentTypeService apiPaymentTypeService) {
-        this.apiPaymentTypeService = apiPaymentTypeService;
+    public ApiUserService(ApiPaymentTypeRepository apiPaymentTypeRepository) {
+        this.apiPaymentTypeRepository = apiPaymentTypeRepository;
     }
 
     @Autowired
@@ -205,14 +206,14 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
                 .anyMatch(apiPaymentType -> apiPaymentType.getPid().equals(paymentTypePid))) {
             throw new BaseException("Тип оплаты " + paymentTypePid + " уже привязан к апи пользователю " + apiUserId);
         }
-        ApiPaymentType apiPaymentType = apiPaymentTypeService.findById(paymentTypePid);
-        if (Objects.isNull(apiPaymentType)) {
+        Optional<ApiPaymentType> apiPaymentType = apiPaymentTypeRepository.findById(paymentTypePid);
+        if (apiPaymentType.isEmpty()) {
             throw new BaseException("Апи тип оплаты не найден по пиду " + paymentTypePid);
         }
         if (Objects.isNull(apiUser.getPaymentTypes())) {
             apiUser.setPaymentTypes(new ArrayList<>());
         }
-        apiUser.getPaymentTypes().add(apiPaymentType);
+        apiUser.getPaymentTypes().add(apiPaymentType.get());
         apiUserRepository.save(apiUser);
     }
 
