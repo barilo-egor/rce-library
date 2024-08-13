@@ -7,10 +7,10 @@ import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiRequisite;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.bean.web.IApiPaymentTypeService;
-import tgb.btc.library.interfaces.service.bean.web.IApiRequisiteService;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
+import tgb.btc.library.repository.web.ApiRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.util.List;
@@ -22,14 +22,14 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
 
     private final IApiUserService apiUserService;
 
-    private final IApiRequisiteService apiRequisiteService;
+    private final ApiRequisiteRepository apiRequisiteRepository;
 
     @Autowired
     public ApiPaymentTypeService(ApiPaymentTypeRepository apiPaymentTypeRepository, IApiUserService apiUserService,
-                                 IApiRequisiteService apiRequisiteService) {
+                                 ApiRequisiteRepository apiRequisiteRepository) {
         this.apiPaymentTypeRepository = apiPaymentTypeRepository;
         this.apiUserService = apiUserService;
-        this.apiRequisiteService = apiRequisiteService;
+        this.apiRequisiteRepository = apiRequisiteRepository;
     }
 
     @Override
@@ -58,12 +58,10 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
         for (String apiUserId : apiUsersIds) {
             apiUserService.deletePaymentType(apiUserId, apiPaymentType.getPid());
         }
-        List<ApiRequisite> apiRequisites = apiRequisiteService.findAll(Example.of(
+        List<ApiRequisite> apiRequisites = apiRequisiteRepository.findAll(Example.of(
                 ApiRequisite.builder().apiPaymentType(apiPaymentType).build())
         );
-        for (ApiRequisite apiRequisite : apiRequisites) {
-            apiRequisiteService.delete(apiRequisite);
-        }
+        apiRequisiteRepository.deleteAll(apiRequisites);
         apiPaymentTypeRepository.deleteById(pid);
     }
 }
