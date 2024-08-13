@@ -7,7 +7,7 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 import java.util.List;
 
 public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentType> {
-    List<ApiPaymentType> findAll(DealType dealType);
+    List<ApiPaymentType> findAll(DealType dealType, String apiUserId);
 
     ApiPaymentType update(Long pid, String name, String id, String comment);
 

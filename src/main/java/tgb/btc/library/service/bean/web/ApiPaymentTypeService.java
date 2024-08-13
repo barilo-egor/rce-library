@@ -1,10 +1,12 @@
 package tgb.btc.library.service.bean.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiRequisite;
+import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.bean.web.IApiPaymentTypeService;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
@@ -13,7 +15,10 @@ import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
 import tgb.btc.library.repository.web.ApiRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> implements IApiPaymentTypeService {
@@ -38,7 +43,16 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
     }
 
     @Override
-    public List<ApiPaymentType> findAll(DealType dealType) {
+    public List<ApiPaymentType> findAll(DealType dealType, String apiUserId) {
+        if (StringUtils.isNotEmpty(apiUserId)) {
+            ApiUser apiUser = apiUserService.getById(apiUserId);
+            if (Objects.isNull(apiUser)) {
+                return Collections.emptyList();
+            }
+            return apiUser.getPaymentTypes().stream()
+                    .filter(apiPaymentType -> apiPaymentType.getDealType().equals(dealType))
+                    .collect(Collectors.toList());
+        }
         return apiPaymentTypeRepository.findAll(Example.of(ApiPaymentType.builder().dealType(dealType).build()));
     }
 
