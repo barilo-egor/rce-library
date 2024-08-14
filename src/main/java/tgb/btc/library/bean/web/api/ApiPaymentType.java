@@ -3,6 +3,7 @@ package tgb.btc.library.bean.web.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -38,6 +39,8 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
+    @Column(nullable = false, precision = 10, scale = 8)
+    @ColumnDefault("0")
     private BigDecimal minSum;
 
     @Override
