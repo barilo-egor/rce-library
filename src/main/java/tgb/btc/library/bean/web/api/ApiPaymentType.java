@@ -10,6 +10,7 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "API_PAYMENT_TYPE")
@@ -37,7 +38,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
-    private Integer minSum;
+    private BigDecimal minSum;
 
     @Override
     public ObjectNode map() {
@@ -50,6 +51,6 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
                 .put("dealType", dealType.getNominative())
                 .put("fiatCurrency", DealType.BUY.equals(dealType) ? fiatCurrency.name() : null)
                 .put("cryptoCurrency", DealType.SELL.equals(dealType) ? cryptoCurrency.name() : null)
-                .put("minSum", minSum);
+                .put("minSum", minSum.toPlainString());
     }
 }
