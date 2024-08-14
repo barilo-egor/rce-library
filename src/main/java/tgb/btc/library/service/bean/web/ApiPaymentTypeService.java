@@ -15,6 +15,7 @@ import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
 import tgb.btc.library.repository.web.ApiRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -57,11 +58,12 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
     }
 
     @Override
-    public ApiPaymentType update(Long pid, String name, String id, String comment) {
+    public ApiPaymentType update(Long pid, String name, String id, String comment, BigDecimal minSum) {
         ApiPaymentType apiPaymentType = apiPaymentTypeRepository.getById(pid);
         apiPaymentType.setId(id);
         apiPaymentType.setName(name);
         apiPaymentType.setComment(comment);
+        apiPaymentType.setMinSum(minSum);
         return apiPaymentTypeRepository.save(apiPaymentType);
     }
 
