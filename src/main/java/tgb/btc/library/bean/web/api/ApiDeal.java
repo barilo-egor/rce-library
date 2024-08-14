@@ -65,6 +65,9 @@ public class ApiDeal extends BasePersist {
     @Enumerated(EnumType.STRING)
     private ReceiptFormat receiptFormat;
 
+    @ManyToOne
+    private ApiPaymentType apiPaymentType;
+
     public BigDecimal getAmountToPay() {
         if (DealType.isBuy(dealType)) return amount;
         else return cryptoAmount;
