@@ -39,7 +39,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
-    @Column(nullable = false, precision = 10, scale = 8)
+    @Column(nullable = false, precision = 15, scale = 8)
     @ColumnDefault("0")
     private BigDecimal minSum;
 
