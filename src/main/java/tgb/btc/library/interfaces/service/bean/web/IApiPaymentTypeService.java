@@ -13,4 +13,6 @@ public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentTy
     ApiPaymentType update(Long pid, String name, String id, String comment, BigDecimal minSum);
 
     void delete(Long pid);
+
+    boolean exists(String id);
 }

@@ -80,4 +80,9 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
         apiRequisiteRepository.deleteAll(apiRequisites);
         apiPaymentTypeRepository.deleteById(pid);
     }
+
+    @Override
+    public boolean exists(String id) {
+        return apiPaymentTypeRepository.exists(Example.of(ApiPaymentType.builder().id(id).build()));
+    }
 }
