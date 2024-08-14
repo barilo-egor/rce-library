@@ -68,6 +68,9 @@ public class ApiDeal extends BasePersist {
     @ManyToOne
     private ApiPaymentType apiPaymentType;
 
+    @ManyToOne
+    private ApiRequisite apiRequisite;
+
     public BigDecimal getAmountToPay() {
         if (DealType.isBuy(dealType)) return amount;
         else return cryptoAmount;
