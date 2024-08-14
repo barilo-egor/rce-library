@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,5 +85,10 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
     @Override
     public boolean exists(String id) {
         return apiPaymentTypeRepository.exists(Example.of(ApiPaymentType.builder().id(id).build()));
+    }
+
+    @Override
+    public Optional<ApiPaymentType> findById(String id) {
+        return apiPaymentTypeRepository.findOne(Example.of(ApiPaymentType.builder().id(id).build()));
     }
 }

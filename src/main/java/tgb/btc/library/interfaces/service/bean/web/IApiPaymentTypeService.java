@@ -6,6 +6,7 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentType> {
     List<ApiPaymentType> findAll(DealType dealType, String apiUserId);
@@ -15,4 +16,6 @@ public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentTy
     void delete(Long pid);
 
     boolean exists(String id);
+
+    Optional<ApiPaymentType> findById(String id);
 }
