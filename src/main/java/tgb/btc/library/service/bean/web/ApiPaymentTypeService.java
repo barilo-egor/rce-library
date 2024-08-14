@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiRequisite;
 import tgb.btc.library.bean.web.api.ApiUser;
@@ -16,10 +17,7 @@ import tgb.btc.library.repository.web.ApiRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,5 +88,17 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
     @Override
     public Optional<ApiPaymentType> findById(String id) {
         return apiPaymentTypeRepository.findOne(Example.of(ApiPaymentType.builder().id(id).build()));
+    }
+
+    @Override
+    public List<ApiPaymentType> getAvailable(ApiUser apiUser, DealType dealType) {
+        List<ApiPaymentType> apiPaymentTypes = new ArrayList<>(apiUser.getPaymentTypes());
+        if (Objects.nonNull(dealType)) {
+            apiPaymentTypes.removeIf(apiPaymentType -> !apiPaymentType.getDealType().equals(dealType));
+            apiPaymentTypes.removeIf(apiPaymentType -> CollectionUtils.isEmpty(
+                    apiRequisiteRepository.findAll(Example.of(ApiRequisite.builder().apiPaymentType(apiPaymentType).build()))
+            ));
+        }
+        return apiPaymentTypes;
     }
 }

@@ -1,6 +1,7 @@
 package tgb.btc.library.interfaces.service.bean.web;
 
 import tgb.btc.library.bean.web.api.ApiPaymentType;
+import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
@@ -18,4 +19,6 @@ public interface IApiPaymentTypeService extends IBasePersistService<ApiPaymentTy
     boolean exists(String id);
 
     Optional<ApiPaymentType> findById(String id);
+
+    List<ApiPaymentType> getAvailable(ApiUser apiUser, DealType dealType);
 }
