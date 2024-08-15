@@ -7,7 +7,6 @@ import org.apache.commons.lang.BooleanUtils;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
-import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
@@ -53,14 +52,6 @@ public class ApiUser extends BasePersist implements JsonConvertable {
 
     @Getter
     @Setter
-    private String buyRequisite;
-
-    @Getter
-    @Setter
-    private String sellRequisite;
-
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FiatCurrency fiatCurrency;
@@ -97,11 +88,6 @@ public class ApiUser extends BasePersist implements JsonConvertable {
         return webUsers;
     }
 
-    public String getRequisite(DealType dealType) {
-        if (DealType.isBuy(dealType)) return buyRequisite;
-        else return sellRequisite;
-    }
-
     public List<UsdApiUserCourse> getUsdApiUserCourseList() {
         if (Objects.nonNull(usdApiUserCourseList)) {
             return usdApiUserCourseList;
@@ -124,9 +110,7 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .put("personalDiscount", getPersonalDiscount())
                 .put("registrationDate", getRegistrationDate().format(DateTimeFormatter.ISO_DATE))
                 .put("isBanned", BooleanUtils.isTrue(getIsBanned()))
-                .put("token", getToken())
-                .put("buyRequisite", getBuyRequisite())
-                .put("sellRequisite", getSellRequisite());
+                .put("token", getToken());
         if (Objects.nonNull(getFiatCurrency())) {
             ObjectNode fiatCurrencyNode = getFiatCurrency().mapFunction().apply(getFiatCurrency());
             result.set("fiatCurrency", fiatCurrencyNode);
