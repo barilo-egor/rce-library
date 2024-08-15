@@ -51,4 +51,8 @@ public abstract class BasePersistService<T extends BasePersist> implements IBase
     public boolean existsById(Long pid) {
         return getBaseRepository().existsById(pid);
     }
+
+    public long count(Example<T> example) {
+        return getBaseRepository().count(example);
+    }
 }
