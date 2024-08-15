@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
-import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
@@ -36,9 +35,6 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     @Enumerated(EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
-    @Enumerated(EnumType.STRING)
-    private CryptoCurrency cryptoCurrency;
-
     @Column(nullable = false, precision = 15, scale = 8)
     @ColumnDefault("0")
     private BigDecimal minSum;
@@ -53,7 +49,6 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
                 .put("comment", comment)
                 .put("dealType", dealType.getNominative())
                 .put("fiatCurrency", DealType.BUY.equals(dealType) ? fiatCurrency.name() : null)
-                .put("cryptoCurrency", DealType.SELL.equals(dealType) ? cryptoCurrency.name() : null)
                 .put("minSum", minSum.stripTrailingZeros().toPlainString());
     }
 }
