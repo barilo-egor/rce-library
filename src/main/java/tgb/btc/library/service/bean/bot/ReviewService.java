@@ -1,6 +1,9 @@
 package tgb.btc.library.service.bean.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Review;
@@ -31,7 +34,20 @@ public class ReviewService extends BasePersistService<Review> implements IReview
         return reviewRepository.findAll();
     }
 
+    @Override
     public List<Review> findAllByIsPublished(Boolean isPublished) {
         return reviewRepository.findAllByIsPublished(isPublished);
+    }
+
+    @Override
+    public List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit, Sort sort) {
+        return reviewRepository.findAll(Example.of(Review.builder().isPublished(isPublished).build()),
+                PageRequest.of(page, limit, sort)).toList();
+    }
+
+    @Override
+    public List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit) {
+        return reviewRepository.findAll(Example.of(Review.builder().isPublished(isPublished).build()),
+                PageRequest.of(page, limit)).toList();
     }
 }
