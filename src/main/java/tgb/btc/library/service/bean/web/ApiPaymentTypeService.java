@@ -104,8 +104,10 @@ public class ApiPaymentTypeService extends BasePersistService<ApiPaymentType> im
         if (Objects.nonNull(dealType)) {
             apiPaymentTypes.removeIf(apiPaymentType -> !apiPaymentType.getDealType().equals(dealType));
         }
-        apiPaymentTypes.removeIf(apiPaymentType -> CollectionUtils.isEmpty(
-                apiRequisiteRepository.findAll(Example.of(ApiRequisite.builder().apiPaymentType(apiPaymentType).build()))
+        apiPaymentTypes.removeIf(apiPaymentType -> apiPaymentType.getDealType().equals(DealType.BUY) &&
+                CollectionUtils.isEmpty(apiRequisiteRepository.findAll(
+                        Example.of(ApiRequisite.builder().apiPaymentType(apiPaymentType).build())
+                )
         ));
         return apiPaymentTypes;
     }
