@@ -80,4 +80,8 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     String getCheckImageIdByPid(Long pid);
 
     ReceiptFormat getReceiptFormatByPid(Long pid);
+
+    void dropApiRequisite(Long apiRequisitePid);
+
+    void dropApiPaymentType(Long apiPaymentTypePid);
 }

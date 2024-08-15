@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiRequisite;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.web.IApiDealService;
 import tgb.btc.library.interfaces.service.bean.web.IApiPaymentTypeService;
 import tgb.btc.library.interfaces.service.bean.web.IApiRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
@@ -21,11 +22,14 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
 
     private final IApiPaymentTypeService apiPaymentTypeService;
 
+    private final IApiDealService apiDealService;
+
     @Autowired
     public ApiRequisiteService(ApiRequisiteRepository apiRequisiteRepository,
-                               IApiPaymentTypeService apiPaymentTypeService) {
+                               IApiPaymentTypeService apiPaymentTypeService, IApiDealService apiDealService) {
         this.apiRequisiteRepository = apiRequisiteRepository;
         this.apiPaymentTypeService = apiPaymentTypeService;
+        this.apiDealService = apiDealService;
     }
 
     @Override
@@ -58,5 +62,11 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
             apiRequisite.setIsOn(isOn);
         }
         return save(apiRequisite);
+    }
+
+    @Override
+    public void delete(Long pid) {
+        apiDealService.dropApiRequisite(pid);
+        apiRequisiteRepository.deleteById(pid);
     }
 }

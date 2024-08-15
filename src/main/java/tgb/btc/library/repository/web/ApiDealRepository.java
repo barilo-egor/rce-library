@@ -99,4 +99,12 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Modifying
     @Query("delete from ApiDeal where apiUser.id=:apiUserId")
     void deleteByApiUserId(String apiUserId);
+
+    @Modifying
+    @Query("update ApiDeal set apiRequisite=null where apiRequisite.pid=:apiRequsitePid")
+    void dropApiRequisite(Long apiRequisitePid);
+
+    @Modifying
+    @Query("update ApiDeal set apiPaymentType=null where apiPaymentType.pid=:apiPaymentTypePid")
+    void dropApiPaymentType(Long apiPaymentTypePid);
 }

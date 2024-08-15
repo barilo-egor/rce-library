@@ -7,4 +7,6 @@ public interface IApiRequisiteService extends IBasePersistService<ApiRequisite> 
     ApiRequisite save(Long paymentTypePid, String requisite);
 
     ApiRequisite update(Long paymentRequisitePid, String requisite, Boolean isOn);
+
+    void delete(Long pid);
 }

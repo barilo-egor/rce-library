@@ -243,6 +243,16 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
+    public void dropApiRequisite(Long apiRequisitePid) {
+        apiDealRepository.dropApiRequisite(apiRequisitePid);
+    }
+
+    @Override
+    public void dropApiPaymentType(Long apiPaymentTypePid) {
+        apiDealRepository.dropApiPaymentType(apiPaymentTypePid);
+    }
+
+    @Override
     protected BaseRepository<ApiDeal> getBaseRepository() {
         return apiDealRepository;
     }
