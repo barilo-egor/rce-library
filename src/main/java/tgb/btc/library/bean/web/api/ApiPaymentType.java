@@ -33,6 +33,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
     private DealType dealType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FiatCurrency fiatCurrency;
 
     @Column(nullable = false, precision = 15, scale = 8)
@@ -48,7 +49,7 @@ public class ApiPaymentType extends BasePersist implements JsonConvertable {
                 .put("name", name)
                 .put("comment", comment)
                 .put("dealType", dealType.getNominative())
-                .put("fiatCurrency", DealType.BUY.equals(dealType) ? fiatCurrency.name() : null)
+                .put("fiatCurrency", fiatCurrency.name())
                 .put("minSum", minSum.stripTrailingZeros().toPlainString());
     }
 }
