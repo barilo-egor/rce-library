@@ -34,8 +34,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
 
     List<ApiDeal> getByDateBetween(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
-    List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
-
     List<ApiDeal> getByDateBetweenExcludeStart(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
     List<ApiDeal> getDealsByPids(List<Long> dealsPids);
@@ -53,8 +51,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     List<Long> getPidsByQuery(String query);
 
     List<ApiDeal> getAcceptedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate, Long userPid);
-
-    List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate);
 
     List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid);
 

@@ -34,9 +34,6 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal d where d.dateTime >= :startDate AND d.dateTime < :endDate and d.apiDealStatus=:apiDealStatus")
     List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
-    @Query("from ApiDeal d where d.dateTime > :startDate AND d.dateTime <= :endDate and d.apiDealStatus=:apiDealStatus")
-    List<ApiDeal> getByDateBetweenExcludeStart(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
-
     @Query("from ApiDeal where pid in (:dealsPids)")
     List<ApiDeal> getDealsByPids(List<Long> dealsPids);
 
@@ -61,17 +58,11 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
     List<ApiDeal> getAcceptedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate, Long userPid);
 
-    @Query("from ApiDeal d where (d.dateTime BETWEEN :startDate AND :endDate) and d.apiDealStatus='ACCEPTED'")
-    List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate);
-
     @Query("from ApiDeal d where d.dateTime>=:dateTime and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
     List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid);
 
     @Query("from ApiDeal d where d.dateTime<=:dateTime and d.apiDealStatus='ACCEPTED' and d.apiUser.pid=:userPid")
     List<ApiDeal> getAcceptedByDateTimeBefore(LocalDateTime dateTime, Long userPid);
-
-    @Query("select apiUser.pid from ApiDeal where pid=:pid")
-    Long getApiUserPidByDealPid(Long pid);
 
     @Query("select count(d.pid) from ApiDeal d where d.apiUser.token=:token and d.pid=:dealPid")
     Long getCountByTokenAndPid(String token, Long dealPid);

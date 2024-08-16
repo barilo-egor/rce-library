@@ -120,15 +120,9 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
-    public List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate,
-            ApiDealStatus apiDealStatus) {
-        return apiDealRepository.getByDateBetweenExcludeEnd(startDate, endDate, apiDealStatus);
-    }
-
-    @Override
     public List<ApiDeal> getByDateBetweenExcludeStart(LocalDateTime startDate, LocalDateTime endDate,
             ApiDealStatus apiDealStatus) {
-        return apiDealRepository.getByDateBetweenExcludeStart(startDate, endDate, apiDealStatus);
+        return apiDealRepository.getByDateBetween(startDate.plusSeconds(1), endDate, apiDealStatus);
     }
 
     @Override
@@ -172,11 +166,6 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
-    public List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate) {
-        return apiDealRepository.getAcceptedByDateTimeBetweenExcludeEnd(startDate, endDate);
-    }
-
-    @Override
     public List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid) {
         return apiDealRepository.getAcceptedByDateTimeAfter(dateTime, userPid);
     }
@@ -188,7 +177,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
 
     @Override
     public Long getApiUserPidByDealPid(Long pid) {
-        return apiDealRepository.getApiUserPidByDealPid(pid);
+        return apiDealRepository.getByPid(pid).getApiUser().getPid();
     }
 
     @Override

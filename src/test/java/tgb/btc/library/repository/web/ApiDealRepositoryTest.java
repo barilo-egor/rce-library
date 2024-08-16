@@ -10,6 +10,7 @@ import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
+import tgb.btc.library.repository.bot.DealRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -26,6 +27,7 @@ class ApiDealRepositoryTest {
 
     @Autowired
     private ApiUserRepository apiUserRepository;
+    private DealRepository dealRepository;
 
     @Test
     void getByPid() {
@@ -420,22 +422,124 @@ class ApiDealRepositoryTest {
 
     @Test
     void getAcceptedByDateTimeBetween() {
-    }
+        ApiUser apiUserForAccepted = new ApiUser();
+        apiUserForAccepted.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForAccepted);
 
-    @Test
-    void getAcceptedByDateTimeBetweenExcludeEnd() {
+        ApiUser apiUserForConfirmed = new ApiUser();
+        apiUserForConfirmed.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForConfirmed);
+
+        int dealsCount = 3;
+        Set<ApiDeal> expected = new HashSet<>();
+        for (int i = 1; i <= dealsCount; i++) {
+            LocalDateTime dateTime = LocalDateTime.of(2001, 1, i, 0, 1);
+
+            ApiDeal acceptedApiDeal = new ApiDeal();
+            acceptedApiDeal.setApiUser(apiUserForAccepted);
+            acceptedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            acceptedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(acceptedApiDeal);
+            expected.add(acceptedApiDeal);
+
+            ApiDeal confirmedApiDeal = new ApiDeal();
+            confirmedApiDeal.setApiUser(apiUserForConfirmed);
+            confirmedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            confirmedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(confirmedApiDeal);
+
+            ApiDeal apiDealWithoutUser = new ApiDeal();
+            apiDealWithoutUser.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            apiDealWithoutUser.setDateTime(dateTime);
+            apiDealRepository.save(apiDealWithoutUser);
+        }
+
+        assertEquals(expected, new HashSet<>(apiDealRepository.getAcceptedByDateTimeBetween(
+                LocalDateTime.of(2001, 1, 1, 0, 1),
+                LocalDateTime.of(2001, 1, dealsCount, 0, 1),
+                apiUserForAccepted.getPid())));
     }
 
     @Test
     void getAcceptedByDateTimeAfter() {
+        ApiUser apiUserForAccepted = new ApiUser();
+        apiUserForAccepted.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForAccepted);
+
+        ApiUser apiUserForConfirmed = new ApiUser();
+        apiUserForConfirmed.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForConfirmed);
+
+        int dealsCount = 3;
+        Set<ApiDeal> expected = new HashSet<>();
+        for (int i = 1; i <= dealsCount; i++) {
+            LocalDateTime dateTime = LocalDateTime.of(2001, 1, i, 0, 1);
+
+            ApiDeal acceptedApiDeal = new ApiDeal();
+            acceptedApiDeal.setApiUser(apiUserForAccepted);
+            acceptedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            acceptedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(acceptedApiDeal);
+            if (i > 1) {
+                expected.add(acceptedApiDeal);
+            }
+
+            ApiDeal confirmedApiDeal = new ApiDeal();
+            confirmedApiDeal.setApiUser(apiUserForConfirmed);
+            confirmedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            confirmedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(confirmedApiDeal);
+
+            ApiDeal apiDealWithoutUser = new ApiDeal();
+            apiDealWithoutUser.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            apiDealWithoutUser.setDateTime(dateTime);
+            apiDealRepository.save(apiDealWithoutUser);
+        }
+
+        assertEquals(expected, new HashSet<>(apiDealRepository.getAcceptedByDateTimeAfter(
+                LocalDateTime.of(2001, 1, 2, 0, 1),
+                apiUserForAccepted.getPid())));
     }
 
     @Test
     void getAcceptedByDateTimeBefore() {
-    }
+        ApiUser apiUserForAccepted = new ApiUser();
+        apiUserForAccepted.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForAccepted);
 
-    @Test
-    void getApiUserPidByDealPid() {
+        ApiUser apiUserForConfirmed = new ApiUser();
+        apiUserForConfirmed.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUserForConfirmed);
+
+        int dealsCount = 3;
+        Set<ApiDeal> expected = new HashSet<>();
+        for (int i = 1; i <= dealsCount; i++) {
+            LocalDateTime dateTime = LocalDateTime.of(2001, 1, i, 0, 1);
+
+            ApiDeal acceptedApiDeal = new ApiDeal();
+            acceptedApiDeal.setApiUser(apiUserForAccepted);
+            acceptedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            acceptedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(acceptedApiDeal);
+            if (i != dealsCount) {
+                expected.add(acceptedApiDeal);
+            }
+
+            ApiDeal confirmedApiDeal = new ApiDeal();
+            confirmedApiDeal.setApiUser(apiUserForConfirmed);
+            confirmedApiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            confirmedApiDeal.setDateTime(dateTime);
+            apiDealRepository.save(confirmedApiDeal);
+
+            ApiDeal apiDealWithoutUser = new ApiDeal();
+            apiDealWithoutUser.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            apiDealWithoutUser.setDateTime(dateTime);
+            apiDealRepository.save(apiDealWithoutUser);
+        }
+
+        assertEquals(expected, new HashSet<>(apiDealRepository.getAcceptedByDateTimeBefore(
+                LocalDateTime.of(2001, 1, dealsCount - 1, 0, 1),
+                apiUserForAccepted.getPid())));
     }
 
     @Test
