@@ -8,10 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.ApiDealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
-import tgb.btc.library.repository.bot.DealRepository;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +29,9 @@ class ApiDealRepositoryTest {
 
     @Autowired
     private ApiUserRepository apiUserRepository;
-    private DealRepository dealRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     void getByPid() {
@@ -544,29 +548,86 @@ class ApiDealRepositoryTest {
 
     @Test
     void getCountByTokenAndPid() {
+        ApiUser apiUser = new ApiUser();
+        apiUser.setToken("token");
+        apiUser.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUser);
+        Set<Long> pids = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+            ApiDeal apiDeal = new ApiDeal();
+            apiDeal.setApiUser(apiUser);
+            apiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+            apiDealRepository.save(apiDeal);
+            pids.add(apiDeal.getPid());
+        }
+        for (Long pid : pids) {
+            assertEquals(1, apiDealRepository.getCountByTokenAndPid("token", pid));
+            assertEquals(0, apiDealRepository.getCountByTokenAndPid("", pid));
+        }
+        assertEquals(0, apiDealRepository.getCountByTokenAndPid("token", Long.MAX_VALUE));
     }
 
     @Test
     void getApiDealTypeByPid() {
+        ApiDealType variable = ApiDealType.API;
+        ApiDeal apiDeal = new ApiDeal();
+        apiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+        apiDeal.setApiDealType(variable);
+        apiDealRepository.save(apiDeal);
+        assertEquals(variable, apiDealRepository.getApiDealTypeByPid(apiDeal.getPid()));
+        assertNull(apiDealRepository.getApiDealTypeByPid(Long.MAX_VALUE));
     }
 
     @Test
     void getCheckImageIdByPid() {
+        String variable = "check";
+        ApiDeal apiDeal = new ApiDeal();
+        apiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+        apiDeal.setCheckImageId(variable);
+        apiDealRepository.save(apiDeal);
+        assertEquals(variable, apiDealRepository.getCheckImageIdByPid(apiDeal.getPid()));
+        assertNull(apiDealRepository.getCheckImageIdByPid(Long.MAX_VALUE));
     }
 
     @Test
     void getReceiptFormatByPid() {
+        ReceiptFormat variable = ReceiptFormat.PDF;
+        ApiDeal apiDeal = new ApiDeal();
+        apiDeal.setApiDealStatus(ApiDealStatus.ACCEPTED);
+        apiDeal.setReceiptFormat(variable);
+        apiDealRepository.save(apiDeal);
+        assertEquals(variable, apiDealRepository.getReceiptFormatByPid(apiDeal.getPid()));
+        assertNull(apiDealRepository.getReceiptFormatByPid(Long.MAX_VALUE));
     }
 
     @Test
     void updateApiDealStatusByPid() {
+        ApiDealStatus variable = ApiDealStatus.PAID;
+        ApiDeal apiDeal = new ApiDeal();
+        apiDeal.setApiDealStatus(ApiDealStatus.CREATED);
+        apiDealRepository.save(apiDeal);
+        apiDealRepository.updateApiDealStatusByPid(variable, apiDeal.getPid());
+        entityManager.clear();
+        apiDeal = apiDealRepository.getByPid(apiDeal.getPid());
+        assertEquals(variable, apiDeal.getApiDealStatus());
     }
 
     @Test
     void updateDealsApiUser() {
+
     }
 
     @Test
     void deleteByApiUserId() {
+    }
+
+    @Test
+    void dropApiRequisite() {
+
+    }
+
+    @Test
+    void dropApiPaymentType() {
+
     }
 }
