@@ -122,8 +122,8 @@ public class CryptoApiService implements ICryptoApiService {
 
     private JSONObject readJsonFromUrl(String url) {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setConnectTimeout(5000);
-        factory.setReadTimeout(5000);
+        factory.setConnectTimeout(2500);
+        factory.setReadTimeout(2500);
         RestTemplate restTemplate = new RestTemplate(factory);
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url,
