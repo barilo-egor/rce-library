@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class SecurePaymentDetails extends BasePersist {
 
-    private String requisite;
+    private String details;
 
     private Integer minDealCount;
 }
