@@ -30,15 +30,15 @@ public enum CryptoApi {
         return url;
     }
 
-    public static final List<CryptoApi> BTC_USD = List.of(CryptoApi.BTC_USD_BLOCKCHAIN, CryptoApi.BTC_USD_BINANCE);
+    public static final List<CryptoApi> BTC_USD = List.of(CryptoApi.BTC_USD_BINANCE, CryptoApi.BTC_USD_BLOCKCHAIN);
 
-    public static final List<CryptoApi> LTS_USD = List.of(CryptoApi.LTC_USD_BLOCKCHAIN, CryptoApi.LTC_USD_BINANCE);
+    public static final List<CryptoApi> LTS_USD = List.of(CryptoApi.LTC_USD_BINANCE, CryptoApi.LTC_USD_BLOCKCHAIN);
 
     public static final List<CryptoApi> XMR_USD = List.of(CryptoApi.XMR_USD_KRAKEN);
 
-    public static final List<CryptoApi> BTC_RUB = List.of(CryptoApi.BTC_RUB_COINGECKO, CryptoApi.BTC_RUB_BINANCE);
+    public static final List<CryptoApi> BTC_RUB = List.of(CryptoApi.BTC_RUB_BINANCE, CryptoApi.BTC_RUB_COINGECKO);
 
-    public static final List<CryptoApi> LTC_RUB = List.of(CryptoApi.LTC_RUB_COINGECKO, CryptoApi.LTC_RUB_BINANCE);
+    public static final List<CryptoApi> LTC_RUB = List.of(CryptoApi.LTC_RUB_BINANCE, CryptoApi.LTC_RUB_COINGECKO);
 
     public static List<CryptoApi> getCryptoApis(CryptoCurrency cryptoCurrency) {
         switch (cryptoCurrency) {
