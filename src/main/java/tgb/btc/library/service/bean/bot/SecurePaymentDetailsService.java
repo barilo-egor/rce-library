@@ -9,8 +9,6 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.SecurePaymentDetailsRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
-import java.util.Objects;
-
 @Service
 public class SecurePaymentDetailsService extends BasePersistService<SecurePaymentDetails> implements ISecurePaymentDetailsService {
 
@@ -27,11 +25,8 @@ public class SecurePaymentDetailsService extends BasePersistService<SecurePaymen
     }
 
     @Override
-    public SecurePaymentDetails update(Long pid, Boolean isOn, String details) {
+    public SecurePaymentDetails update(Long pid, String details) {
         SecurePaymentDetails securePaymentDetails = repository.getById(pid);
-        if (Objects.nonNull(isOn)) {
-            securePaymentDetails.setIsOn(isOn);
-        }
         if (StringUtils.isNotEmpty(details)) {
             securePaymentDetails.setDetails(details);
         }
