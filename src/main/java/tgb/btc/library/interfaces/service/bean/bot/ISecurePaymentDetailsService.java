@@ -5,4 +5,8 @@ import tgb.btc.library.interfaces.service.IBasePersistService;
 
 public interface ISecurePaymentDetailsService extends IBasePersistService<SecurePaymentDetails> {
     SecurePaymentDetails update(Long pid, String details);
+
+    boolean hasAccessToPaymentTypes(Long chatId);
+
+    SecurePaymentDetails getByChatId(Long chatId);
 }
