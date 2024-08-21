@@ -55,4 +55,8 @@ public abstract class BasePersistService<T extends BasePersist> implements IBase
     public long count(Example<T> example) {
         return getBaseRepository().count(example);
     }
+
+    public long count() {
+        return getBaseRepository().count();
+    }
 }

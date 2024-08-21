@@ -25,4 +25,6 @@ public interface IBasePersistService<T extends BasePersist> {
     List<T> findAll(Example<T> example);
 
     long count(Example<T> example);
+
+    long count();
 }
