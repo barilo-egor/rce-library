@@ -20,4 +20,6 @@ public class SecurePaymentDetails extends BasePersist {
     private String details;
 
     private Integer minDealCount;
+
+    private Boolean isOn;
 }

@@ -4,4 +4,5 @@ import tgb.btc.library.bean.bot.SecurePaymentDetails;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
 public interface ISecurePaymentDetailsService extends IBasePersistService<SecurePaymentDetails> {
+    SecurePaymentDetails update(Long pid, Boolean isOn, String details);
 }

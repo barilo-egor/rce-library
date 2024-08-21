@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean.bot;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.SecurePaymentDetails;
@@ -7,6 +8,8 @@ import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.SecurePaymentDetailsRepository;
 import tgb.btc.library.service.bean.BasePersistService;
+
+import java.util.Objects;
 
 @Service
 public class SecurePaymentDetailsService extends BasePersistService<SecurePaymentDetails> implements ISecurePaymentDetailsService {
@@ -21,5 +24,17 @@ public class SecurePaymentDetailsService extends BasePersistService<SecurePaymen
     @Override
     protected BaseRepository<SecurePaymentDetails> getBaseRepository() {
         return repository;
+    }
+
+    @Override
+    public SecurePaymentDetails update(Long pid, Boolean isOn, String details) {
+        SecurePaymentDetails securePaymentDetails = repository.getById(pid);
+        if (Objects.nonNull(isOn)) {
+            securePaymentDetails.setIsOn(isOn);
+        }
+        if (StringUtils.isNotEmpty(details)) {
+            securePaymentDetails.setDetails(details);
+        }
+        return save(securePaymentDetails);
     }
 }
