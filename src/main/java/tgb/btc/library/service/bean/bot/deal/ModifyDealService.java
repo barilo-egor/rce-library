@@ -165,6 +165,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     public void confirm(Long dealPid) {
         Deal deal = readDealService.findByPid(dealPid);
         User user = deal.getUser();
+        boolean hasAccessToPaymentTypes = securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId());
 
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
@@ -190,7 +191,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         deal.setDealStatus(DealStatus.CONFIRMED);
         save(deal);
         DealDeleteScheduler.deleteCryptoDeal(deal.getPid());
-        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId())) {
+        if (hasAccessToPaymentTypes) {
             paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
         if (Objects.nonNull(user.getLotteryCount())) user.setLotteryCount(user.getLotteryCount() + 1);
