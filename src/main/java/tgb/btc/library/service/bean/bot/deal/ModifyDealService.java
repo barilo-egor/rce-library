@@ -16,6 +16,7 @@ import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
+import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
@@ -65,6 +66,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private IBigDecimalService bigDecimalService;
 
     private IModule<ReferralType> referralModule;
+
+    private ISecurePaymentDetailsService securePaymentDetailsService;
+
+    @Autowired
+    public void setSecurePaymentDetailsService(ISecurePaymentDetailsService securePaymentDetailsService) {
+        this.securePaymentDetailsService = securePaymentDetailsService;
+    }
 
     @Autowired
     public void setBigDecimalService(IBigDecimalService bigDecimalService) {
@@ -182,7 +190,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         deal.setDealStatus(DealStatus.CONFIRMED);
         save(deal);
         DealDeleteScheduler.deleteCryptoDeal(deal.getPid());
-        paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
+        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId())) {
+            paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
+        }
         if (Objects.nonNull(user.getLotteryCount())) user.setLotteryCount(user.getLotteryCount() + 1);
         else user.setLotteryCount(1);
         user.setCurrentDeal(null);
