@@ -22,6 +22,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 public class GroupChatService extends BasePersistService<GroupChat> implements IGroupChatService {
 
     private GroupChatRepository groupChatRepository;

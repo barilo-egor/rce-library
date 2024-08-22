@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.SecurePaymentDetails;
 import tgb.btc.library.exception.BaseException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 public class SecurePaymentDetailsService extends BasePersistService<SecurePaymentDetails> implements ISecurePaymentDetailsService {
 
     private final SecurePaymentDetailsRepository repository;

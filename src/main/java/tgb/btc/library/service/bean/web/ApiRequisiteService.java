@@ -3,6 +3,7 @@ package tgb.btc.library.service.bean.web;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.api.ApiPaymentType;
 import tgb.btc.library.bean.web.api.ApiRequisite;
 import tgb.btc.library.exception.BaseException;
@@ -16,6 +17,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class ApiRequisiteService extends BasePersistService<ApiRequisite> implements IApiRequisiteService {
 
     private final ApiRequisiteRepository apiRequisiteRepository;

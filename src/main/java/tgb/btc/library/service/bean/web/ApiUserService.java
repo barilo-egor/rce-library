@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ApiUserService extends BasePersistService<ApiUser> implements IApiUserService {
 
     private ApiUserRepository apiUserRepository;

@@ -4,6 +4,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class ApiDealService extends BasePersistService<ApiDeal> implements IApiDealService {
 
     private ApiDealRepository apiDealRepository;
