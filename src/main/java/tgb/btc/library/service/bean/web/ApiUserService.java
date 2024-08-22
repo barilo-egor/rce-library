@@ -12,6 +12,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.web.IApiUserService;
+import tgb.btc.library.interfaces.service.bean.web.IWebUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
 import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
@@ -37,9 +38,12 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     private final ApiPaymentTypeRepository apiPaymentTypeRepository;
 
+    private final IWebUserService webUserService;
+
     @Autowired
-    public ApiUserService(ApiPaymentTypeRepository apiPaymentTypeRepository) {
+    public ApiUserService(ApiPaymentTypeRepository apiPaymentTypeRepository, IWebUserService webUserService) {
         this.apiPaymentTypeRepository = apiPaymentTypeRepository;
+        this.webUserService = webUserService;
     }
 
     @Autowired
@@ -132,7 +136,12 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     @Override
     public Long getPidByUsername(String username) {
-        return apiUserRepository.getPidByUsername(username);
+        return findAll().stream().filter(apiUser ->
+                        apiUser.getWebUsers().stream()
+                                .anyMatch(webUser -> webUser.getUsername().equals(username)))
+                .findFirst()
+                .orElseThrow(() -> new BaseException("Апи пользователь не найден."))
+                .getPid();
     }
 
     @Override
