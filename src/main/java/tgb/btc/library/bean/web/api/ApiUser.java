@@ -70,7 +70,7 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @Setter
     private ApiDeal lastPaidDeal;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<WebUser> webUsers;
 
     @OneToOne
