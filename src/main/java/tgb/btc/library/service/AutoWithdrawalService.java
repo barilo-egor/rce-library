@@ -122,7 +122,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             return;
         }
         String toAddress = deal.getWallet();
-        String amount = "0.001";
+        String amount = deal.getCryptoAmount().toPlainString();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(electrumLitecoinRpcUrl);
 
