@@ -86,7 +86,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     private BigDecimal getLitecoinWalletBalance() {
         if (configPropertiesReader.isDev() || !autoWithdrawalLitecoin) {
             log.debug("Включен режим разработчика. Возвращается заглушка для баланса.");
-            return new BigDecimal(0);
+            return new BigDecimal(500);
         }
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(5000);
@@ -123,6 +123,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
         String toAddress = deal.getWallet();
         String amount = deal.getCryptoAmount().toPlainString();
+        log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(electrumLitecoinRpcUrl);
 

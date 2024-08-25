@@ -123,6 +123,11 @@ public class GroupChatService extends BasePersistService<GroupChat> implements I
         return existsByType(GroupChatType.DEAL_REQUEST);
     }
 
+    @Override
+    public boolean hasAutoWithdrawal() {
+        return existsByType(GroupChatType.AUTO_WITHDRAWAL);
+    }
+
     private boolean existsByType(GroupChatType groupChatType) {
         return groupChatRepository.exists(Example.of(GroupChat.builder()
                 .type(groupChatType)
