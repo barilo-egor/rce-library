@@ -44,6 +44,9 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     @Value("${rpc.litecoin.password}")
     private String rpcLitecoinPassword;
 
+    @Value("${auto.withdrawal.litecoin}")
+    private boolean autoWithdrawalLitecoin;
+
     private final IReadDealService readDealService;
 
     private final ConfigPropertiesReader configPropertiesReader;
@@ -81,7 +84,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     }
 
     private BigDecimal getLitecoinWalletBalance() {
-        if (configPropertiesReader.isDev()) {
+        if (configPropertiesReader.isDev() || !autoWithdrawalLitecoin) {
             log.debug("Включен режим разработчика. Возвращается заглушка для баланса.");
             return new BigDecimal(0);
         }
@@ -111,6 +114,9 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
 
 
     private void sendLtc(Deal deal) throws IOException {
+        if (!autoWithdrawalLitecoin) {
+            throw new BaseException("Автовывод лайткоина отключен.");
+        }
         if (configPropertiesReader.isDev()) {
             log.debug("Включен режим разработчика. Отправка валюты отменена.");
             return;
