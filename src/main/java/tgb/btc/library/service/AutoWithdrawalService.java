@@ -23,6 +23,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.IAutoWithdrawalService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealPropertyService;
 import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
 import java.io.IOException;
@@ -52,10 +53,14 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
 
     private final ConfigPropertiesReader configPropertiesReader;
 
+    private final IDealPropertyService dealPropertyService;
+
     @Autowired
-    public AutoWithdrawalService(IReadDealService readDealService, ConfigPropertiesReader configPropertiesReader) {
+    public AutoWithdrawalService(IReadDealService readDealService, ConfigPropertiesReader configPropertiesReader,
+                                 IDealPropertyService dealPropertyService) {
         this.readDealService = readDealService;
         this.configPropertiesReader = configPropertiesReader;
+        this.dealPropertyService = dealPropertyService;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         if (!autoWithdrawalLitecoin) {
             throw new BaseException("Автовывод лайткоина отключен.");
         }
-        if (DealStatus.CONFIRMED.equals(deal.getDealStatus())) {
+        if (DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid()))) {
             throw new BaseException("Заявка уже подтверждена. Автовывод невозможен.");
         }
         if (configPropertiesReader.isDev()) {
