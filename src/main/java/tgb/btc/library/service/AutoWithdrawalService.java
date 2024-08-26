@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.IAutoWithdrawalService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
@@ -113,9 +114,12 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     }
 
 
-    private void sendLtc(Deal deal) throws IOException {
+    private synchronized void sendLtc(Deal deal) throws IOException {
         if (!autoWithdrawalLitecoin) {
             throw new BaseException("Автовывод лайткоина отключен.");
+        }
+        if (DealStatus.CONFIRMED.equals(deal.getDealStatus())) {
+            throw new BaseException("Заявка уже подтверждена. Автовывод невозможен.");
         }
         if (configPropertiesReader.isDev()) {
             log.debug("Включен режим разработчика. Отправка валюты отменена.");
