@@ -84,11 +84,11 @@ public interface ApiDealRepository extends BaseRepository<ApiDeal> {
     void updateApiDealStatusByPid(ApiDealStatus status, Long pid);
 
     @Modifying
-    @Query("update ApiDeal set apiUser=:apiUser where apiUser.id=:oldApiUserId")
+    @Query("update ApiDeal deal set deal.apiUser=:apiUser where deal.apiUser = (select u from ApiUser u where u.id = :oldApiUserId)")
     void updateDealsApiUser(ApiUser apiUser, String oldApiUserId);
 
     @Modifying
-    @Query("delete from ApiDeal where apiUser.id=:apiUserId")
+    @Query("delete from ApiDeal deal where deal.apiUser = (select u from ApiUser u where u.id = :apiUserId)")
     void deleteByApiUserId(String apiUserId);
 
     @Modifying

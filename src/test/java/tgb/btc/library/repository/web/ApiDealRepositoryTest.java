@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.ActiveProfiles;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.web.api.ApiDeal;
@@ -614,11 +615,44 @@ class ApiDealRepositoryTest {
 
     @Test
     void updateDealsApiUser() {
-
+        ApiUser apiUser1 = new ApiUser();
+        apiUser1.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUser1);
+        ApiUser apiUser2 = new ApiUser();
+        apiUser2.setId("id");
+        apiUser2.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUser2);
+        for (int i = 0; i < 6; i++) {
+            ApiDeal apiDeal = new ApiDeal();
+            apiDeal.setApiUser(i % 2 == 0 ? apiUser1 : apiUser2);
+            apiDealRepository.save(apiDeal);
+        }
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser2).build())));
+        apiDealRepository.updateDealsApiUser(apiUser1, "id");
+        assertEquals(6, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser1).build())));
+        assertEquals(0, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser2).build())));
     }
 
     @Test
     void deleteByApiUserId() {
+        ApiUser apiUser1 = new ApiUser();
+        apiUser1.setFiatCurrency(FiatCurrency.BYN);
+        apiUser1.setId("id");
+        apiUserRepository.save(apiUser1);
+        ApiUser apiUser2 = new ApiUser();
+        apiUser2.setFiatCurrency(FiatCurrency.BYN);
+        apiUserRepository.save(apiUser2);
+        for (int i = 0; i < 6; i++) {
+            ApiDeal apiDeal = new ApiDeal();
+            apiDeal.setApiUser(i % 2 == 0 ? apiUser1 : apiUser2);
+            apiDealRepository.save(apiDeal);
+        }
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser2).build())));
+        apiDealRepository.deleteByApiUserId("id");
+        assertEquals(0, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiUser(apiUser2).build())));
     }
 
     @Test
