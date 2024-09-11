@@ -11,7 +11,5 @@ public interface IDealPaymentService extends IBasePersistService<DealPayment> {
      * SELECT
      */
 
-    DealPayment getByDealPid(Long dealPid);
-
     List<DealPayment> findAllSortedDescDateTime();
 }

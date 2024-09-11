@@ -23,11 +23,6 @@ public class DealPaymentService extends BasePersistService<DealPayment> implemen
     }
 
     @Override
-    public DealPayment getByDealPid(Long dealPid) {
-        return dealPaymentRepository.getByDealPid(dealPid);
-    }
-
-    @Override
     public List<DealPayment> findAllSortedDescDateTime() {
         return dealPaymentRepository.findAllSortedDescDateTime();
     }
