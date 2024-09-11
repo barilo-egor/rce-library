@@ -8,13 +8,17 @@ import org.springframework.data.domain.Example;
 import org.springframework.test.context.ActiveProfiles;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.web.api.ApiDeal;
+import tgb.btc.library.bean.web.api.ApiPaymentType;
+import tgb.btc.library.bean.web.api.ApiRequisite;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
 import javax.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +37,12 @@ class ApiDealRepositoryTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ApiRequisiteRepository apiRequisiteRepository;
+
+    @Autowired
+    private ApiPaymentTypeRepository apiPaymentTypeRepository;
 
     @Test
     void getByPid() {
@@ -657,11 +667,45 @@ class ApiDealRepositoryTest {
 
     @Test
     void dropApiRequisite() {
-
+        ApiRequisite apiRequisite1 = new ApiRequisite();
+        apiRequisite1.setIsOn(true);
+        apiRequisiteRepository.save(apiRequisite1);
+        ApiRequisite apiRequisite2 = new ApiRequisite();
+        apiRequisite2.setIsOn(true);
+        apiRequisiteRepository.save(apiRequisite2);
+        for (int i = 0; i < 6; i++) {
+            ApiDeal apiDeal = new ApiDeal();
+            apiDeal.setApiRequisite(i % 2 == 0 ? apiRequisite1 : apiRequisite2);
+            apiDealRepository.save(apiDeal);
+        }
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiRequisite(apiRequisite1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiRequisite(apiRequisite2).build())));
+        apiDealRepository.dropApiRequisite(apiRequisite1.getPid());
+        assertEquals(0, apiDealRepository.count(Example.of(ApiDeal.builder().apiRequisite(apiRequisite1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiRequisite(apiRequisite2).build())));
     }
 
     @Test
     void dropApiPaymentType() {
-
+        ApiPaymentType apiPaymentType1 = new ApiPaymentType();
+        apiPaymentType1.setDealType(DealType.BUY);
+        apiPaymentType1.setFiatCurrency(FiatCurrency.BYN);
+        apiPaymentType1.setMinSum(new BigDecimal(1));
+        apiPaymentTypeRepository.save(apiPaymentType1);
+        ApiPaymentType apiPaymentType2 = new ApiPaymentType();
+        apiPaymentType2.setDealType(DealType.BUY);
+        apiPaymentType2.setFiatCurrency(FiatCurrency.BYN);
+        apiPaymentType2.setMinSum(new BigDecimal(1));
+        apiPaymentTypeRepository.save(apiPaymentType2);
+        for (int i = 0; i < 6; i++) {
+            ApiDeal apiDeal = new ApiDeal();
+            apiDeal.setApiPaymentType(i % 2 == 0 ? apiPaymentType1 : apiPaymentType2);
+            apiDealRepository.save(apiDeal);
+        }
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiPaymentType(apiPaymentType1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiPaymentType(apiPaymentType2).build())));
+        apiDealRepository.dropApiPaymentType(apiPaymentType1.getPid());
+        assertEquals(0, apiDealRepository.count(Example.of(ApiDeal.builder().apiPaymentType(apiPaymentType1).build())));
+        assertEquals(3, apiDealRepository.count(Example.of(ApiDeal.builder().apiPaymentType(apiPaymentType2).build())));
     }
 }
