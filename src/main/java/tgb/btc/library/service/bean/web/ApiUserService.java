@@ -84,7 +84,7 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
     @Transactional
     @Override
     public String generateToken(String username) {
-        ApiUser apiUser = apiUserRepository.getByUsername(username);
+        ApiUser apiUser = getByUsername(username);
         String token = RandomStringUtils.randomAlphanumeric(42);
         while (apiUserRepository.countByToken(token) > 0) {
             token = RandomStringUtils.randomAlphanumeric(42);
@@ -146,12 +146,21 @@ public class ApiUserService extends BasePersistService<ApiUser> implements IApiU
 
     @Override
     public FiatCurrency getFiatCurrencyByUsername(String username) {
-        return apiUserRepository.getFiatCurrencyByUsername(username);
+        return findAll().stream().filter(apiUser ->
+                        apiUser.getWebUsers().stream()
+                                .anyMatch(webUser -> webUser.getUsername().equals(username)))
+                .findFirst()
+                .orElseThrow(() -> new BaseException("Апи пользователь не найден."))
+                .getFiatCurrency();
     }
 
     @Override
     public ApiUser getByUsername(String username) {
-        return apiUserRepository.getByUsername(username);
+        return findAll().stream().filter(apiUser ->
+                        apiUser.getWebUsers().stream()
+                                .anyMatch(webUser -> webUser.getUsername().equals(username)))
+                .findFirst()
+                .orElseThrow(() -> new BaseException("Апи пользователь не найден."));
     }
 
     @Override

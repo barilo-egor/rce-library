@@ -84,7 +84,9 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     private List<ApiPaymentType> paymentTypes;
 
     public List<WebUser> getWebUsers() {
-        if (Objects.isNull(webUsers)) return new ArrayList<>();
+        if (Objects.isNull(webUsers)) {
+            webUsers = new ArrayList<>();
+        }
         return webUsers;
     }
 

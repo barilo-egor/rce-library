@@ -8,7 +8,6 @@ import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
-import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.repository.BaseRepository;
 
 import java.util.List;
@@ -37,15 +36,6 @@ public interface ApiUserRepository extends BaseRepository<ApiUser> {
 
     @Query("select u.lastPaidDeal from ApiUser u where u.pid=:userPid")
     ApiDeal getLastPaidDeal(Long userPid);
-
-    @Query("select apiUser.pid from ApiUser apiUser join apiUser.webUsers webUser where webUser.username=:username")
-    Long getPidByUsername(String username);
-
-    @Query("select apiUser.fiatCurrency from ApiUser apiUser join apiUser.webUsers webUser where webUser.username=:username")
-    FiatCurrency getFiatCurrencyByUsername(String username);
-
-    @Query("from ApiUser apiUser join apiUser.webUsers webUser where webUser.username=:username")
-    ApiUser getByUsername(String username);
 
     @Query("select u.webUsers from ApiUser u where u.pid=:pid")
     List<WebUser> getWebUsers(Long pid);
