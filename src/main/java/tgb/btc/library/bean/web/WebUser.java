@@ -1,5 +1,6 @@
 package tgb.btc.library.bean.web;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "WEB_USER")
+@EqualsAndHashCode(callSuper = true)
 public class WebUser extends BasePersist implements UserDetails {
 
     private String username;
