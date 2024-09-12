@@ -70,6 +70,19 @@ public class DealDeleteScheduler {
         }
     }
 
+    public void addNewDeal(Long pid, Integer messageId) {
+        synchronized (NEW_CRYPTO_DEALS_PIDS) {
+            if (Objects.isNull(pid)) return;
+            NEW_CRYPTO_DEALS_PIDS.put(pid, messageId);
+        }
+    }
+
+    public void deleteDeal(Long pid) {
+        synchronized (NEW_CRYPTO_DEALS_PIDS) {
+            NEW_CRYPTO_DEALS_PIDS.remove(pid);
+        }
+    }
+
     @Scheduled(fixedDelay = 10000)
     @Async
     public void deleteOverdueDeals() {

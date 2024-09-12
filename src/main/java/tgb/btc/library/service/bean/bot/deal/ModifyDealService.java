@@ -22,6 +22,7 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.interfaces.service.process.IReferralService;
 import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
@@ -68,6 +69,20 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private IModule<ReferralType> referralModule;
 
     private ISecurePaymentDetailsService securePaymentDetailsService;
+
+    private DealDeleteScheduler dealDeleteScheduler;
+
+    private IReferralService referralService;
+
+    @Autowired
+    public void setReferralService(IReferralService referralService) {
+        this.referralService = referralService;
+    }
+
+    @Autowired
+    public void setDealDeleteScheduler(DealDeleteScheduler dealDeleteScheduler) {
+        this.dealDeleteScheduler = dealDeleteScheduler;
+    }
 
     @Autowired
     public void setSecurePaymentDetailsService(ISecurePaymentDetailsService securePaymentDetailsService) {
@@ -158,7 +173,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         deleteById(dealPid);
         modifyUserService.updateCurrentDealByChatId(null, userChatId);
         if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
-        DealDeleteScheduler.deleteCryptoDeal(dealPid);
+        dealDeleteScheduler.deleteDeal(dealPid);
     }
 
     @Transactional
@@ -168,29 +183,11 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         boolean hasAccessToPaymentTypes = securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId());
 
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
-            BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
-            BigDecimal sumWithDiscount;
-            if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && variablePropertiesReader.isNotBlank("course.rub.byn")) {
-                referralBalance = referralBalance.multiply(variablePropertiesReader.getBigDecimal("course.rub.byn"));
-            }
-            if (referralBalance.compareTo(deal.getOriginalPrice()) < 1) {
-                sumWithDiscount = deal.getOriginalPrice().subtract(referralBalance);
-                referralBalance = BigDecimal.ZERO;
-            } else {
-                sumWithDiscount = BigDecimal.ZERO;
-                referralBalance = referralBalance.subtract(deal.getOriginalPrice()).setScale(0, RoundingMode.HALF_UP);
-                if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                        && variablePropertiesReader.isNotBlank("course.byn.rub")) {
-                    referralBalance = referralBalance.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
-                }
-            }
-            user.setReferralBalance(referralBalance.intValue());
-            deal.setAmount(sumWithDiscount);
+            referralService.processReferralDiscount(deal);
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
         save(deal);
-        DealDeleteScheduler.deleteCryptoDeal(deal.getPid());
+        dealDeleteScheduler.deleteDeal(deal.getPid());
         if (hasAccessToPaymentTypes) {
             paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
@@ -199,24 +196,14 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         user.setCurrentDeal(null);
         modifyUserService.save(user);
         if (user.getFromChatId() != null) {
-            User refUser = readUserService.findByChatId(user.getFromChatId());
-            BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
-            boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
-            BigDecimal referralPercent = isGeneralReferralPercent
-                    ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
-                    : refUserReferralPercent;
-            BigDecimal sumToAdd = bigDecimalService.multiplyHalfUp(deal.getAmount(),
-                    calculateService.getPercentsFactor(referralPercent));
-            if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && variablePropertiesReader.isNotBlank("course.byn.rub")) {
-                sumToAdd = sumToAdd.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
-            }
-            Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
-            modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
-            if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
-                notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
-            modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
+            processReferralBonus(deal);
         }
+        sendNotify(deal);
+
+        if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
+    }
+
+    private void sendNotify(Deal deal) {
         String message;
         if (!DealType.isBuy(deal.getDealType())) {
             message = "Заявка обработана, деньги отправлены.";
@@ -232,14 +219,33 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
                     message = "Валюта отправлена.https://tronscan.io/#/address/" + deal.getWallet();
                     break;
                 case MONERO:
-                    message = "Валюта отправлена."; // TODO добавить url
+                    message = "Валюта отправлена.";
                     break;
                 default:
                     throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
             }
         }
         if (Objects.nonNull(notifier)) notifier.sendNotify(deal.getUser().getChatId(), message);
-        if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
+    }
+
+    private void processReferralBonus(Deal deal) {
+        User refUser = readUserService.findByChatId(deal.getUser().getFromChatId());
+        BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
+        boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
+        BigDecimal referralPercent = isGeneralReferralPercent
+                ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
+                : refUserReferralPercent;
+        BigDecimal sumToAdd = bigDecimalService.multiplyHalfUp(deal.getAmount(),
+                calculateService.getPercentsFactor(referralPercent));
+        if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
+                && variablePropertiesReader.isNotBlank("course.byn.rub")) {
+            sumToAdd = sumToAdd.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
+        }
+        Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
+        modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
+        if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
+            notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
+        modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
     }
 
     /**
