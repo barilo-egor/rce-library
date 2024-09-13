@@ -170,7 +170,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         }
         sendNotify(deal);
 
-        if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
+        if (Objects.nonNull(reviewPriseService)) {
+            reviewPriseService.processReviewPrise(deal.getPid());
+        }
     }
 
     private void sendNotify(Deal deal) {
