@@ -10,11 +10,8 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
-import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.*;
-import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
@@ -22,18 +19,15 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.interfaces.service.process.ILotteryService;
 import tgb.btc.library.interfaces.service.process.IReferralService;
-import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
-import tgb.btc.library.service.process.CalculateService;
-import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -56,23 +50,22 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private IPaymentRequisiteService paymentRequisiteService;
 
-    private CalculateService calculateService;
-
     private INotifier notifier;
 
     private IReviewPriseProcessService reviewPriseService;
-
-    private VariablePropertiesReader variablePropertiesReader;
-
-    private IBigDecimalService bigDecimalService;
-
-    private IModule<ReferralType> referralModule;
 
     private ISecurePaymentDetailsService securePaymentDetailsService;
 
     private DealDeleteScheduler dealDeleteScheduler;
 
     private IReferralService referralService;
+
+    private ILotteryService lotteryService;
+
+    @Autowired
+    public void setLotteryService(ILotteryService lotteryService) {
+        this.lotteryService = lotteryService;
+    }
 
     @Autowired
     public void setReferralService(IReferralService referralService) {
@@ -89,21 +82,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         this.securePaymentDetailsService = securePaymentDetailsService;
     }
 
-    @Autowired
-    public void setBigDecimalService(IBigDecimalService bigDecimalService) {
-        this.bigDecimalService = bigDecimalService;
-    }
-
-    @Autowired
-    public void setReferralModule(IModule<ReferralType> referralModule) {
-        this.referralModule = referralModule;
-    }
-
-    @Autowired
-    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
-        this.variablePropertiesReader = variablePropertiesReader;
-    }
-
     @Autowired(required = false)
     public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
         this.reviewPriseService = reviewPriseService;
@@ -112,11 +90,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
-    }
-
-    @Autowired
-    public void setCalculateService(CalculateService calculateService) {
-        this.calculateService = calculateService;
     }
 
     @Autowired
@@ -180,23 +153,20 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     public void confirm(Long dealPid) {
         Deal deal = readDealService.findByPid(dealPid);
         User user = deal.getUser();
-        boolean hasAccessToPaymentTypes = securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId());
-
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             referralService.processReferralDiscount(deal);
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
         save(deal);
         dealDeleteScheduler.deleteDeal(deal.getPid());
-        if (hasAccessToPaymentTypes) {
+        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId())) {
             paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
-        if (Objects.nonNull(user.getLotteryCount())) user.setLotteryCount(user.getLotteryCount() + 1);
-        else user.setLotteryCount(1);
+        lotteryService.addLottery(user);
         user.setCurrentDeal(null);
         modifyUserService.save(user);
         if (user.getFromChatId() != null) {
-            processReferralBonus(deal);
+            referralService.processReferralBonus(deal);
         }
         sendNotify(deal);
 
@@ -225,27 +195,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
                     throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
             }
         }
-        if (Objects.nonNull(notifier)) notifier.sendNotify(deal.getUser().getChatId(), message);
-    }
-
-    private void processReferralBonus(Deal deal) {
-        User refUser = readUserService.findByChatId(deal.getUser().getFromChatId());
-        BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
-        boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
-        BigDecimal referralPercent = isGeneralReferralPercent
-                ? BigDecimal.valueOf(variablePropertiesReader.getDouble(VariableType.REFERRAL_PERCENT))
-                : refUserReferralPercent;
-        BigDecimal sumToAdd = bigDecimalService.multiplyHalfUp(deal.getAmount(),
-                calculateService.getPercentsFactor(referralPercent));
-        if (referralModule.isCurrent(ReferralType.STANDARD) && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                && variablePropertiesReader.isNotBlank("course.byn.rub")) {
-            sumToAdd = sumToAdd.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
+        if (Objects.nonNull(notifier)) {
+            notifier.sendNotify(deal.getUser().getChatId(), message);
         }
-        Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
-        modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
-        if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
-            notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
-        modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
     }
 
     /**

@@ -1,5 +1,6 @@
 package tgb.btc.library.service.util;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.interfaces.util.IBigDecimalService;
@@ -13,8 +14,6 @@ import java.util.Objects;
 @Service
 public class BigDecimalService implements IBigDecimalService {
 
-    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
-
     private static final int SCALE = Arrays.stream(CryptoCurrency.values())
             .max(Comparator.comparingInt(CryptoCurrency::getScale))
             .map(CryptoCurrency::getScale)
@@ -25,8 +24,9 @@ public class BigDecimalService implements IBigDecimalService {
     }
 
     @Override
+    @Cacheable
     public BigDecimal getHundred() {
-        return HUNDRED;
+        return BigDecimal.valueOf(100);
     }
 
     @Override
@@ -90,5 +90,10 @@ public class BigDecimalService implements IBigDecimalService {
     @Override
     public boolean isZero(BigDecimal number) {
         return BigDecimal.ZERO.compareTo(number) == 0;
+    }
+
+    @Override
+    public boolean isZeroOrNull(BigDecimal number) {
+        return Objects.isNull(number) || number.compareTo(BigDecimal.ZERO) == 0;
     }
 }

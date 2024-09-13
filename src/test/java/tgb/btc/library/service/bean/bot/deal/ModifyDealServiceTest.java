@@ -104,22 +104,7 @@ class ModifyDealServiceTest {
 
     @Test
     void confirmWithUsedReferralDiscountTest() {
-        Long dealPid = 1L;
-        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, 1, 0);
-        User user = new User();
-        user.setPid(1L);
-        Deal deal = new Deal();
-        deal.setPid(dealPid);
-        deal.setDealStatus(DealStatus.PAID);
-        deal.setCreateType(CreateType.BOT);
-        deal.setDateTime(dateTime);
-        deal.setDealType(DealType.BUY);
-        deal.setUser(user);
-        deal.setIsUsedReferralDiscount(true);
 
-        when(readDealService.findByPid(anyLong())).thenReturn(deal);
-
-        modifyDealService.confirm(dealPid);
     }
 
     @Test

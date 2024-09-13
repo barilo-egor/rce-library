@@ -26,4 +26,6 @@ public interface IBigDecimalService {
     BigDecimal round(Double num, int scale);
 
     boolean isZero(BigDecimal number);
+
+    boolean isZeroOrNull(BigDecimal number);
 }
