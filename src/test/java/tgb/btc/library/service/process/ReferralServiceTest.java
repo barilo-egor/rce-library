@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
@@ -18,7 +17,6 @@ import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.service.bean.bot.user.ModifyUserService;
 import tgb.btc.library.service.bean.bot.user.ReadUserService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
-import tgb.btc.library.service.util.BigDecimalService;
 
 import java.math.BigDecimal;
 
@@ -37,9 +35,6 @@ class ReferralServiceTest {
 
     @Mock
     private ReadUserService readUserService;
-
-    @Spy
-    private BigDecimalService bigDecimalService;
 
     @Mock
     private CalculateService calculateService;
