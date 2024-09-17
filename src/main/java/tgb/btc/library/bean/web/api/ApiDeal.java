@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class ApiDeal extends BasePersist {
 
     @ManyToOne(fetch = FetchType.EAGER)

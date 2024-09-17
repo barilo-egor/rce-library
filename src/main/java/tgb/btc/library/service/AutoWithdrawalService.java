@@ -37,16 +37,16 @@ import java.util.Map;
 @Slf4j
 public class AutoWithdrawalService implements IAutoWithdrawalService {
 
-    @Value("${electrum.litecoin.rpc.url}")
+    @Value("${electrum.litecoin.rpc.url:#{null}}")
     private String electrumLitecoinRpcUrl;
 
-    @Value("${rpc.litecoin.username}")
+    @Value("${rpc.litecoin.username:#{null}}")
     private String rpcLitecoinUsername;
 
-    @Value("${rpc.litecoin.password}")
+    @Value("${rpc.litecoin.password:#{null}}")
     private String rpcLitecoinPassword;
 
-    @Value("${auto.withdrawal.litecoin}")
+    @Value("${auto.withdrawal.litecoin:#{false}}")
     private boolean autoWithdrawalLitecoin;
 
     private final IReadDealService readDealService;

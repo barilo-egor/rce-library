@@ -24,7 +24,6 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class ApiUser extends BasePersist implements JsonConvertable {
 
     @Getter

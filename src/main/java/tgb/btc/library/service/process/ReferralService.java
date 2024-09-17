@@ -41,7 +41,8 @@ public class ReferralService implements IReferralService {
 
     @Autowired
     public ReferralService(IModule<ReferralType> referralModule, VariablePropertiesReader variablePropertiesReader,
-                           IReadUserService readUserService, BigDecimalService bigDecimalService, INotifier notifier,
+                           IReadUserService readUserService, BigDecimalService bigDecimalService,
+                           @Autowired(required = false) INotifier notifier,
                            CalculateService calculateService, IModifyUserService modifyUserService) {
         this.referralModule = referralModule;
         this.variablePropertiesReader = variablePropertiesReader;

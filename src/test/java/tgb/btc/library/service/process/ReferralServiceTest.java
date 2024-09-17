@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
@@ -17,6 +18,7 @@ import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.service.bean.bot.user.ModifyUserService;
 import tgb.btc.library.service.bean.bot.user.ReadUserService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
+import tgb.btc.library.service.util.BigDecimalService;
 
 import java.math.BigDecimal;
 
@@ -44,6 +46,9 @@ class ReferralServiceTest {
 
     @Mock
     private INotifier notifier;
+
+    @Spy
+    private BigDecimalService bigDecimalService;
 
     @InjectMocks
     private ReferralService referralService;
@@ -172,7 +177,7 @@ class ReferralServiceTest {
         when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
         when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(null);
         when(variablePropertiesReader.getBigDecimal(VariableType.REFERRAL_PERCENT.getKey())).thenReturn(referralPercent);
-        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal(0.02));
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0.02"));
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
 
         referralService.processReferralBonus(deal);
@@ -202,7 +207,7 @@ class ReferralServiceTest {
 
         when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
         when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(referralPercent);
-        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal(0.05));
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0.05"));
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
 
         referralService.processReferralBonus(deal);
@@ -230,7 +235,7 @@ class ReferralServiceTest {
 
         when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
         when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(referralPercent);
-        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal(0.05));
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0.05"));
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
 
         referralService.processReferralBonus(deal);
@@ -256,7 +261,7 @@ class ReferralServiceTest {
 
         when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
         when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(referralPercent);
-        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal(0.05));
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0.05"));
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
         when(variablePropertiesReader.isNotBlank("course.rub.byn")).thenReturn(false);
 
@@ -281,7 +286,7 @@ class ReferralServiceTest {
 
         when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
         when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(referralPercent);
-        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal(0.05));
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0.05"));
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
         when(variablePropertiesReader.isNotBlank("course.rub.byn")).thenReturn(true);
         when(variablePropertiesReader.isNotBlank("course.byn.rub")).thenReturn(false);

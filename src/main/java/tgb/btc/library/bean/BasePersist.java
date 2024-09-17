@@ -1,5 +1,9 @@
 package tgb.btc.library.bean;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,20 +14,15 @@ import java.util.Objects;
 public class BasePersist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    @Getter
+    @Setter
     private Long pid;
 
     public BasePersist() {
     }
 
     public BasePersist(Long pid) {
-        this.pid = pid;
-    }
-
-    public Long getPid() {
-        return pid;
-    }
-
-    public void setPid(Long pid) {
         this.pid = pid;
     }
 
