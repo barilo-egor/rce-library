@@ -26,6 +26,8 @@ public class ApiRequisite extends BasePersist {
 
     private String requisite;
 
+    private String comment;
+
     @NotNull
     @Column(nullable = false)
     private Boolean isOn;
