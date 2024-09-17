@@ -40,7 +40,7 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
     }
 
     @Override
-    public ApiRequisite save(Long paymentTypePid, String requisite) {
+    public ApiRequisite save(Long paymentTypePid, String requisite, String comment) {
         ApiPaymentType apiPaymentType = apiPaymentTypeService.findById(paymentTypePid);
         if (Objects.isNull(apiPaymentType)) {
             throw new BaseException("Апи тип оплаты pid=" + paymentTypePid + " не найден.");
@@ -49,12 +49,13 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
                 .builder()
                 .apiPaymentType(apiPaymentType)
                 .requisite(requisite)
+                .comment(comment)
                 .isOn(false)
                 .build());
     }
 
     @Override
-    public ApiRequisite update(Long paymentRequisitePid, String requisite, Boolean isOn) {
+    public ApiRequisite update(Long paymentRequisitePid, String requisite, String comment, Boolean isOn) {
         ApiRequisite apiRequisite = apiRequisiteRepository.findById(paymentRequisitePid)
                 .orElseThrow(() -> new BaseException("Апи реквизит pid=" + paymentRequisitePid + " не найден."));
         if (StringUtils.isNotEmpty(requisite)) {
@@ -63,6 +64,7 @@ public class ApiRequisiteService extends BasePersistService<ApiRequisite> implem
         if (!Objects.isNull(isOn)) {
             apiRequisite.setIsOn(isOn);
         }
+        apiRequisite.setComment(comment);
         return save(apiRequisite);
     }
 
