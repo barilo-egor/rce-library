@@ -24,7 +24,7 @@ public class BigDecimalService implements IBigDecimalService {
     }
 
     @Override
-    @Cacheable
+    @Cacheable("hundredBigDecimal")
     public BigDecimal getHundred() {
         return BigDecimal.valueOf(100);
     }
