@@ -62,7 +62,6 @@ class ReferralServiceTest {
         deal.setOriginalPrice(new BigDecimal(2000));
 
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
-        when(variablePropertiesReader.isNotBlank(any())).thenReturn(true);
 
         referralService.processReferralDiscount(deal);
         assertAll(
@@ -80,7 +79,6 @@ class ReferralServiceTest {
         deal.setOriginalPrice(new BigDecimal(1500));
 
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
-        when(variablePropertiesReader.isNotBlank(any())).thenReturn(true);
 
         referralService.processReferralDiscount(deal);
         assertAll(
@@ -139,7 +137,6 @@ class ReferralServiceTest {
         deal.setOriginalPrice(new BigDecimal(50));
 
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
-        when(variablePropertiesReader.isNotBlank(any())).thenReturn(true);
         referralService.processReferralDiscount(deal);
         verify(variablePropertiesReader, never()).getBigDecimal(any());
     }
@@ -147,12 +144,22 @@ class ReferralServiceTest {
     @Test
     void processReferralDiscountConvertTestBlankRubBynCourse() {
         Deal deal = new Deal();
+        deal.setFiatCurrency(FiatCurrency.BYN);
+        User user = new User();
+        user.setReferralBalance(1000);
+        deal.setUser(user);
+        when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
         assertThrows(BaseException.class, () -> referralService.processReferralDiscount(deal));
     }
 
     @Test
     void processReferralDiscountConvertTestBlankBynRubCourse() {
         Deal deal = new Deal();
+        deal.setFiatCurrency(FiatCurrency.BYN);
+        User user = new User();
+        user.setReferralBalance(1000);
+        deal.setUser(user);
+        when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
         when(variablePropertiesReader.isNotBlank("course.rub.byn")).thenReturn(true);
         assertThrows(BaseException.class, () -> referralService.processReferralDiscount(deal));
     }

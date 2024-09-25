@@ -55,12 +55,12 @@ public class ReferralService implements IReferralService {
 
     @Override
     public void processReferralDiscount(Deal deal) {
-        checkCoursesNotBlank();
         BigDecimal referralBalance = BigDecimal.valueOf(deal.getUser().getReferralBalance());
         BigDecimal sumWithDiscount;
         boolean isConversionNeeded = referralModule.isCurrent(ReferralType.STANDARD)
                 && FiatCurrency.BYN.equals(deal.getFiatCurrency());
         if (isConversionNeeded) {
+            checkCoursesNotBlank();
             referralBalance = referralBalance.multiply(variablePropertiesReader.getBigDecimal("course.rub.byn"));
         }
         if (referralBalance.compareTo(deal.getOriginalPrice()) < 1) {
