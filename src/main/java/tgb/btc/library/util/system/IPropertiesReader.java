@@ -135,6 +135,7 @@ public interface IPropertiesReader {
                     instance.setListDelimiter(IPropertiesReader.getListDelimiter());
                     instance.setDelimiterParsingDisabled(true);
                     instance.setAutoSave(true);
+                    instance.setEncoding("UTF-8");
                     instance.load();
                     instance.setReloadingStrategy(new FileChangedReloadingStrategy());
                     properties.put(IPropertiesReader, instance);
