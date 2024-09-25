@@ -28,10 +28,7 @@ import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -141,7 +138,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         String authHeader = "Basic " + java.util.Base64.getEncoder().encodeToString(auth.getBytes());
         httpPost.setHeader("Authorization", authHeader);
 
-        // Формирование JSON запроса для создания транзакции
+        // Формирование JSON запроса для создания и отправки транзакции
         Map<String, Object> request = new HashMap<>();
         request.put("jsonrpc", "2.0");
         request.put("id", "1");
@@ -151,6 +148,10 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         List<Object> params = new ArrayList<>();
         params.add(toAddress);
         params.add(amount);
+        // Добавляем параметр broadcast=true
+        Map<String, Object> options = new HashMap<>();
+        options.put("broadcast", true);
+        params.add(options);
         request.put("params", params);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -159,37 +160,42 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         httpPost.setEntity(new StringEntity(jsonRequest));
         httpPost.setHeader("Content-type", "application/json");
 
-        // Выполнение запроса для создания транзакции
-        String signedTransaction;
+        // Выполнение запроса для создания и отправки транзакции
+        String txHash;
         try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
             String jsonResponse = EntityUtils.toString(response.getEntity());
             Map<String, Object> result = objectMapper.readValue(jsonResponse, Map.class);
-            signedTransaction = (String) result.get("result");
-            log.info("Транзакция создана: {}", signedTransaction);
+            txHash = (String) result.get("result");
+            log.info("Транзакция отправлена: {}", txHash);
         }
 
-        // Теперь нужно отправить созданную транзакцию в сеть
-        HttpPost broadcastPost = new HttpPost(electrumLitecoinRpcUrl);
+        // Проверяем статус транзакции
+        HttpPost statusPost = new HttpPost(electrumLitecoinRpcUrl);
+        statusPost.setHeader("Authorization", authHeader);
 
-        broadcastPost.setHeader("Authorization", authHeader);
+        Map<String, Object> statusRequest = new HashMap<>();
+        statusRequest.put("jsonrpc", "2.0");
+        statusRequest.put("id", "2");
+        statusRequest.put("method", "gettransaction");
+        statusRequest.put("params", Collections.singletonList(txHash));
 
-        Map<String, Object> broadcastRequest = new HashMap<>();
-        broadcastRequest.put("jsonrpc", "2.0");
-        broadcastRequest.put("id", "2");
-        broadcastRequest.put("method", "broadcast");
-        broadcastRequest.put("params", new String[]{signedTransaction});
+        String statusJsonRequest = objectMapper.writeValueAsString(statusRequest);
+        statusPost.setEntity(new StringEntity(statusJsonRequest));
+        statusPost.setHeader("Content-type", "application/json");
 
-        String broadcastJsonRequest = objectMapper.writeValueAsString(broadcastRequest);
-        broadcastPost.setEntity(new StringEntity(broadcastJsonRequest));
-        broadcastPost.setHeader("Content-type", "application/json");
+        try (CloseableHttpResponse statusResponse = httpClient.execute(statusPost)) {
+            String statusJsonResponse = EntityUtils.toString(statusResponse.getEntity());
+            log.debug("Ответ отправки LTC по сделке {}: {}", deal.getPid(), statusJsonResponse);
+            Map<String, Object> statusResult = objectMapper.readValue(statusJsonResponse, Map.class);
+            String txDetails = (String) statusResult.get("result");
 
-        // Выполнение запроса для отправки транзакции
-        try (CloseableHttpResponse broadcastResponse = httpClient.execute(broadcastPost)) {
-            String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
-            Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
-            log.info("Транзакция отправлена. Ответ: {}", broadcastResult);
+            if (txDetails != null) {
+                log.info("Результат отправки LTC по сделке {}: {}", deal.getPid(), txDetails);
+            } else {
+                log.error("Не получилось вывести LTC по сделке {}.", deal.getPid());
+                throw new BaseException("Транзакция не была успешно отправлена.");
+            }
         }
     }
-
 
 }
