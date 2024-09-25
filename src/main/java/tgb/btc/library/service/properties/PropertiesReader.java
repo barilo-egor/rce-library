@@ -131,6 +131,7 @@ public abstract class PropertiesReader {
             instance.setListDelimiter(propertiesPath.getListDelimiter());
             instance.setDelimiterParsingDisabled(true);
             instance.setAutoSave(true);
+            instance.setEncoding("UTF-8");
             instance.load();
             instance.setReloadingStrategy(new FileChangedReloadingStrategy());
         } catch (ConfigurationException e) {
