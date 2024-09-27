@@ -1,6 +1,6 @@
 package tgb.btc.library.service.stub;
 
-import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import tgb.btc.api.web.INotifier;
 
 import java.io.File;
@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * Заглушка для тестов. Настоящая реализация в rce.
  */
-@Service
-public class Notifier implements INotifier {
+@ConditionalOnMissingBean
+public class NotifierStub implements INotifier {
 
     @Override
     public void notifyNewApiDeal(Long aLong) {
