@@ -331,6 +331,27 @@ class ReferralServiceTest {
         verify(modifyUserService).updateReferralBalanceByChatId(120, fromChatId);
         verify(notifier).sendNotify(fromChatId, String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, 20));
         verify(modifyUserService).updateChargesByChatId(220, fromChatId);
+        verify(notifier).sendNotify(fromChatId, String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, 20));
     }
 
+    @Test
+    void processReferralSendNotify() {
+        Long fromChatId = 12345678L;
+        User user = new User();
+        user.setFromChatId(fromChatId);
+        User referralUser = new User();
+        referralUser.setChatId(fromChatId);
+        referralUser.setReferralBalance(2);
+        referralUser.setCharges(100);
+        Deal deal = new Deal();
+        deal.setUser(user);
+        deal.setAmount(bigDecimalService.getHundred());
+        when(readUserService.findByChatId(fromChatId)).thenReturn(referralUser);
+        BigDecimal referralPercent = new BigDecimal(1);
+        when(readUserService.getReferralPercentByChatId(fromChatId)).thenReturn(referralPercent);
+        when(calculateService.getPercentsFactor(referralPercent)).thenReturn(new BigDecimal("0"));
+        when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
+        referralService.processReferralBonus(deal);
+        verify(notifier, never()).sendNotify(anyLong(), any());
+    }
 }

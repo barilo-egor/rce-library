@@ -19,7 +19,6 @@ import tgb.btc.library.service.util.BigDecimalService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 @Service
@@ -90,8 +89,9 @@ public class ReferralService implements IReferralService {
         }
         Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
         modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
-        if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
+        if (BigDecimal.ZERO.compareTo(sumToAdd) != 0) {
             notifier.sendNotify(refUser.getChatId(), String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, sumToAdd.intValue()));
+        }
         modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
     }
 
