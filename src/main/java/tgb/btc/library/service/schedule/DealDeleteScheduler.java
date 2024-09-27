@@ -100,7 +100,7 @@ public class DealDeleteScheduler {
                 dealRepository.deleteById(dealPid);
                 modifyUserService.updateCurrentDealByChatId(null, chatId);
                 deleteCryptoDeal(dealPid);
-                if (Objects.nonNull(notifier)) notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
+                notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
                 log.debug("Автоматически удалена заявка №" + dealPid + " по истечению " + dealActiveTime + " минут.");
             }
         }

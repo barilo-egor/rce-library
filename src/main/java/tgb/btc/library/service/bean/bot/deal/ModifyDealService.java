@@ -197,9 +197,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
                     throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
             }
         }
-        if (Objects.nonNull(notifier)) {
-            notifier.sendNotify(deal.getUser().getChatId(), message);
-        }
+        notifier.sendNotify(deal.getUser().getChatId(), message);
     }
 
     /**
