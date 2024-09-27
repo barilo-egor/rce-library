@@ -74,7 +74,7 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     protected BaseRepository<Deal> getBaseRepository() {
-        return modifyDealRepository;
+        return readDealRepository;
     }
 
 }
