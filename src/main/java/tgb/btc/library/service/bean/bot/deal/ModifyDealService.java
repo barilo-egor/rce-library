@@ -11,7 +11,7 @@ import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
-import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
@@ -30,7 +30,6 @@ import tgb.btc.library.service.schedule.DealDeleteScheduler;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -52,7 +51,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private INotifier notifier;
 
-    private IReviewPriseProcessService reviewPriseService;
+    private IReviewPriseProcessService reviewPriseProcessService;
 
     private ISecurePaymentDetailsService securePaymentDetailsService;
 
@@ -84,7 +83,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     @Autowired(required = false)
     public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
-        this.reviewPriseService = reviewPriseService;
+        this.reviewPriseProcessService = reviewPriseService;
     }
 
     @Autowired(required = false)
@@ -170,32 +169,15 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         }
         sendNotify(deal);
 
-        if (Objects.nonNull(reviewPriseService)) {
-            reviewPriseService.processReviewPrise(deal.getPid());
-        }
+        reviewPriseProcessService.processReviewPrise(deal.getPid());
     }
 
     private void sendNotify(Deal deal) {
         String message;
         if (!DealType.isBuy(deal.getDealType())) {
-            message = "Заявка обработана, деньги отправлены.";
+            message = BotMessageConst.DEAL_CONFIRMED.getMessage();
         } else {
-            switch (deal.getCryptoCurrency()) {
-                case BITCOIN:
-                    message = "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/" + deal.getWallet();
-                    break;
-                case LITECOIN:
-                    message = "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/" + deal.getWallet();
-                    break;
-                case USDT:
-                    message = "Валюта отправлена.https://tronscan.io/#/address/" + deal.getWallet();
-                    break;
-                case MONERO:
-                    message = "Валюта отправлена.";
-                    break;
-                default:
-                    throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
-            }
+            message = String.format(deal.getCryptoCurrency().getSendMessage(), deal.getWallet());
         }
         notifier.sendNotify(deal.getUser().getChatId(), message);
     }

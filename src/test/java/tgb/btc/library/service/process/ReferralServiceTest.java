@@ -12,7 +12,7 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.constants.strings.BotMessages;
+import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.service.bean.bot.user.ModifyUserService;
@@ -191,7 +191,7 @@ class ReferralServiceTest {
 
         verify(variablePropertiesReader, never()).getBigDecimal("course.byn.rub");
         verify(modifyUserService).updateReferralBalanceByChatId(102, fromChatId);
-        verify(notifier).sendNotify(fromChatId, String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, 2));
+        verify(notifier).sendNotify(fromChatId, String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(), 2));
         verify(modifyUserService).updateChargesByChatId(202, fromChatId);
     }
 
@@ -329,9 +329,8 @@ class ReferralServiceTest {
         referralService.processReferralBonus(deal);
 
         verify(modifyUserService).updateReferralBalanceByChatId(120, fromChatId);
-        verify(notifier).sendNotify(fromChatId, String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, 20));
+        verify(notifier).sendNotify(fromChatId, String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(), 20));
         verify(modifyUserService).updateChargesByChatId(220, fromChatId);
-        verify(notifier).sendNotify(fromChatId, String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, 20));
     }
 
     @Test

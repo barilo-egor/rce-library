@@ -8,7 +8,7 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.constants.strings.BotMessages;
+import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.IModule;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
@@ -90,7 +90,8 @@ public class ReferralService implements IReferralService {
         Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
         modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
         if (BigDecimal.ZERO.compareTo(sumToAdd) != 0) {
-            notifier.sendNotify(refUser.getChatId(), String.format(BotMessages.FROM_REFERRAL_BALANCE_PURCHASE, sumToAdd.intValue()));
+            notifier.sendNotify(refUser.getChatId(), String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(),
+                    sumToAdd.intValue()));
         }
         modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
     }

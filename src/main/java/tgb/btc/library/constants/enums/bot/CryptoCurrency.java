@@ -10,19 +10,21 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
-    BITCOIN("btc", 8, 0.004),
-    LITECOIN("ltc", 8, 0.7),
-    USDT("usdt", 6, 50.0),
-    MONERO("xmr", 8, 0.5);
+    BITCOIN("btc", 8, 0.004, "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/"),
+    LITECOIN("ltc", 8, 0.7, "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/"),
+    USDT("usdt", 6, 50.0, "Валюта отправлена.https://tronscan.io/#/address/"),
+    MONERO("xmr", 8, 0.5, "Валюта отправлена.");
 
     final String shortName;
     final int scale;
     final Double defaultCheckValue;
+    final String sendMessage;
 
-    CryptoCurrency(String shortName, int scale, Double defaultCheckValue) {
+    CryptoCurrency(String shortName, int scale, Double defaultCheckValue, String sendMessage) {
         this.shortName = shortName;
         this.scale = scale;
         this.defaultCheckValue = defaultCheckValue;
+        this.sendMessage = sendMessage;
     }
 
     public Double getDefaultCheckValue() {
@@ -57,5 +59,9 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
             cryptoCurrency = null;
         }
         return cryptoCurrency;
+    }
+
+    public String getSendMessage() {
+        return sendMessage;
     }
 }
