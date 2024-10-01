@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
-    BITCOIN("btc", 8, 0.004, "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/"),
-    LITECOIN("ltc", 8, 0.7, "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/"),
-    USDT("usdt", 6, 50.0, "Валюта отправлена.https://tronscan.io/#/address/"),
+    BITCOIN("btc", 8, 0.004, "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/%s"),
+    LITECOIN("ltc", 8, 0.7, "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/%s"),
+    USDT("usdt", 6, 50.0, "Валюта отправлена.https://tronscan.io/#/address/%s"),
     MONERO("xmr", 8, 0.5, "Валюта отправлена.");
 
     final String shortName;
