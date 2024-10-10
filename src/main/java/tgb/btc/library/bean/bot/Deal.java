@@ -98,6 +98,12 @@ public class Deal extends BasePersist {
     @Column(name = "COURSE")
     private BigDecimal course;
 
+    /**
+     * Реквизит на который должен отправить сумму клиент
+     */
+    @Column(name = "DETAILS")
+    private String details;
+
     // TODO заменить на сеттеры геттеры ломбока
     public Boolean getUsedPromo() {
         return isUsedPromo;
