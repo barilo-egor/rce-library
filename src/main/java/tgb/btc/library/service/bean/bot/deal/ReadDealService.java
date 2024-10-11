@@ -10,7 +10,6 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
@@ -22,13 +21,6 @@ import java.util.List;
 public class ReadDealService extends BasePersistService<Deal> implements IReadDealService {
 
     private ReadDealRepository readDealRepository;
-
-    private ModifyDealRepository modifyDealRepository;
-
-    @Autowired
-    public void setModifyDealRepository(ModifyDealRepository modifyDealRepository) {
-        this.modifyDealRepository = modifyDealRepository;
-    }
 
     @Autowired
     public void setReadDealRepository(ReadDealRepository readDealRepository) {
@@ -70,6 +62,11 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     public List<PaymentReceipt> getPaymentReceipts(Long dealPid) {
         Deal deal = findByPid(dealPid);
         return new ArrayList<>(deal.getPaymentReceipts());
+    }
+
+    @Override
+    public List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency) {
+        return readDealRepository.getAllByDealStatusAndCryptoCurrency(dealStatus, cryptoCurrency);
     }
 
     @Override

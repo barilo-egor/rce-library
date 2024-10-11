@@ -12,6 +12,7 @@ public enum DealStatus implements ObjectNodeConvertable<DealStatus> {
     AWAITING_VERIFICATION("Ожидает верификацию", "orangeColor"),
     VERIFICATION_REJECTED("Верификация отклонена", "redColor"),
     VERIFICATION_RECEIVED("Верификация получена", "violetColor"),
+    AWAITING_WITHDRAWAL("Ожидает вывод", "powderBlueColor"),
     CONFIRMED("Подтверждена", "lightGrey");
 
     private final String displayName;
