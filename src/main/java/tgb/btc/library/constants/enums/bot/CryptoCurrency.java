@@ -6,6 +6,7 @@ import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -26,6 +27,8 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
         this.defaultCheckValue = defaultCheckValue;
         this.sendMessage = sendMessage;
     }
+
+    public static final List<CryptoCurrency> ELECTRUM_CURRENCIES = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
 
     public Double getDefaultCheckValue() {
         return defaultCheckValue;

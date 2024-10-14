@@ -2,6 +2,7 @@ package tgb.btc.library.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -26,10 +27,13 @@ import tgb.btc.library.interfaces.service.IAutoWithdrawalService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealPropertyService;
 import tgb.btc.library.service.properties.ConfigPropertiesReader;
+import tgb.btc.library.vo.web.electrum.GetBalanceElectrumResponse;
+import tgb.btc.library.vo.web.electrum.SingleTransactionElectrumResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -59,6 +63,8 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     @Value("${auto.withdrawal.bitcoin:#{false}}")
     private boolean autoWithdrawalBitcoin;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     private final IReadDealService readDealService;
 
@@ -78,9 +84,8 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     public BigDecimal getBalance(CryptoCurrency cryptoCurrency) {
         switch (cryptoCurrency) {
             case LITECOIN:
-                return getLitecoinWalletBalance();
             case BITCOIN:
-                return getBitcoinWalletBalance();
+                return getElectrumBalance(cryptoCurrency);
             default:
                 return null;
         }
@@ -92,18 +97,16 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             Deal deal = readDealService.findByPid(dealPid);
             switch (deal.getCryptoCurrency()) {
                 case LITECOIN:
-                    sendLtc(deal);
-                    break;
                 case BITCOIN:
-                    sendBtc(deal);
+                    sendElectrum(deal);
                     break;
                 default:
-                    throw new BaseException("Для данной криптовалюты не предусмотрен автовывод сделки.");
+                    throw new BaseException("Для данной криптовалюты не предусмотрен авто вывод сделки.");
             }
         } catch (Exception e) {
-            log.error("Ошибка при попытке автовывода сделки {}.", dealPid);
+            log.error("Ошибка при попытке авто вывода сделки {}.", dealPid);
             log.error(e.getMessage(), e);
-            throw new BaseException("Ошибка при попытке автовывода.");
+            throw new BaseException("Ошибка при попытке авто вывода.");
         }
     }
 
@@ -116,12 +119,10 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             CryptoCurrency cryptoCurrency = deals.get(0).getCryptoCurrency();
             if (deals.stream().anyMatch(deal -> !cryptoCurrency.equals(deal.getCryptoCurrency())))
                 throw new BaseException("Все сделки должны быть одной крипто валюты.");
-            switch (cryptoCurrency) {
-                case BITCOIN:
-                    sendBtc(deals);
-                    break;
-                default:
-                    throw new BaseException("Для данной криптовалюты не предусмотрен автовывод нескольких сделок.");
+            if (cryptoCurrency == CryptoCurrency.BITCOIN) {
+                sendElectrum(deals);
+            } else {
+                throw new BaseException("Для данной криптовалюты не предусмотрен авто вывод нескольких сделок.");
             }
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода сделки {}.", dealPids);
@@ -130,8 +131,11 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
     }
 
-    private BigDecimal getLitecoinWalletBalance() {
-        if (configPropertiesReader.isDev() || !autoWithdrawalLitecoin) {
+    private BigDecimal getElectrumBalance(CryptoCurrency cryptoCurrency) {
+        if (!CryptoCurrency.ELECTRUM_CURRENCIES.contains(cryptoCurrency)) {
+            throw new BaseException("Реализация предусмотрена только для валют через electrum.");
+        }
+        if (configPropertiesReader.isDev() || !isAutoWithdrawalOn(cryptoCurrency)) {
             log.debug("Включен режим разработчика. Возвращается заглушка для баланса.");
             return new BigDecimal(500);
         }
@@ -148,62 +152,49 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         params.put("jsonrpc", "2.0");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(rpcLitecoinUsername, rpcLitecoinPassword);
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
-
-        ResponseEntity<Map> response = restTemplate.exchange(electrumLitecoinRpcUrl, HttpMethod.POST, request, Map.class);
-
-        Map<String, Object> result = (Map<String, Object>) response.getBody().get("result");
-
-        return new BigDecimal((String) result.get("confirmed"));
-    }
-
-    private BigDecimal getBitcoinWalletBalance() {
-        if (configPropertiesReader.isDev() || !autoWithdrawalBitcoin) {
-            log.debug("Включен режим разработчика. Возвращается заглушка для баланса.");
-            return new BigDecimal(500);
+        if (CryptoCurrency.BITCOIN.equals(cryptoCurrency)) {
+            headers.setBasicAuth(rpcBitcoinUsername, rpcBitcoinPassword);
+        } else {
+            headers.setBasicAuth(rpcLitecoinUsername, rpcLitecoinPassword);
         }
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setConnectTimeout(5000);
-        factory.setReadTimeout(5000);
-        RestTemplate restTemplate = new RestTemplate(factory);
-        String method = "getbalance";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("method", method);
-        params.put("params", new Object[]{});
-        params.put("id", 1);
-        params.put("jsonrpc", "2.0");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(rpcBitcoinUsername, rpcBitcoinPassword);
-
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<Map> response = restTemplate.exchange(electrumBitcoinRpcUrl, HttpMethod.POST, request, Map.class);
-
-        Map<String, Object> result = (Map<String, Object>) response.getBody().get("result");
-
-        return new BigDecimal((String) result.get("confirmed"));
+        String url = getUrl(cryptoCurrency);
+        ResponseEntity<GetBalanceElectrumResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, GetBalanceElectrumResponse.class);
+        GetBalanceElectrumResponse response = responseEntity.getBody();
+        if (Objects.isNull(response)) {
+            throw new BaseException("Отсутствует объект ответа.");
+        }
+        if (Objects.nonNull(response.getResult()) && StringUtils.isNotBlank(response.getResult().getConfirmed())) {
+            return new BigDecimal(response.getResult().getConfirmed());
+        } else if (Objects.nonNull(response.getError())) {
+            String message = "Ошибка получения баланса для " + cryptoCurrency.getShortName() + ". Сообщение от electrum: " + response.getError().getMessage();
+            throw new BaseException(message);
+        } else {
+            String message = "В ответе при получении баланса отсутствуют confirmed и error.";
+            log.error("{}\nОтвет: {}", message, response);
+            throw new BaseException(message);
+        }
     }
 
-    private synchronized void sendLtc(Deal deal) throws IOException {
-        if (!autoWithdrawalLitecoin) {
-            throw new BaseException("Автовывод лайткоина отключен.");
+    private synchronized void sendElectrum(Deal deal) throws IOException {
+        CryptoCurrency cryptoCurrency = deal.getCryptoCurrency();
+        if (!CryptoCurrency.ELECTRUM_CURRENCIES.contains(cryptoCurrency)) {
+            throw new BaseException("Реализация предусмотрена только для валют через electrum.");
         }
         if (DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid()))) {
-            throw new BaseException("Заявка уже подтверждена. Автовывод невозможен.");
+            throw new BaseException("Заявка уже подтверждена. Авто вывод невозможен.");
         }
-        if (configPropertiesReader.isDev()) {
-            log.debug("Включен режим разработчика. Отправка валюты отменена.");
+        if (configPropertiesReader.isDev() || !isAutoWithdrawalOn(cryptoCurrency)) {
+            log.debug("Включен режим разработчика. Фиктивная отправка транзакции.");
             return;
         }
+        String url = getUrl(cryptoCurrency);
         String toAddress = deal.getWallet();
         String amount = deal.getCryptoAmount().toPlainString();
-        log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
+        log.debug("Запрос на авто вывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(electrumLitecoinRpcUrl);
+        HttpPost httpPost = new HttpPost(url);
 
         // Настройка аутентификации
         String auth = rpcLitecoinUsername + ":" + rpcLitecoinPassword;
@@ -229,16 +220,10 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         httpPost.setHeader("Content-type", "application/json");
 
         // Выполнение запроса для создания транзакции
-        String signedTransaction;
-        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            Map<String, Object> result = objectMapper.readValue(jsonResponse, Map.class);
-            signedTransaction = (String) result.get("result");
-            log.info("Транзакция сделки {} создана: {}", deal.getPid(), signedTransaction);
-        }
+        String signedTransaction = createTransaction(httpClient, httpPost);
 
         // Теперь нужно отправить созданную транзакцию в сеть
-        HttpPost broadcastPost = new HttpPost(electrumLitecoinRpcUrl);
+        HttpPost broadcastPost = new HttpPost(url);
 
         broadcastPost.setHeader("Authorization", authHeader);
 
@@ -255,96 +240,46 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         // Выполнение запроса для отправки транзакции
         try (CloseableHttpResponse broadcastResponse = httpClient.execute(broadcastPost)) {
             String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
-            Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
-            log.info("Транзакция сделки {} отправлена. Ответ: {}", deal.getPid(), broadcastResult);
-        }
-    }
-
-    private synchronized void sendBtc(Deal deal) throws IOException {
-        if (!autoWithdrawalBitcoin) {
-            throw new BaseException("Автовывод BTC отключен.");
-        }
-        if (DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid()))) {
-            throw new BaseException("Заявка уже подтверждена. Автовывод невозможен.");
-        }
-        if (configPropertiesReader.isDev()) {
-            log.debug("Включен режим разработчика. Отправка валюты отменена.");
-            return;
-        }
-        String toAddress = deal.getWallet();
-        String amount = deal.getCryptoAmount().toPlainString();
-        log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(electrumBitcoinRpcUrl);
-
-        // Настройка аутентификации
-        String auth = rpcBitcoinUsername + ":" + rpcBitcoinUsername;
-        String authHeader = "Basic " + java.util.Base64.getEncoder().encodeToString(auth.getBytes());
-        httpPost.setHeader("Authorization", authHeader);
-
-        // Формирование JSON запроса для создания транзакции
-        Map<String, Object> request = new HashMap<>();
-        request.put("jsonrpc", "2.0");
-        request.put("id", "1");
-        request.put("method", "payto");
-
-        // Аргументы метода payto
-        List<Object> params = new ArrayList<>();
-        params.add(toAddress);
-        params.add(amount);
-        request.put("params", params);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonRequest = objectMapper.writeValueAsString(request);
-
-        httpPost.setEntity(new StringEntity(jsonRequest));
-        httpPost.setHeader("Content-type", "application/json");
-
-        // Выполнение запроса для создания транзакции
-        String signedTransaction;
-        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            Map<String, Object> result = objectMapper.readValue(jsonResponse, Map.class);
-            signedTransaction = (String) result.get("result");
-            log.info("Транзакция сделки {} создана: {}", deal.getPid(), signedTransaction);
-        }
-
-        // Теперь нужно отправить созданную транзакцию в сеть
-        HttpPost broadcastPost = new HttpPost(electrumBitcoinRpcUrl);
-
-        broadcastPost.setHeader("Authorization", authHeader);
-
-        Map<String, Object> broadcastRequest = new HashMap<>();
-        broadcastRequest.put("jsonrpc", "2.0");
-        broadcastRequest.put("id", "2");
-        broadcastRequest.put("method", "broadcast");
-        broadcastRequest.put("params", new String[]{signedTransaction});
-
-        String broadcastJsonRequest = objectMapper.writeValueAsString(broadcastRequest);
-        broadcastPost.setEntity(new StringEntity(broadcastJsonRequest));
-        broadcastPost.setHeader("Content-type", "application/json");
-
-        // Выполнение запроса для отправки транзакции
-        try (CloseableHttpResponse broadcastResponse = httpClient.execute(broadcastPost)) {
-            String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
-            Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
-            log.info("Транзакция сделки {} отправлена. Ответ: {}", deal.getPid(), broadcastResult);
-        }
-    }
-
-    private synchronized void sendBtc(List<Deal> deals) throws IOException {
-        if (!autoWithdrawalBitcoin) {
-            throw new BaseException("Автовывод BTC отключен.");
-        }
-        if (configPropertiesReader.isDev()) {
-            log.debug("Включен режим разработчика. Отправка валюты отменена.");
-            return;
-        }
-        // Проверка статуса каждой сделки
-        for (Deal deal : deals) {
-            if (DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid()))) {
-                throw new BaseException("Заявка уже подтверждена. Автовывод невозможен для сделки " + deal.getPid());
+            SingleTransactionElectrumResponse response = objectMapper.readValue(broadcastJsonResponse, SingleTransactionElectrumResponse.class);
+            if (Objects.nonNull(response.getError())) {
+                log.error("Ошибка при создании транзакции. Ответ: {}", response);
+                throw new BaseException("Ошибка при создании транзакции. Код: " + response.getError().getCode()
+                        + ", сообщение: " + response.getError().getMessage());
             }
+            log.info("Транзакция сделки {} отправлена. Ответ: {}", deal.getPid(), response);
+        }
+    }
+
+    private String getUrl(CryptoCurrency cryptoCurrency) {
+        return CryptoCurrency.BITCOIN.equals(cryptoCurrency)
+                ? electrumBitcoinRpcUrl
+                : electrumLitecoinRpcUrl;
+    }
+
+    private boolean isAutoWithdrawalOn(CryptoCurrency cryptoCurrency) {
+        switch (cryptoCurrency) {
+            case BITCOIN:
+                return autoWithdrawalBitcoin;
+            case LITECOIN:
+                return autoWithdrawalLitecoin;
+            default:
+                throw new BaseException("Реализация для криптовалюты " + cryptoCurrency.getShortName() + " не предусмотрена.");
+        }
+    }
+
+    private synchronized void sendElectrum(List<Deal> deals) throws IOException {
+        if (!autoWithdrawalBitcoin) {
+            throw new BaseException("Автовывод BTC отключен.");
+        }
+        if (configPropertiesReader.isDev()) {
+            log.debug("Включен режим разработчика. Отправка валюты отменена.");
+            return;
+        }
+        if (deals.stream().anyMatch(deal -> !DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid())))) {
+            throw new BaseException("Одна из заявок уже подтверждена. Вывод невозможен.");
+        }
+        if (CollectionUtils.isEmpty(deals)) {
+            throw new BaseException("Отсутствуют сделки.");
         }
 
         // Сбор адресов и сумм для отправки
@@ -357,7 +292,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(electrumBitcoinRpcUrl);
+        HttpPost httpPost = new HttpPost(getUrl(deals.get(0).getCryptoCurrency()));
 
         // Настройка аутентификации
         String auth = rpcBitcoinUsername + ":" + rpcBitcoinPassword; // убедитесь, что используете пароль
@@ -382,13 +317,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         httpPost.setHeader("Content-type", "application/json");
 
         // Выполнение запроса для создания транзакции
-        String signedTransaction;
-        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            Map<String, Object> result = objectMapper.readValue(jsonResponse, Map.class);
-            signedTransaction = (String) result.get("result");
-            log.info("Транзакция создана: {}", signedTransaction);
-        }
+        String signedTransaction = createTransaction(httpClient, httpPost);
 
         // Отправка транзакции в сеть
         HttpPost broadcastPost = new HttpPost(electrumBitcoinRpcUrl);
@@ -409,7 +338,35 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         try (CloseableHttpResponse broadcastResponse = httpClient.execute(broadcastPost)) {
             String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
             Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
+            if (broadcastResult.containsKey("error")) {
+                log.error("Ошибка при авто выводе сделок: {}", deals.stream()
+                        .map(deal -> String.valueOf(deal.getPid()))
+                        .collect(Collectors.joining())
+                );
+                throw new BaseException("Ошибка при отправке транзакции: " + broadcastResult.get("error"));
+            }
             log.info("Транзакция отправлена. Ответ: {}", broadcastResult);
         }
+    }
+
+    private String createTransaction(CloseableHttpClient httpClient, HttpPost httpPost) throws IOException {
+        String signedTransaction;
+        try (CloseableHttpResponse httpResponse = httpClient.execute(httpPost)) {
+            String jsonResponse = EntityUtils.toString(httpResponse.getEntity());
+            SingleTransactionElectrumResponse response = objectMapper.readValue(jsonResponse, SingleTransactionElectrumResponse.class);
+            if (Objects.nonNull(response.getError())) {
+                log.error("Ошибка при создании транзакции. Ответ: {}", response);
+                throw new BaseException("Ошибка при создании транзакции. Код: " + response.getError().getCode()
+                        + ", сообщение: " + response.getError().getMessage());
+            }
+            if (StringUtils.isEmpty(response.getResult())) {
+                String message = "Отсутствует result при создании транзакции.";
+                log.error("{}\nОтвет: {}", message, response);
+                throw new BaseException();
+            }
+            signedTransaction = response.getResult();
+            log.info("Транзакция создана: {}", signedTransaction);
+        }
+        return signedTransaction;
     }
 }
