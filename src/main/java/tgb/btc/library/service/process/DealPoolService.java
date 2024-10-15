@@ -78,6 +78,7 @@ public class DealPoolService implements IDealPoolService {
 
     @Scheduled(cron = "0 0/10 * * * ?")
     @Async
+    @Override
     public void notifyDealsCount() {
         List<Deal> deals = readDealService.getAllByDealStatusAndCryptoCurrency(DealStatus.AWAITING_WITHDRAWAL, CryptoCurrency.BITCOIN);
         int size = deals.size();

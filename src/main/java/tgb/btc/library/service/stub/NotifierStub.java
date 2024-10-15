@@ -1,6 +1,7 @@
 package tgb.btc.library.service.stub;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 
 import java.io.File;
@@ -9,7 +10,8 @@ import java.util.List;
 /**
  * Заглушка для тестов. Настоящая реализация в rce.
  */
-@ConditionalOnMissingBean
+@Profile({"test", "web"})
+@Service
 public class NotifierStub implements INotifier {
 
     @Override

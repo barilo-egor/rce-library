@@ -59,7 +59,7 @@ public class CurrencyGetter implements ICurrencyGetter {
         this.cryptoApiService = cryptoApiService;
     }
 
-    @Autowired(required = false)
+    @Autowired
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
     }
