@@ -191,8 +191,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
         String url = getUrl(cryptoCurrency);
         String toAddress = deal.getWallet();
-        // TODO УДАЛИТЬ
-        String amount = CryptoCurrency.BITCOIN.equals(cryptoCurrency) ? "0.00000546" : deal.getCryptoAmount().toPlainString();
+        String amount = deal.getCryptoAmount().toPlainString();
         log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
@@ -225,7 +224,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         httpPost.setEntity(new StringEntity(jsonRequest));
         httpPost.setHeader("Content-type", "application/json");
 
-        // Выполнение запроса для создания транзакции
+        log.debug("Создание транзакции.");
         String signedTransaction = createTransaction(httpClient, httpPost);
 
         // Теперь нужно отправить созданную транзакцию в сеть
@@ -288,6 +287,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         if (CollectionUtils.isEmpty(deals)) {
             throw new BaseException("Отсутствуют сделки.");
         }
+        log.debug("Запрос на автовывод сделок: {}", deals.stream().map(deal -> deal.getPid().toString()).collect(Collectors.joining(",")));
 
         // Сбор адресов и сумм для отправки
         List<List<Object>> outputsList = new ArrayList<>();
@@ -316,6 +316,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         List<Object> params = new ArrayList<>();
         params.add(outputsList);
         request.put("params", params);
+        log.debug("Итоговые параметры: {}", params);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(request);
@@ -323,7 +324,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         httpPost.setEntity(new StringEntity(jsonRequest));
         httpPost.setHeader("Content-type", "application/json");
 
-        // Выполнение запроса для создания транзакции
+        log.debug("Создание транзакции.");
         String signedTransaction = createTransaction(httpClient, httpPost);
 
         // Отправка транзакции в сеть
@@ -341,7 +342,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         broadcastPost.setEntity(new StringEntity(broadcastJsonRequest));
         broadcastPost.setHeader("Content-type", "application/json");
 
-        // Выполнение запроса для отправки транзакции
+        log.debug("Выполнение запроса на отправку транзакции {}.", signedTransaction);
         try (CloseableHttpResponse broadcastResponse = httpClient.execute(broadcastPost)) {
             String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
             Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
@@ -353,6 +354,10 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
                 throw new BaseException("Ошибка при отправке транзакции: " + broadcastResult.get("error"));
             }
             log.info("Транзакция отправлена. Ответ: {}", broadcastResult);
+        } catch (Exception e) {
+            log.error("При выполнении запроса на отправку транзакции {} возникла ошибка", signedTransaction);
+            log.error("Описание: ", e);
+            throw new BaseException("При выполнении запроса на отправку транзакции возникла ошибка.");
         }
     }
 
@@ -373,7 +378,11 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             }
             signedTransaction = response.getResult();
             log.info("Транзакция создана: {}", signedTransaction);
+        } catch (Exception e) {
+            log.error("Ошибка при создании транзакции.");
+            throw new BaseException("Ошибка при создании транзакции.");
         }
+        log.debug("Транзакция создана: {}", signedTransaction);
         return signedTransaction;
     }
 }
