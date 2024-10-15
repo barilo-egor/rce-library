@@ -11,4 +11,6 @@ public interface IDealPoolService {
     List<Deal> getAllByDealStatusAndCryptoCurrency(CryptoCurrency cryptoCurrency);
 
     void completePool(List<Deal> deals);
+
+    void deleteFromPool(Long pid);
 }

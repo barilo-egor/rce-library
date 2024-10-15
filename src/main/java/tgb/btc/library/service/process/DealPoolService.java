@@ -50,4 +50,11 @@ public class DealPoolService implements IDealPoolService {
             }
         }
     }
+
+    @Override
+    public void deleteFromPool(Long pid) {
+        synchronized (this) {
+            modifyDealService.updateDealStatusByPid(DealStatus.PAID, pid);
+        }
+    }
 }
