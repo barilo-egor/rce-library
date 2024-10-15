@@ -43,8 +43,9 @@ public class DealPoolService implements IDealPoolService {
      * @param deals сделки
      */
     @Override
-    public void completePool(List<Deal> deals) {
+    public void completePool(CryptoCurrency cryptoCurrency) {
         synchronized (this) {
+            List<Deal> deals = getAllByDealStatusAndCryptoCurrency(cryptoCurrency);
             for (Deal deal : deals) {
                 modifyDealService.updateDealStatusByPid(DealStatus.CONFIRMED, deal.getPid());
             }
