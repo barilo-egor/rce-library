@@ -57,4 +57,15 @@ public class DealPoolService implements IDealPoolService {
             modifyDealService.updateDealStatusByPid(DealStatus.PAID, pid);
         }
     }
+
+    @Override
+    public void clearPool(CryptoCurrency cryptoCurrency) {
+        synchronized (this) {
+            List<Deal> deals = readDealService.getAllByDealStatusAndCryptoCurrency(DealStatus.AWAITING_WITHDRAWAL, cryptoCurrency);
+            for (Deal deal : deals) {
+                deal.setDealStatus(DealStatus.PAID);
+                modifyDealService.save(deal);
+            }
+        }
+    }
 }
