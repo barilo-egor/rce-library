@@ -282,7 +282,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             log.debug("Включен режим разработчика. Отправка валюты отменена.");
             return;
         }
-        if (deals.stream().anyMatch(deal -> !DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid())))) {
+        if (deals.stream().anyMatch(deal -> DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid())))) {
             throw new BaseException("Одна из заявок уже подтверждена. Вывод невозможен.");
         }
         if (CollectionUtils.isEmpty(deals)) {
