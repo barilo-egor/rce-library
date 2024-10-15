@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import tgb.btc.api.web.INotificationsAPI;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
@@ -23,17 +24,22 @@ public class DealPoolService implements IDealPoolService {
 
     private final INotifier notifier;
 
+    private INotificationsAPI notificationsAPI;
+
     @Autowired
-    public DealPoolService(IModifyDealService modifyDealService, IReadDealService readDealService, INotifier notifier) {
+    public DealPoolService(IModifyDealService modifyDealService, IReadDealService readDealService, INotifier notifier,
+                           INotificationsAPI notificationsAPI) {
         this.modifyDealService = modifyDealService;
         this.readDealService = readDealService;
         this.notifier = notifier;
+        this.notificationsAPI = notificationsAPI;
     }
 
     @Override
     public void addToPool(Long pid) {
         synchronized (this) {
             modifyDealService.updateDealStatusByPid(DealStatus.AWAITING_WITHDRAWAL, pid);
+            notificationsAPI.poolChanged();
         }
     }
 
@@ -55,6 +61,7 @@ public class DealPoolService implements IDealPoolService {
             for (Deal deal : deals) {
                 modifyDealService.updateDealStatusByPid(DealStatus.CONFIRMED, deal.getPid());
             }
+            notificationsAPI.poolChanged();
         }
     }
 
@@ -62,6 +69,7 @@ public class DealPoolService implements IDealPoolService {
     public void deleteFromPool(Long pid) {
         synchronized (this) {
             modifyDealService.updateDealStatusByPid(DealStatus.PAID, pid);
+            notificationsAPI.poolChanged();
         }
     }
 
@@ -73,6 +81,7 @@ public class DealPoolService implements IDealPoolService {
                 deal.setDealStatus(DealStatus.PAID);
                 modifyDealService.save(deal);
             }
+            notificationsAPI.poolChanged();
         }
     }
 
