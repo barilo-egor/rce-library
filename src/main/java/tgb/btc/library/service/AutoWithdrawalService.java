@@ -101,12 +101,12 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
                     sendElectrum(deal);
                     break;
                 default:
-                    throw new BaseException("Для данной криптовалюты не предусмотрен авто вывод сделки.");
+                    throw new BaseException("Для данной криптовалюты не предусмотрен автовывод сделки.");
             }
         } catch (Exception e) {
-            log.error("Ошибка при попытке авто вывода сделки {}.", dealPid);
+            log.error("Ошибка при попытке автовывода сделки {}.", dealPid);
             log.error(e.getMessage(), e);
-            throw new BaseException("Ошибка при попытке авто вывода.");
+            throw new BaseException("Ошибка при попытке автовывода.");
         }
     }
 
@@ -122,7 +122,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             if (cryptoCurrency == CryptoCurrency.BITCOIN) {
                 sendElectrum(deals);
             } else {
-                throw new BaseException("Для данной криптовалюты не предусмотрен авто вывод нескольких сделок.");
+                throw new BaseException("Для данной криптовалюты не предусмотрен автовывод нескольких сделок.");
             }
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода сделки {}.", dealPids);
@@ -183,7 +183,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             throw new BaseException("Реализация предусмотрена только для валют через electrum.");
         }
         if (DealStatus.CONFIRMED.equals(dealPropertyService.getDealStatusByPid(deal.getPid()))) {
-            throw new BaseException("Заявка уже подтверждена. Авто вывод невозможен.");
+            throw new BaseException("Заявка уже подтверждена. Автовывод невозможен.");
         }
         if (configPropertiesReader.isDev() || !isAutoWithdrawalOn(cryptoCurrency)) {
             log.debug("Включен режим разработчика. Фиктивная отправка транзакции.");
@@ -191,13 +191,19 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
         String url = getUrl(cryptoCurrency);
         String toAddress = deal.getWallet();
-        String amount = deal.getCryptoAmount().toPlainString();
-        log.debug("Запрос на авто вывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
+        // TODO УДАЛИТЬ
+        String amount = CryptoCurrency.BITCOIN.equals(cryptoCurrency) ? "0.00000546" : deal.getCryptoAmount().toPlainString();
+        log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
 
         // Настройка аутентификации
-        String auth = rpcLitecoinUsername + ":" + rpcLitecoinPassword;
+        String auth;
+        if (CryptoCurrency.BITCOIN.equals(cryptoCurrency)) {
+            auth = rpcBitcoinUsername + ":" + rpcBitcoinPassword;
+        } else {
+            auth = rpcLitecoinUsername + ":" + rpcLitecoinPassword;
+        }
         String authHeader = "Basic " + java.util.Base64.getEncoder().encodeToString(auth.getBytes());
         httpPost.setHeader("Authorization", authHeader);
 
@@ -256,14 +262,15 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
                 : electrumLitecoinRpcUrl;
     }
 
-    private boolean isAutoWithdrawalOn(CryptoCurrency cryptoCurrency) {
+    @Override
+    public boolean isAutoWithdrawalOn(CryptoCurrency cryptoCurrency) {
         switch (cryptoCurrency) {
             case BITCOIN:
                 return autoWithdrawalBitcoin;
             case LITECOIN:
                 return autoWithdrawalLitecoin;
             default:
-                throw new BaseException("Реализация для криптовалюты " + cryptoCurrency.getShortName() + " не предусмотрена.");
+                return false;
         }
     }
 
@@ -339,7 +346,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             String broadcastJsonResponse = EntityUtils.toString(broadcastResponse.getEntity());
             Map<String, Object> broadcastResult = objectMapper.readValue(broadcastJsonResponse, Map.class);
             if (broadcastResult.containsKey("error")) {
-                log.error("Ошибка при авто выводе сделок: {}", deals.stream()
+                log.error("Ошибка при автовыводе сделок: {}", deals.stream()
                         .map(deal -> String.valueOf(deal.getPid()))
                         .collect(Collectors.joining())
                 );
