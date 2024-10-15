@@ -1,7 +1,10 @@
 package tgb.btc.library.service.process;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -18,10 +21,13 @@ public class DealPoolService implements IDealPoolService {
 
     private final IReadDealService readDealService;
 
+    private final INotifier notifier;
+
     @Autowired
-    public DealPoolService(IModifyDealService modifyDealService, IReadDealService readDealService) {
+    public DealPoolService(IModifyDealService modifyDealService, IReadDealService readDealService, INotifier notifier) {
         this.modifyDealService = modifyDealService;
         this.readDealService = readDealService;
+        this.notifier = notifier;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class DealPoolService implements IDealPoolService {
 
     /**
      * Перевод сделок в подтвержденные, в случае удачного вывода.
-     * @param deals сделки
+     * @param cryptoCurrency крипто валюта
      */
     @Override
     public void completePool(CryptoCurrency cryptoCurrency) {
@@ -67,6 +73,16 @@ public class DealPoolService implements IDealPoolService {
                 deal.setDealStatus(DealStatus.PAID);
                 modifyDealService.save(deal);
             }
+        }
+    }
+
+    @Scheduled(cron = "0 0/10 * * * ?")
+    @Async
+    public void notifyDealsCount() {
+        List<Deal> deals = readDealService.getAllByDealStatusAndCryptoCurrency(DealStatus.AWAITING_WITHDRAWAL, CryptoCurrency.BITCOIN);
+        int size = deals.size();
+        if (size > 0) {
+            notifier.notifyAdmins("В пуле BTC на текущий момент находится " + deals.size() + " сделок.");
         }
     }
 }
