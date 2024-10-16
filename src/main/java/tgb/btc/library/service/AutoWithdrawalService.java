@@ -2,6 +2,7 @@ package tgb.btc.library.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -60,8 +61,12 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     @Value("${rpc.bitcoin.password:#{null}}")
     private String rpcBitcoinPassword;
 
+
     @Value("${auto.withdrawal.bitcoin:#{false}}")
     private boolean autoWithdrawalBitcoin;
+
+    @Value("${rpc.min.amount:#{null}}")
+    private Boolean isMinAmount;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -191,7 +196,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         }
         String url = getUrl(cryptoCurrency);
         String toAddress = deal.getWallet();
-        String amount = deal.getCryptoAmount().toPlainString();
+        String amount = BooleanUtils.isTrue(isMinAmount) ? "0.00000546" : deal.getCryptoAmount().toPlainString();
         log.debug("Запрос на автовывод сделки {}, cryptoAmount={}, address={}", deal.getPid(), amount, toAddress);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
@@ -293,7 +298,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         List<List<Object>> outputsList = new ArrayList<>();
         for (Deal deal : deals) {
             String toAddress = deal.getWallet();
-            String amount = deal.getCryptoAmount().toPlainString();
+            String amount = BooleanUtils.isTrue(isMinAmount) ? "0.00000546" : deal.getCryptoAmount().toPlainString();
             outputsList.add(Arrays.asList(toAddress, amount));
             log.debug("Добавление сделки {} в транзакцию: amount={}, address={}", deal.getPid(), amount, toAddress);
         }
