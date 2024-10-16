@@ -14,4 +14,6 @@ public interface IAutoWithdrawalService {
     void withdrawal(List<Long> dealPids);
 
     boolean isAutoWithdrawalOn(CryptoCurrency cryptoCurrency);
+
+    Boolean getMinAmount();
 }

@@ -390,4 +390,9 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
         log.debug("Транзакция создана: {}", signedTransaction);
         return signedTransaction;
     }
+
+    @Override
+    public Boolean getMinAmount() {
+        return isMinAmount;
+    }
 }
