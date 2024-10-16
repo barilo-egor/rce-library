@@ -88,4 +88,9 @@ public class NotifierStub implements INotifier {
     public void sendGoodbyeToNewApiDealRequestGroup(Long aLong, String s) {
         // stub
     }
+
+    @Override
+    public void notifyPoolChanged(Long aLong) {
+        // stub
+    }
 }
