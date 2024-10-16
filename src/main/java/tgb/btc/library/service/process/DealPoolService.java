@@ -37,10 +37,13 @@ public class DealPoolService implements IDealPoolService {
     }
 
     @Override
-    public void addToPool(Long pid) {
+    public void addToPool(Long pid, Long initiatorChatId) {
         synchronized (this) {
             modifyDealService.updateDealStatusByPid(DealStatus.AWAITING_WITHDRAWAL, pid);
             notificationsAPI.poolChanged();
+            if (Objects.nonNull(initiatorChatId)) {
+                notifier.notifyPoolChanged(initiatorChatId);
+            }
         }
     }
 

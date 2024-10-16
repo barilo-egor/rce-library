@@ -8,7 +8,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import java.util.List;
 
 public interface IDealPoolService {
-    void addToPool(Long pid);
+    void addToPool(Long pid, Long initiatorChatId);
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(CryptoCurrency cryptoCurrency);
 
