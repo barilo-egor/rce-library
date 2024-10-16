@@ -384,7 +384,7 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
             signedTransaction = response.getResult();
             log.info("Транзакция создана: {}", signedTransaction);
         } catch (Exception e) {
-            log.error("Ошибка при создании транзакции.");
+            log.error("Ошибка при создании транзакции.", e);
             throw new BaseException("Ошибка при создании транзакции.");
         }
         log.debug("Транзакция создана: {}", signedTransaction);
