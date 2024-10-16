@@ -14,6 +14,7 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.process.IDealPoolService;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DealPoolService implements IDealPoolService {
@@ -24,7 +25,7 @@ public class DealPoolService implements IDealPoolService {
 
     private final INotifier notifier;
 
-    private INotificationsAPI notificationsAPI;
+    private final INotificationsAPI notificationsAPI;
 
     @Autowired
     public DealPoolService(IModifyDealService modifyDealService, IReadDealService readDealService, INotifier notifier,
@@ -51,30 +52,36 @@ public class DealPoolService implements IDealPoolService {
     }
 
     /**
-     * Перевод сделок в подтвержденные, в случае удачного вывода.
+     * Перевод сделок в подтвержденные с оповещениями на веб и бот.
      * @param cryptoCurrency крипто валюта
      */
     @Override
-    public void completePool(CryptoCurrency cryptoCurrency) {
+    public void completePool(CryptoCurrency cryptoCurrency, Long initiatorChatId) {
         synchronized (this) {
             List<Deal> deals = getAllByDealStatusAndCryptoCurrency(cryptoCurrency);
             for (Deal deal : deals) {
                 modifyDealService.updateDealStatusByPid(DealStatus.CONFIRMED, deal.getPid());
             }
             notificationsAPI.poolChanged();
+            if (Objects.nonNull(initiatorChatId)) {
+                notifier.notifyPoolChanged(initiatorChatId);
+            }
         }
     }
 
     @Override
-    public void deleteFromPool(Long pid) {
+    public void deleteFromPool(Long pid, Long initiatorChatId) {
         synchronized (this) {
             modifyDealService.updateDealStatusByPid(DealStatus.PAID, pid);
             notificationsAPI.poolChanged();
+            if (Objects.nonNull(initiatorChatId)) {
+                notifier.notifyPoolChanged(initiatorChatId);
+            }
         }
     }
 
     @Override
-    public void clearPool(CryptoCurrency cryptoCurrency) {
+    public void clearPool(CryptoCurrency cryptoCurrency, Long initiatorChatId) {
         synchronized (this) {
             List<Deal> deals = readDealService.getAllByDealStatusAndCryptoCurrency(DealStatus.AWAITING_WITHDRAWAL, cryptoCurrency);
             for (Deal deal : deals) {
@@ -82,6 +89,9 @@ public class DealPoolService implements IDealPoolService {
                 modifyDealService.save(deal);
             }
             notificationsAPI.poolChanged();
+            if (Objects.nonNull(initiatorChatId)) {
+                notifier.notifyPoolChanged(initiatorChatId);
+            }
         }
     }
 

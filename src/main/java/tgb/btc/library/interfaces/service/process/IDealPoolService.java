@@ -12,11 +12,11 @@ public interface IDealPoolService {
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(CryptoCurrency cryptoCurrency);
 
-    void completePool(CryptoCurrency cryptoCurrency);
+    void completePool(CryptoCurrency cryptoCurrency, Long initiatorChatId);
 
-    void deleteFromPool(Long pid);
+    void deleteFromPool(Long pid, Long initiatorChatId);
 
-    void clearPool(CryptoCurrency cryptoCurrency);
+    void clearPool(CryptoCurrency cryptoCurrency, Long initiatorChatId);
 
     @Scheduled(cron = "0 0/10 * * * ?")
     @Async
