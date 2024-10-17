@@ -73,6 +73,9 @@ public interface ReadUserRepository extends BaseRepository<User> {
     @Query("select pid from User ")
     List<Long> getPids();
 
+    @Query("select chatId from User where isNotificationsOn=:isNotificationsOn")
+    List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn);
+
     /**
      * Reports
      */
