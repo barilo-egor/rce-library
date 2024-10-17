@@ -75,6 +75,9 @@ public class User extends BasePersist {
     @Builder.Default
     private UserRole userRole = UserRole.USER;
 
+    @Column(name = "IS_NOTIFICATIONS_ON")
+    private Boolean isNotificationsOn;
+
     public User(Long pid) {
         this.setPid(pid);
     }
@@ -214,6 +217,14 @@ public class User extends BasePersist {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public Boolean getNotificationsOn() {
+        return isNotificationsOn;
+    }
+
+    public void setNotificationsOn(Boolean notificationsOn) {
+        isNotificationsOn = notificationsOn;
     }
 
     public static User.UserBuilder getDefaultUser() {

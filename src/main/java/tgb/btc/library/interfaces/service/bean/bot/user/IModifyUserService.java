@@ -42,4 +42,6 @@ public interface IModifyUserService extends IBasePersistService<User> {
     void updateStepByChatId(Long chatId, Integer step);
 
     void updateUserRoleByChatId(UserRole userRole, Long chatId);
+
+    void updateIsNotificationsOn(Long chatId, Boolean isNotificationsOn);
 }
