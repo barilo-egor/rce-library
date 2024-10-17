@@ -158,4 +158,8 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
         return readUserRepository;
     }
 
+    @Override
+    public List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn) {
+        return readUserRepository.getChatIdsByIsNotificationsOn(isNotificationsOn);
+    }
 }

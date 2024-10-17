@@ -65,4 +65,6 @@ public interface IReadUserService extends IBasePersistService<User> {
     Long getChatIdByPid(Long pid);
 
     List<Object[]> findAllForUsersReport();
+
+    List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn);
 }
