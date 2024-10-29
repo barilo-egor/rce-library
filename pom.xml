@@ -84,7 +84,7 @@
                         <configuration>
                             <forkCount>1</forkCount>
                             <reuseForks>true</reuseForks>
-                            <executable>/usr/lib/jvm/java-1.11.0-openjdk-amd64/bin/java</executable> <!-- путь к Java 11 -->
+                            <executable>/usr/lib/jvm/java-1.11.0-openjdk-amd64/bin/javac</executable> <!-- путь к Java 11 -->
                         </configuration>
                     </plugin>
                     <plugin>
