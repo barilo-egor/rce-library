@@ -55,7 +55,7 @@ public class BackupService {
             splitDirectory = Files.createTempDirectory("backup_split").toFile();
 
             // Команда для разбиения файла на части по 50 МБ
-            String splitCommand = String.format("split -b 50M %s %s/backup_part_",
+            String splitCommand = String.format("split -b 45M %s %s/backup_part_",
                     tempBackupFile.getAbsolutePath(), splitDirectory.getAbsolutePath());
 
             // Запускаем команду split
