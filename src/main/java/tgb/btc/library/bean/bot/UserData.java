@@ -1,7 +1,6 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -12,10 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "USER_DATA")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Builder
 public class UserData extends BasePersist {
 
     @OneToOne
@@ -35,53 +38,5 @@ public class UserData extends BasePersist {
 
     @Column(name = "FIAT_CURRENCY")
     private FiatCurrency fiatCurrency;
-
-    public FiatCurrency getFiatCurrency() {
-        return fiatCurrency;
-    }
-
-    public void setFiatCurrency(FiatCurrency fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Long getLongVariable() {
-        return longVariable;
-    }
-
-    public void setLongVariable(Long longVariable) {
-        this.longVariable = longVariable;
-    }
-
-    public String getStringVariable() {
-        return stringVariable;
-    }
-
-    public void setStringVariable(String stringVariable) {
-        this.stringVariable = stringVariable;
-    }
-
-    public DealType getDealTypeVariable() {
-        return dealTypeVariable;
-    }
-
-    public void setDealTypeVariable(DealType dealTypeVariable) {
-        this.dealTypeVariable = dealTypeVariable;
-    }
-
-    public CryptoCurrency getCryptoCurrency() {
-        return cryptoCurrency;
-    }
-
-    public void setCryptoCurrency(CryptoCurrency cryptoCurrency) {
-        this.cryptoCurrency = cryptoCurrency;
-    }
 
 }

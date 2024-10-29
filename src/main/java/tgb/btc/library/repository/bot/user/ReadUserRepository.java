@@ -10,6 +10,7 @@ import tgb.btc.library.repository.BaseRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ReadUserRepository extends BaseRepository<User> {
@@ -36,10 +37,14 @@ public interface ReadUserRepository extends BaseRepository<User> {
     @Query("select u.referralUsers from User u where u.chatId=:chatId")
     List<ReferralUser> getUserReferralsByChatId(Long chatId);
 
+    // TODO удалить,самый первый метод точно такой же
     User getByChatId(Long chatId);
 
     @Query("select chatId from User where userRole='ADMIN'")
     List<Long> getAdminsChatIds();
+
+    @Query("select chatId from User where userRole in (:roles)")
+    List<Long> getChatIdsByRoles(Set<UserRole> roles);
 
     @Query("select bufferVariable from User where chatId=:chatId")
     String getBufferVariable(Long chatId);
@@ -67,6 +72,9 @@ public interface ReadUserRepository extends BaseRepository<User> {
 
     @Query("select pid from User ")
     List<Long> getPids();
+
+    @Query("select chatId from User where isNotificationsOn=:isNotificationsOn")
+    List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn);
 
     /**
      * Reports

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import org.apache.commons.lang.BooleanUtils;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
-import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
@@ -51,14 +51,6 @@ public class ApiUser extends BasePersist implements JsonConvertable {
 
     @Getter
     @Setter
-    private String buyRequisite;
-
-    @Getter
-    @Setter
-    private String sellRequisite;
-
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FiatCurrency fiatCurrency;
@@ -77,17 +69,24 @@ public class ApiUser extends BasePersist implements JsonConvertable {
     @Setter
     private ApiDeal lastPaidDeal;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<WebUser> webUsers;
 
-    public List<WebUser> getWebUsers() {
-        if (Objects.isNull(webUsers)) return new ArrayList<>();
-        return webUsers;
-    }
+    @OneToOne
+    @Getter
+    @Setter
+    private GroupChat groupChat;
 
-    public String getRequisite(DealType dealType) {
-        if (DealType.isBuy(dealType)) return buyRequisite;
-        else return sellRequisite;
+    @Getter
+    @Setter
+    @ManyToMany
+    private List<ApiPaymentType> paymentTypes;
+
+    public List<WebUser> getWebUsers() {
+        if (Objects.isNull(webUsers)) {
+            webUsers = new ArrayList<>();
+        }
+        return webUsers;
     }
 
     public List<UsdApiUserCourse> getUsdApiUserCourseList() {
@@ -112,13 +111,18 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .put("personalDiscount", getPersonalDiscount())
                 .put("registrationDate", getRegistrationDate().format(DateTimeFormatter.ISO_DATE))
                 .put("isBanned", BooleanUtils.isTrue(getIsBanned()))
-                .put("token", getToken())
-                .put("buyRequisite", getBuyRequisite())
-                .put("sellRequisite", getSellRequisite());
+                .put("token", getToken());
         if (Objects.nonNull(getFiatCurrency())) {
-            ObjectNode fiatCurrency = getFiatCurrency().mapFunction().apply(getFiatCurrency());
-            result.set("fiatCurrency", fiatCurrency);
+            ObjectNode fiatCurrencyNode = getFiatCurrency().mapFunction().apply(getFiatCurrency());
+            result.set("fiatCurrency", fiatCurrencyNode);
         }
+        ObjectNode groupChatNode;
+        if (Objects.nonNull(getGroupChat())) {
+            groupChatNode = getGroupChat().map();
+        } else {
+            groupChatNode = GroupChat.empty().map();
+        }
+        result.set("groupChat", groupChatNode);
         usdApiUserCourseList.stream()
                 .filter(course -> FiatCurrency.BYN.equals(course.getFiatCurrency()))
                 .findFirst()
@@ -129,5 +133,4 @@ public class ApiUser extends BasePersist implements JsonConvertable {
                 .ifPresent(course -> result.put("usdCourseRUB", course.getCourse()));
         return result;
     }
-
 }

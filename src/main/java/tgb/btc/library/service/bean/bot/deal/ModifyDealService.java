@@ -4,37 +4,32 @@ import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tgb.btc.api.library.IReviewPriseService;
+import tgb.btc.api.library.IReviewPriseProcessService;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
-import tgb.btc.library.constants.enums.ReferralType;
 import tgb.btc.library.constants.enums.bot.*;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
-import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
+import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.interfaces.service.process.ILotteryService;
+import tgb.btc.library.interfaces.service.process.IReferralService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
-import tgb.btc.library.service.process.CalculateService;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
-import tgb.btc.library.util.BigDecimalUtil;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -54,25 +49,46 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private IPaymentRequisiteService paymentRequisiteService;
 
-    private CalculateService calculateService;
-
     private INotifier notifier;
 
-    private IReviewPriseService reviewPriseService;
+    private IReviewPriseProcessService reviewPriseProcessService;
+
+    private ISecurePaymentDetailsService securePaymentDetailsService;
+
+    private DealDeleteScheduler dealDeleteScheduler;
+
+    private IReferralService referralService;
+
+    private ILotteryService lotteryService;
+
+    @Autowired
+    public void setLotteryService(ILotteryService lotteryService) {
+        this.lotteryService = lotteryService;
+    }
+
+    @Autowired
+    public void setReferralService(IReferralService referralService) {
+        this.referralService = referralService;
+    }
+
+    @Autowired
+    public void setDealDeleteScheduler(DealDeleteScheduler dealDeleteScheduler) {
+        this.dealDeleteScheduler = dealDeleteScheduler;
+    }
+
+    @Autowired
+    public void setSecurePaymentDetailsService(ISecurePaymentDetailsService securePaymentDetailsService) {
+        this.securePaymentDetailsService = securePaymentDetailsService;
+    }
 
     @Autowired(required = false)
-    public void setReviewPriseService(IReviewPriseService reviewPriseService) {
-        this.reviewPriseService = reviewPriseService;
+    public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
+        this.reviewPriseProcessService = reviewPriseService;
     }
 
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
-    }
-
-    @Autowired
-    public void setCalculateService(CalculateService calculateService) {
-        this.calculateService = calculateService;
     }
 
     @Autowired
@@ -129,85 +145,41 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         deleteById(dealPid);
         modifyUserService.updateCurrentDealByChatId(null, userChatId);
         if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
-        DealDeleteScheduler.deleteCryptoDeal(dealPid);
+        dealDeleteScheduler.deleteDeal(dealPid);
     }
 
     @Transactional
     public void confirm(Long dealPid) {
         Deal deal = readDealService.findByPid(dealPid);
         User user = deal.getUser();
-
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
-            BigDecimal referralBalance = BigDecimal.valueOf(user.getReferralBalance());
-            BigDecimal sumWithDiscount;
-            if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.rub.byn")) {
-                referralBalance = referralBalance.multiply(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.rub.byn"));
-            }
-            if (referralBalance.compareTo(deal.getOriginalPrice()) < 1) {
-                sumWithDiscount = deal.getOriginalPrice().subtract(referralBalance);
-                referralBalance = BigDecimal.ZERO;
-            } else {
-                sumWithDiscount = BigDecimal.ZERO;
-                referralBalance = referralBalance.subtract(deal.getOriginalPrice()).setScale(0, RoundingMode.HALF_UP);
-                if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                        && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.byn.rub")) {
-                    referralBalance = referralBalance.divide(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
-                }
-            }
-            user.setReferralBalance(referralBalance.intValue());
-            deal.setAmount(sumWithDiscount);
+            referralService.processReferralDiscount(deal);
+        }
+        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId())) {
+            paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
         save(deal);
-        DealDeleteScheduler.deleteCryptoDeal(deal.getPid());
-        paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
-        if (Objects.nonNull(user.getLotteryCount())) user.setLotteryCount(user.getLotteryCount() + 1);
-        else user.setLotteryCount(1);
+        dealDeleteScheduler.deleteDeal(deal.getPid());
+        lotteryService.addLottery(user);
         user.setCurrentDeal(null);
         modifyUserService.save(user);
         if (user.getFromChatId() != null) {
-            User refUser = readUserService.findByChatId(user.getFromChatId());
-            BigDecimal refUserReferralPercent = readUserService.getReferralPercentByChatId(refUser.getChatId());
-            boolean isGeneralReferralPercent = Objects.isNull(refUserReferralPercent) || refUserReferralPercent.compareTo(BigDecimal.ZERO) == 0;
-            BigDecimal referralPercent = isGeneralReferralPercent
-                    ? BigDecimal.valueOf(VariablePropertiesUtil.getDouble(VariableType.REFERRAL_PERCENT))
-                    : refUserReferralPercent;
-            BigDecimal sumToAdd = BigDecimalUtil.multiplyHalfUp(deal.getAmount(),
-                    calculateService.getPercentsFactor(referralPercent));
-            if (ReferralType.STANDARD.isCurrent() && FiatCurrency.BYN.equals(deal.getFiatCurrency())
-                    && PropertiesPath.VARIABLE_PROPERTIES.isNotBlank("course.byn.rub")) {
-                sumToAdd = sumToAdd.divide(PropertiesPath.VARIABLE_PROPERTIES.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
-            }
-            Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
-            modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
-            if (BigDecimal.ZERO.compareTo(sumToAdd) != 0 && Objects.nonNull(notifier))
-                notifier.sendNotify(refUser.getChatId(), "На реферальный баланс было добавлено " + sumToAdd.intValue() + "₽ по сделке партнера.");
-            modifyUserService.updateChargesByChatId(refUser.getCharges() + sumToAdd.intValue(), refUser.getChatId());
+            referralService.processReferralBonus(deal);
         }
+        sendNotify(deal);
+
+        reviewPriseProcessService.processReviewPrise(deal.getPid());
+    }
+
+    private void sendNotify(Deal deal) {
         String message;
         if (!DealType.isBuy(deal.getDealType())) {
-            message = "Заявка обработана, деньги отправлены.";
+            message = BotMessageConst.DEAL_CONFIRMED.getMessage();
         } else {
-            switch (deal.getCryptoCurrency()) {
-                case BITCOIN:
-                    message = "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/" + deal.getWallet();
-                    break;
-                case LITECOIN:
-                    message = "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/" + deal.getWallet();
-                    break;
-                case USDT:
-                    message = "Валюта отправлена.https://tronscan.io/#/address/" + deal.getWallet();
-                    break;
-                case MONERO:
-                    message = "Валюта отправлена."; // TODO добавить url
-                    break;
-                default:
-                    throw new BaseException("Не найдена криптовалюта у сделки. dealPid=" + deal.getPid());
-            }
+            message = String.format(deal.getCryptoCurrency().getSendMessage(), deal.getWallet());
         }
-        if (Objects.nonNull(notifier)) notifier.sendNotify(deal.getUser().getChatId(), message);
-        if (Objects.nonNull(reviewPriseService)) reviewPriseService.processReviewPrise(deal.getPid());
+        notifier.sendNotify(deal.getUser().getChatId(), message);
     }
 
     /**

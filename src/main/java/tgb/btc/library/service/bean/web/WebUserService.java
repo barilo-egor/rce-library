@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class WebUserService extends BasePersistService<WebUser> implements UserDetailsService, IWebUserService {
 
     private WebUserRepository webUserRepository;

@@ -1,16 +1,23 @@
 package tgb.btc.library.service.bean.web;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 import tgb.btc.library.interfaces.service.bean.web.IApiDealService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.ApiDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,9 +27,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional
 public class ApiDealService extends BasePersistService<ApiDeal> implements IApiDealService {
 
     private ApiDealRepository apiDealRepository;
+
+    private EntityManager entityManager;
+
+    @Autowired
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Autowired
     public void setApiDealRepository(ApiDealRepository apiDealRepository) {
@@ -107,15 +122,9 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
-    public List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate,
-            ApiDealStatus apiDealStatus) {
-        return apiDealRepository.getByDateBetweenExcludeEnd(startDate, endDate, apiDealStatus);
-    }
-
-    @Override
     public List<ApiDeal> getByDateBetweenExcludeStart(LocalDateTime startDate, LocalDateTime endDate,
             ApiDealStatus apiDealStatus) {
-        return apiDealRepository.getByDateBetweenExcludeStart(startDate, endDate, apiDealStatus);
+        return apiDealRepository.getByDateBetween(startDate.plusSeconds(1), endDate, apiDealStatus);
     }
 
     @Override
@@ -159,11 +168,6 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     }
 
     @Override
-    public List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate) {
-        return apiDealRepository.getAcceptedByDateTimeBetweenExcludeEnd(startDate, endDate);
-    }
-
-    @Override
     public List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid) {
         return apiDealRepository.getAcceptedByDateTimeAfter(dateTime, userPid);
     }
@@ -175,7 +179,7 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
 
     @Override
     public Long getApiUserPidByDealPid(Long pid) {
-        return apiDealRepository.getApiUserPidByDealPid(pid);
+        return apiDealRepository.getByPid(pid).getApiUser().getPid();
     }
 
     @Override
@@ -196,6 +200,47 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     @Override
     public void deleteByApiUserId(String apiUserId) {
         apiDealRepository.deleteByApiUserId(apiUserId);
+    }
+
+    @Override
+    public String getRequisiteFromLastDeal(String username) {
+        TypedQuery<String> query =
+                entityManager.createQuery("select apiDeal.requisite " +
+                        "from ApiDeal apiDeal " +
+                        "join apiDeal.apiUser.webUsers webUsers " +
+                        "where webUsers.username = :username " +
+                        "order by apiDeal.dateTime desc", String.class);
+        query.setMaxResults(1);
+        query.setParameter("username", username);
+        List<String> result = query.getResultList();
+        return CollectionUtils.isEmpty(result)
+                ? StringUtils.EMPTY
+                : result.get(0);
+    }
+
+    @Override
+    public ApiDealType getApiDealTypeByPid(Long pid) {
+        return apiDealRepository.getApiDealTypeByPid(pid);
+    }
+
+    @Override
+    public String getCheckImageIdByPid(Long pid) {
+        return apiDealRepository.getCheckImageIdByPid(pid);
+    }
+
+    @Override
+    public ReceiptFormat getReceiptFormatByPid(Long pid) {
+        return apiDealRepository.getReceiptFormatByPid(pid);
+    }
+
+    @Override
+    public void dropApiRequisite(Long apiRequisitePid) {
+        apiDealRepository.dropApiRequisite(apiRequisitePid);
+    }
+
+    @Override
+    public void dropApiPaymentType(Long apiPaymentTypePid) {
+        apiDealRepository.dropApiPaymentType(apiPaymentTypePid);
     }
 
     @Override

@@ -12,6 +12,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.read.DealCountRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,28 +27,23 @@ public class DealCountService extends BasePersistService<Deal> implements IDealC
     }
 
     @Override
-    public Integer getCountFinishedDeal(Long chatId, List<DealStatus> dealStatus) {
-        return dealCountRepository.getCountFinishedDeal(chatId, dealStatus);
+    public Integer getCountDealByChatIdAndNotInDealStatus(Long chatId, List<DealStatus> dealStatus) {
+        return dealCountRepository.getCountDealByChatIdAndNotInDealStatus(chatId, dealStatus);
     }
 
     @Override
-    public Long getCountPassedByUserChatId(Long chatId) {
-        return dealCountRepository.getCountPassedByUserChatId(chatId);
+    public Long getCountConfirmedByUserChatId(Long chatId) {
+        return dealCountRepository.getCountByDealStatusAndChatId(chatId, DealStatus.CONFIRMED);
     }
 
     @Override
-    public Long getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency) {
-        return dealCountRepository.getPassedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(chatId, dealType, cryptoCurrency);
+    public Long getConfirmedDealsCountByUserChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency) {
+        return dealCountRepository.getDealsCountByUserChatIdAndDealStatusAndDealTypeAndCryptoCurrency(chatId, DealStatus.CONFIRMED, dealType, cryptoCurrency);
     }
 
     @Override
-    public Long getPassedDealsCountByUserChatId(Long chatId, DealType dealType) {
-        return dealCountRepository.getPassedDealsCountByUserChatId(chatId, dealType);
-    }
-
-    @Override
-    public Long getPassedDealsCountByUserChatId(Long chatId) {
-        return dealCountRepository.getPassedDealsCountByUserChatId(chatId);
+    public Integer getCountConfirmedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return dealCountRepository.getCountByDateTimeBetweenAndDealStatus(startDate, endDate, DealStatus.CONFIRMED);
     }
 
     @Override

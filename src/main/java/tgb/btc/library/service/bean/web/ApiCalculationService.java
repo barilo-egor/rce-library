@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.api.ApiCalculation;
 import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.interfaces.service.bean.web.IApiCalculationService;
@@ -12,6 +13,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.util.List;
 
 @Service
+@Transactional
 public class ApiCalculationService extends BasePersistService<ApiCalculation> implements IApiCalculationService {
 
     private ApiCalculationRepository apiCalculationRepository;

@@ -2,7 +2,6 @@ package tgb.btc.library.constants.enums.bot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang.StringUtils;
 import tgb.btc.library.exception.EnumTypeNotFoundException;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 
@@ -73,7 +72,8 @@ public enum DealType implements ObjectNodeConvertable<DealType> {
     public Function<DealType, ObjectNode> mapFunction() {
         return dealType -> new ObjectMapper().createObjectNode()
                 .put("name", dealType.name())
-                .put("nominative", dealType.getNominative());
+                .put("nominative", dealType.getNominative())
+                .put("nominativeFirstUpper", dealType.getNominativeFirstLetterToUpper());
     }
 
     public static DealType valueOfNullable(String name) {

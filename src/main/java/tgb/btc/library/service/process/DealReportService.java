@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.Deal;
@@ -14,7 +15,7 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.util.BigDecimalUtil;
+import tgb.btc.library.interfaces.util.IBigDecimalService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,13 +23,19 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 @Slf4j
 public class DealReportService {
+    
+    private IBigDecimalService bigDecimalService;
+
+    @Autowired
+    public void setBigDecimalService(IBigDecimalService bigDecimalService) {
+        this.bigDecimalService = bigDecimalService;
+    }
 
     public byte[] loadReport(List<Deal> deals) {
         Workbook book = new XSSFWorkbook();
@@ -94,7 +101,7 @@ public class DealReportService {
             cell = row.createCell(4);
             cell.setCellValue(deal.getFiatCurrency().getCode());
             cell = row.createCell(5);
-            cell.setCellValue(BigDecimalUtil.roundToPlainString(deal.getCryptoAmount(), deal.getCryptoCurrency().getScale()));
+            cell.setCellValue(bigDecimalService.roundToPlainString(deal.getCryptoAmount(), deal.getCryptoCurrency().getScale()));
             Map<CryptoCurrency, BigDecimal> totalCryptoAmountMap = isBuy
                     ? totalBuyCryptoAmountMap : totalSellCryptoAmountMap;
             totalCryptoAmountMap.put(deal.getCryptoCurrency(), totalCryptoAmountMap.get(deal.getCryptoCurrency()).add(deal.getCryptoAmount()));
@@ -151,7 +158,7 @@ public class DealReportService {
 
     private void printFiatTotal(Row row, FiatCurrency fiatCurrency, Map<FiatCurrency, BigDecimal> totalFiatAmountMap, int startCell) {
         Cell cell = row.createCell(startCell);
-        cell.setCellValue(BigDecimalUtil.roundToPlainString(totalFiatAmountMap.get(fiatCurrency)));
+        cell.setCellValue(bigDecimalService.roundToPlainString(totalFiatAmountMap.get(fiatCurrency)));
         cell = row.createCell(startCell + 1);
         cell.setCellValue(fiatCurrency.getGenitive());
     }
@@ -159,7 +166,7 @@ public class DealReportService {
 
     private void printCryptoTotal(Row row, CryptoCurrency cryptoCurrency, Map<CryptoCurrency, BigDecimal> totalFiatAmountMap, int startCell) {
         Cell cell = row.createCell(startCell);
-        cell.setCellValue(BigDecimalUtil.roundToPlainString(totalFiatAmountMap.get(cryptoCurrency),
+        cell.setCellValue(bigDecimalService.roundToPlainString(totalFiatAmountMap.get(cryptoCurrency),
                 cryptoCurrency.getScale()));
         cell = row.createCell(startCell + 1);
         cell.setCellValue(cryptoCurrency.getShortName());

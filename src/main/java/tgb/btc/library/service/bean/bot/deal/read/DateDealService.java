@@ -25,28 +25,24 @@ public class DateDealService extends BasePersistService<Deal> implements IDateDe
     }
 
     @Override
-    public List<Deal> getByDateBetween(LocalDate startDate, LocalDate endDate) {
-        return dealRepository.getByDateBetween(startDate, endDate);
+    public List<Deal> getConfirmedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return dealRepository.getConfirmedByDateTimeBetween(startDate, endDate);
     }
 
     @Override
-    public List<Deal> getByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
-        return dealRepository.getByDateTimeBetween(startDate, endDate);
+    public List<Deal> getConfirmedByDateBetween(LocalDate startDate, LocalDate endDate) {
+        return getConfirmedByDateTimeBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
     }
 
     @Override
-    public List<Deal> getPassedByDate(LocalDate date) {
-        return dealRepository.getPassedByDate(date);
+    public List<Deal> getConfirmedByDateTimeBetween(LocalDateTime startDate) {
+        return getConfirmedByDateTimeBetween(startDate.toLocalDate().atStartOfDay(),
+                startDate.toLocalDate().plusDays(1).atStartOfDay());
     }
 
     @Override
-    public List<Deal> getPassedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
-        return dealRepository.getPassedByDateTimeBetween(startDate, endDate);
-    }
-
-    @Override
-    public List<Deal> getByDate(LocalDate dateTime) {
-        return dealRepository.getPassedByDate(dateTime);
+    public List<Deal> getConfirmedByDateBetween(LocalDate startDate) {
+        return getConfirmedByDateBetween(startDate, startDate);
     }
 
     @Override

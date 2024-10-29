@@ -1,7 +1,6 @@
 package tgb.btc.library.bean.bot;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 
 import javax.persistence.Column;
@@ -14,6 +13,10 @@ import java.time.LocalDateTime;
 @Table(name = "SPAM_BAN")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Builder
+@Getter
+@Setter
 public class SpamBan extends BasePersist {
     @OneToOne
     private User user;

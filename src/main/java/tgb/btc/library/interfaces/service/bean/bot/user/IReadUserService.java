@@ -2,11 +2,13 @@ package tgb.btc.library.interfaces.service.bean.bot.user;
 
 import tgb.btc.library.bean.bot.ReferralUser;
 import tgb.btc.library.bean.bot.User;
+import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface IReadUserService extends IBasePersistService<User> {
 
@@ -22,6 +24,8 @@ public interface IReadUserService extends IBasePersistService<User> {
 
     boolean isAdminByChatId(Long chatId);
 
+    UserRole getUserRoleByChatId(Long chatId);
+
     Integer getReferralBalanceByChatId(Long chatId);
 
     List<ReferralUser> getUserReferralsByChatId(Long chatId);
@@ -29,6 +33,8 @@ public interface IReadUserService extends IBasePersistService<User> {
     User getByChatId(Long chatId);
 
     List<Long> getAdminsChatIds();
+
+    List<Long> getChatIdsByRoles(Set<UserRole> roles);
 
     String getBufferVariable(Long chatId);
 
@@ -59,4 +65,6 @@ public interface IReadUserService extends IBasePersistService<User> {
     Long getChatIdByPid(Long pid);
 
     List<Object[]> findAllForUsersReport();
+
+    List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn);
 }

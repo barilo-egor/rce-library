@@ -6,10 +6,11 @@ import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.util.List;
 
-public interface IReadDealService {
+public interface IReadDealService extends IBasePersistService<Deal> {
 
     Deal findByPid(Long pid);
 
@@ -19,7 +20,7 @@ public interface IReadDealService {
     List<Deal> getDealsByPids(List<Long> pids);
 
     @Query("select d.pid from Deal d where d.user.chatId=:chatId and d.dealStatus=:dealStatus")
-    List<Long> getListNewDeal(Long chatId, DealStatus dealStatus);
+    List<Long> getPidsByChatIdAndStatus(Long chatId, DealStatus dealStatus);
 
     @Query("select pid from Deal where dealStatus='PAID'")
     List<Long> getPaidDealsPids();
@@ -30,7 +31,7 @@ public interface IReadDealService {
     @Query("select wallet from Deal where pid=(select max(d.pid) from Deal d where d.user.chatId=:chatId and d.dealStatus='CONFIRMED' and d.dealType=:dealType and d.cryptoCurrency=:cryptoCurrency)")
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
-    void findAllByDealStatusNot(DealStatus dealStatus);
-
     List<PaymentReceipt> getPaymentReceipts(Long dealPid);
+
+    List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
 }

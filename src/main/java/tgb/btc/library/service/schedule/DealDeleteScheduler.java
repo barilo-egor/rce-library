@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.properties.VariableType;
+import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.bot.DealRepository;
-import tgb.btc.library.service.bean.bot.UserService;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -26,9 +26,21 @@ public class DealDeleteScheduler {
 
     private DealRepository dealRepository;
 
-    private UserService userService;
+    private IModifyUserService modifyUserService;
 
     private INotifier notifier;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
+
+    @Autowired
+    public void setModifyUserService(IModifyUserService modifyUserService) {
+        this.modifyUserService = modifyUserService;
+    }
 
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
@@ -38,11 +50,6 @@ public class DealDeleteScheduler {
     @PostConstruct
     public void post() {
         log.info("Автоматическое удаление недействительных заявок загружено в контекст.");
-    }
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 
     @Autowired
@@ -63,11 +70,24 @@ public class DealDeleteScheduler {
         }
     }
 
+    public void addNewDeal(Long pid, Integer messageId) {
+        synchronized (NEW_CRYPTO_DEALS_PIDS) {
+            if (Objects.isNull(pid)) return;
+            NEW_CRYPTO_DEALS_PIDS.put(pid, messageId);
+        }
+    }
+
+    public void deleteDeal(Long pid) {
+        synchronized (NEW_CRYPTO_DEALS_PIDS) {
+            NEW_CRYPTO_DEALS_PIDS.remove(pid);
+        }
+    }
+
     @Scheduled(fixedDelay = 10000)
     @Async
     public void deleteOverdueDeals() {
         if (NEW_CRYPTO_DEALS_PIDS.isEmpty()) return;
-        Integer dealActiveTime = VariablePropertiesUtil.getInt(VariableType.DEAL_ACTIVE_TIME);
+        Integer dealActiveTime = variablePropertiesReader.getInt(VariableType.DEAL_ACTIVE_TIME);
         Map<Long, Integer> bufferDealsPids = new HashMap<>(NEW_CRYPTO_DEALS_PIDS);
         for (Map.Entry<Long, Integer> dealData : bufferDealsPids.entrySet()) {
             Long dealPid = dealData.getKey();
@@ -78,9 +98,9 @@ public class DealDeleteScheduler {
             if (isDealNotActive(dealPid, dealActiveTime)) {
                 Long chatId = dealRepository.getUserChatIdByDealPid(dealPid);
                 dealRepository.deleteById(dealPid);
-                userService.updateCurrentDealByChatId(null, chatId);
+                modifyUserService.updateCurrentDealByChatId(null, chatId);
                 deleteCryptoDeal(dealPid);
-                if (Objects.nonNull(notifier)) notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
+                notifier.notifyDealAutoDeleted(chatId, dealData.getValue());
                 log.debug("Автоматически удалена заявка №" + dealPid + " по истечению " + dealActiveTime + " минут.");
             }
         }

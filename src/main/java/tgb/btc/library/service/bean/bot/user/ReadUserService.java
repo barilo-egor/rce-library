@@ -14,6 +14,7 @@ import tgb.btc.library.service.bean.BasePersistService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +58,11 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     }
 
     @Override
+    public UserRole getUserRoleByChatId(Long chatId) {
+        return readUserRepository.getUserRoleByChatId(chatId);
+    }
+
+    @Override
     public Integer getReferralBalanceByChatId(Long chatId) {
         return readUserRepository.getReferralBalanceByChatId(chatId);
     }
@@ -74,6 +80,11 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     @Override
     public List<Long> getAdminsChatIds() {
         return readUserRepository.getAdminsChatIds();
+    }
+
+    @Override
+    public List<Long> getChatIdsByRoles(Set<UserRole> roles) {
+        return readUserRepository.getChatIdsByRoles(roles);
     }
 
     @Override
@@ -147,4 +158,8 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
         return readUserRepository;
     }
 
+    @Override
+    public List<Long> getChatIdsByIsNotificationsOn(Boolean isNotificationsOn) {
+        return readUserRepository.getChatIdsByIsNotificationsOn(isNotificationsOn);
+    }
 }

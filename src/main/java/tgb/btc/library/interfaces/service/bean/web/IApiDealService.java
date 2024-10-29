@@ -2,14 +2,17 @@ package tgb.btc.library.interfaces.service.bean.web;
 
 import tgb.btc.library.bean.web.api.ApiDeal;
 import tgb.btc.library.bean.web.api.ApiUser;
+import tgb.btc.library.constants.enums.ApiDealType;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
+import tgb.btc.library.interfaces.service.IBasePersistService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-public interface IApiDealService {
+public interface IApiDealService extends IBasePersistService<ApiDeal> {
 
     List<ApiDeal> getAcceptedByDate(LocalDateTime dateTime);
 
@@ -31,8 +34,6 @@ public interface IApiDealService {
 
     List<ApiDeal> getByDateBetween(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
-    List<ApiDeal> getByDateBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
-
     List<ApiDeal> getByDateBetweenExcludeStart(LocalDateTime startDate, LocalDateTime endDate, ApiDealStatus apiDealStatus);
 
     List<ApiDeal> getDealsByPids(List<Long> dealsPids);
@@ -51,8 +52,6 @@ public interface IApiDealService {
 
     List<ApiDeal> getAcceptedByDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate, Long userPid);
 
-    List<ApiDeal> getAcceptedByDateTimeBetweenExcludeEnd(LocalDateTime startDate, LocalDateTime endDate);
-
     List<ApiDeal> getAcceptedByDateTimeAfter(LocalDateTime dateTime, Long userPid);
 
     List<ApiDeal> getAcceptedByDateTimeBefore(LocalDateTime dateTime, Long userPid);
@@ -69,4 +68,16 @@ public interface IApiDealService {
     void updateDealsApiUser(ApiUser apiUser, String oldApiUserId);
 
     void deleteByApiUserId(String apiUserId);
+
+    String getRequisiteFromLastDeal(String username);
+
+    ApiDealType getApiDealTypeByPid(Long pid);
+
+    String getCheckImageIdByPid(Long pid);
+
+    ReceiptFormat getReceiptFormatByPid(Long pid);
+
+    void dropApiRequisite(Long apiRequisitePid);
+
+    void dropApiPaymentType(Long apiPaymentTypePid);
 }

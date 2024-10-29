@@ -1,23 +1,27 @@
 package tgb.btc.library.bean.web.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
+import tgb.btc.library.constants.enums.ApiDealType;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "API_DEAL")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class ApiDeal extends BasePersist {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -39,82 +43,33 @@ public class ApiDeal extends BasePersist {
     @Enumerated(EnumType.STRING)
     private CryptoCurrency cryptoCurrency;
 
+    @Column
     private String requisite;
 
     @Enumerated(EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
-    public FiatCurrency getFiatCurrency() {
-        return fiatCurrency;
-    }
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'API'")
+    @Builder.Default
+    @Column(nullable = false)
+    private ApiDealType apiDealType = ApiDealType.API;
 
-    public void setFiatCurrency(FiatCurrency fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
-    }
+    /**
+     * ID файла в ТГ
+     */
+    @Column
+    private String checkImageId;
 
-    public ApiUser getApiUser() {
-        return apiUser;
-    }
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ReceiptFormat receiptFormat;
 
-    public void setApiUser(ApiUser apiUser) {
-        this.apiUser = apiUser;
-    }
+    @ManyToOne
+    private ApiPaymentType apiPaymentType;
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public DealType getDealType() {
-        return dealType;
-    }
-
-    public void setDealType(DealType dealType) {
-        this.dealType = dealType;
-    }
-
-    public BigDecimal getCryptoAmount() {
-        return cryptoAmount;
-    }
-
-    public void setCryptoAmount(BigDecimal cryptoAmount) {
-        this.cryptoAmount = cryptoAmount;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public ApiDealStatus getApiDealStatus() {
-        return apiDealStatus;
-    }
-
-    public void setApiDealStatus(ApiDealStatus apiDealStatus) {
-        this.apiDealStatus = apiDealStatus;
-    }
-
-    public CryptoCurrency getCryptoCurrency() {
-        return cryptoCurrency;
-    }
-
-    public void setCryptoCurrency(CryptoCurrency cryptoCurrency) {
-        this.cryptoCurrency = cryptoCurrency;
-    }
-
-    public String getRequisite() {
-        return requisite;
-    }
-
-    public void setRequisite(String requisite) {
-        this.requisite = requisite;
-    }
+    @ManyToOne
+    private ApiRequisite apiRequisite;
 
     public BigDecimal getAmountToPay() {
         if (DealType.isBuy(dealType)) return amount;

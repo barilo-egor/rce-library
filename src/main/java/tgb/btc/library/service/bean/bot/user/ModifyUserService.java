@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.user.ModifyUserRepository;
+import tgb.btc.library.repository.bot.user.ReadUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
 import java.math.BigDecimal;
@@ -17,6 +18,13 @@ import java.math.BigDecimal;
 public class ModifyUserService extends BasePersistService<User> implements IModifyUserService {
 
     private ModifyUserRepository modifyUserRepository;
+
+    private ReadUserRepository readUserRepository;
+
+    @Autowired
+    public void setReadUserRepository(ReadUserRepository readUserRepository) {
+        this.readUserRepository = readUserRepository;
+    }
 
     @Autowired
     public void setModifyUserRepository(ModifyUserRepository modifyUserRepository) {
@@ -106,6 +114,13 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     @Override
     public void updateUserRoleByChatId(UserRole userRole, Long chatId) {
         modifyUserRepository.updateUserRoleByChatId(userRole, chatId);
+    }
+
+    @Override
+    public void updateIsNotificationsOn(Long chatId, Boolean isNotificationsOn) {
+        User user = readUserRepository.findByChatId(chatId);
+        user.setNotificationsOn(isNotificationsOn);
+        modifyUserRepository.save(user);
     }
 
 }

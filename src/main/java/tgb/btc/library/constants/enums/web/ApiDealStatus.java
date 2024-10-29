@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import tgb.btc.library.interfaces.ObjectNodeConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
+import java.util.List;
 import java.util.function.Function;
 
 public enum ApiDealStatus implements ObjectNodeConvertable<ApiDealStatus> {
@@ -16,6 +17,8 @@ public enum ApiDealStatus implements ObjectNodeConvertable<ApiDealStatus> {
     private final String description;
 
     private final String color;
+
+    public static final List<ApiDealStatus> CONFIRMED_STATUSES = List.of(ACCEPTED, DECLINED);
 
     ApiDealStatus(String description, String color) {
         this.description = description;

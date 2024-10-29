@@ -12,13 +12,14 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.*;
+import tgb.btc.library.interfaces.enums.ICryptoApiService;
 import tgb.btc.library.interfaces.scheduler.ICurrencyGetter;
-import tgb.btc.library.util.properties.VariablePropertiesUtil;
+import tgb.btc.library.service.properties.VariablePropertiesReader;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,15 +33,31 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     public static final String RUB = "RUB";
 
-    private final Map<CryptoCurrency, CryptoApi> currentCryptoUSDApis = new HashMap<>();
+    private final Map<CryptoCurrency, CryptoApi> currentCryptoUSDApis = new EnumMap<>(CryptoCurrency.class);
 
-    private final Map<CryptoCurrency, CryptoApi> currentCryptoRUBApis = new HashMap<>();
+    private final Map<CryptoCurrency, CryptoApi> currentCryptoRUBApis =  new EnumMap<>(CryptoCurrency.class);
 
     private LocalDateTime lastErrorSendTime;
 
     private INotifier notifier;
 
     private INotificationsAPI notificationsAPI;
+
+    private ICryptoApiService cryptoApiService;
+
+    private VariablePropertiesReader variablePropertiesReader;
+
+    private boolean isStartMessageSent = false;
+
+    @Autowired
+    public void setVariablePropertiesReader(VariablePropertiesReader variablePropertiesReader) {
+        this.variablePropertiesReader = variablePropertiesReader;
+    }
+
+    @Autowired
+    public void setCryptoApiService(ICryptoApiService cryptoApiService) {
+        this.cryptoApiService = cryptoApiService;
+    }
 
     @Autowired
     public void setNotifier(INotifier notifier) {
@@ -61,7 +78,7 @@ public class CurrencyGetter implements ICurrencyGetter {
             throw new BaseException(e.getMessage());
         }
         cryptoCourses.put(CryptoCurrency.USDT, BigDecimal.valueOf(Double.parseDouble(
-                VariablePropertiesUtil.getVariable(VariableType.USDT_COURSE)))
+                variablePropertiesReader.getVariable(VariableType.USDT_COURSE)))
         );
         updateCourses();
         log.debug("Автоматическое получения курса загружено в контекст.");
@@ -94,11 +111,20 @@ public class CurrencyGetter implements ICurrencyGetter {
                 }
             }
         }
+        if (!isStartMessageSent) {
+            StringBuilder message = new StringBuilder();
+            message.append("Курсы на старте приложения:\n");
+            for (CryptoCurrency cryptoCurrency : CryptoCurrency.values()) {
+                message.append(cryptoCurrency.name()).append(" = ").append(cryptoCourses.get(cryptoCurrency)).append("\n");
+            }
+            notifier.notifyAdmins(message.toString());
+            isStartMessageSent = true;
+        }
     }
 
     public BigDecimal getCryptoCourse(CryptoCurrency cryptoCurrency) {
         try {
-            return currentCryptoUSDApis.get(cryptoCurrency).getCourse();
+            return cryptoApiService.getCourse(currentCryptoUSDApis.get(cryptoCurrency));
         } catch (ReadFromUrlException e) {
             throw new ReadUsdCourseException(cryptoCurrency);
         }
@@ -106,7 +132,7 @@ public class CurrencyGetter implements ICurrencyGetter {
 
     public BigDecimal getFiatCryptoCourse(CryptoCurrency cryptoCurrency) {
         try {
-            return currentCryptoUSDApis.get(cryptoCurrency).getCourse();
+            return cryptoApiService.getCourse(currentCryptoUSDApis.get(cryptoCurrency));
         } catch (ReadFromUrlException e) {
             throw new ReadUsdCourseException(cryptoCurrency);
         }
@@ -154,7 +180,7 @@ public class CurrencyGetter implements ICurrencyGetter {
     private boolean tryConnect(CryptoApi cryptoApi, CryptoCurrency cryptoCurrency, Map<CryptoCurrency, CryptoApi> apis) {
         log.debug("Попытка получения курса для {}.", cryptoApi.name());
         try {
-            cryptoApi.getCourse();
+            cryptoApiService.getCourse(cryptoApi);
             apis.put(cryptoCurrency, cryptoApi);
             log.debug("Курс {} получен, выбран для дальнейшего использования.", cryptoApi);
             return true;

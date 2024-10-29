@@ -2,6 +2,7 @@ package tgb.btc.library.bean.bot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class User extends BasePersist {
 
     public static final int DEFAULT_STEP = 0;
@@ -68,9 +70,13 @@ public class User extends BasePersist {
     private List<ReferralUser> referralUsers;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "USER_ROLE", unique = true)
-    @ColumnDefault("USER")
-    private UserRole userRole;
+    @Column(name = "USER_ROLE")
+    @ColumnDefault("'USER'")
+    @Builder.Default
+    private UserRole userRole = UserRole.USER;
+
+    @Column(name = "IS_NOTIFICATIONS_ON")
+    private Boolean isNotificationsOn;
 
     public User(Long pid) {
         this.setPid(pid);
@@ -211,5 +217,21 @@ public class User extends BasePersist {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public Boolean getNotificationsOn() {
+        return isNotificationsOn;
+    }
+
+    public void setNotificationsOn(Boolean notificationsOn) {
+        isNotificationsOn = notificationsOn;
+    }
+
+    public static User.UserBuilder getDefaultUser() {
+        return User.builder()
+                .isActive(true)
+                .isBanned(false)
+                .registrationDate(LocalDateTime.now())
+                .referralBalance(0);
     }
 }

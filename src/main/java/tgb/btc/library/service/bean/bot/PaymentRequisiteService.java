@@ -51,7 +51,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
                 PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order);
             } else {
                 Integer paymentTypeRequisitesSize = paymentRequisiteRepository.countByPaymentTypePidAndIsOn(paymentTypePid);
-                if (Objects.isNull(paymentTypeRequisitesSize) || paymentTypeRequisitesSize.equals(order + 1))
+                if (Objects.isNull(paymentTypeRequisitesSize) || order + 1 >= paymentTypeRequisitesSize)
                     PAYMENT_REQUISITE_ORDER.put(paymentTypePid, 0);
                 else PAYMENT_REQUISITE_ORDER.put(paymentTypePid, order + 1);
             }
@@ -104,11 +104,6 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     @Override
     public PaymentType getPaymentTypeByPid(Long pid) {
         return paymentRequisiteRepository.getPaymentTypeByPid(pid);
-    }
-
-    @Override
-    public String getRequisiteByPaymentTypePidAndOrder(Long paymentPid, Integer requisiteOrder) {
-        return paymentRequisiteRepository.getRequisiteByPaymentTypePidAndOrder(paymentPid, requisiteOrder);
     }
 
     @Override
