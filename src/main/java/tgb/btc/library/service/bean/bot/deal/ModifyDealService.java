@@ -155,12 +155,12 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             referralService.processReferralDiscount(deal);
         }
-        deal.setDealStatus(DealStatus.CONFIRMED);
-        save(deal);
-        dealDeleteScheduler.deleteDeal(deal.getPid());
         if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId())) {
             paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
+        deal.setDealStatus(DealStatus.CONFIRMED);
+        save(deal);
+        dealDeleteScheduler.deleteDeal(deal.getPid());
         lotteryService.addLottery(user);
         user.setCurrentDeal(null);
         modifyUserService.save(user);
