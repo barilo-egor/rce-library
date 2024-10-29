@@ -35,8 +35,9 @@ public class BackupService {
         File splitDirectory = null;
 
         try {
-            // Создаем временный файл для основного бэкапа
-            tempBackupFile = File.createTempFile("backup-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm_")), ".sql");
+            // Формируем имя файла с текущей датой в формате "backup_<дата>.sql"
+            String backupFileName = "backup_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm"));
+            tempBackupFile = File.createTempFile(backupFileName, ".sql");
 
             // Команда для создания бэкапа базы данных
             String backupCommand = String.format("mysqldump -u%s -p%s %s --result-file=%s",
@@ -54,9 +55,9 @@ public class BackupService {
             // Создаем временную директорию для хранения частей
             splitDirectory = Files.createTempDirectory("backup_split").toFile();
 
-            // Команда для разбиения файла на части по 50 МБ
-            String splitCommand = String.format("split -b 45M %s %s/backup_part_",
-                    tempBackupFile.getAbsolutePath(), splitDirectory.getAbsolutePath());
+            // Изменение: команда для разбиения файла на части по 45 МБ с добавлением нижнего подчеркивания перед суффиксом
+            String splitCommand = String.format("split -b 45M %s %s/%s_part_",
+                    tempBackupFile.getAbsolutePath(), splitDirectory.getAbsolutePath(), backupFileName);
 
             // Запускаем команду split
             Process splitProcess = Runtime.getRuntime().exec(splitCommand);
