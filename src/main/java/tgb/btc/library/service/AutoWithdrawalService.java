@@ -12,6 +12,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
@@ -30,15 +33,21 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealPropertyServic
 import tgb.btc.library.service.properties.ConfigPropertiesReader;
 import tgb.btc.library.vo.web.electrum.GetBalanceElectrumResponse;
 import tgb.btc.library.vo.web.electrum.SingleTransactionElectrumResponse;
+import tgb.cryptoexchange.web.ApiResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class AutoWithdrawalService implements IAutoWithdrawalService {
+
+    private String authorizationHeader;
+
+    private final RestTemplate restTemplate;
 
     @Value("${electrum.litecoin.rpc.url:#{null}}")
     private String electrumLitecoinRpcUrl;
@@ -78,8 +87,9 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
     private final IDealPropertyService dealPropertyService;
 
     @Autowired
-    public AutoWithdrawalService(IReadDealService readDealService, ConfigPropertiesReader configPropertiesReader,
+    public AutoWithdrawalService(RestTemplate restTemplate, IReadDealService readDealService, ConfigPropertiesReader configPropertiesReader,
                                  IDealPropertyService dealPropertyService) {
+        this.restTemplate = restTemplate;
         this.readDealService = readDealService;
         this.configPropertiesReader = configPropertiesReader;
         this.dealPropertyService = dealPropertyService;
@@ -87,13 +97,42 @@ public class AutoWithdrawalService implements IAutoWithdrawalService {
 
     @Override
     public BigDecimal getBalance(CryptoCurrency cryptoCurrency) {
-        switch (cryptoCurrency) {
-            case LITECOIN:
-            case BITCOIN:
-                return getElectrumBalance(cryptoCurrency);
-            default:
-                return null;
+        if (Objects.isNull(authorizationHeader)) {
+            authenticate();
         }
+        try {
+            String baseUrl = "https://crypto-withdrawal.paysendmmm.online/balance";
+            URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                    .queryParam("cryptoCurrency", cryptoCurrency.name())
+                    .build()
+                    .toUri();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", authorizationHeader);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<ApiResponse<BigDecimal>> response = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+            });
+            return Objects.requireNonNull(response.getBody()).getData();
+        } catch (HttpClientErrorException.Forbidden exception) {
+            authenticate();
+            try {
+                return getBalance(cryptoCurrency);
+            } catch (HttpClientErrorException.Forbidden ex) {
+                throw new BaseException("Два раза октазано в доступе при получении баланса.");
+            }
+        }
+    }
+
+    private void authenticate() {
+        String baseUrl = "https://crypto-withdrawal.paysendmmm.online/authenticate";
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("username", "rce")
+                .queryParam("password", "Barilo37552109!")
+                .build()
+                .toUri();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(uri, null, String.class);
+        authorizationHeader = "Bearer " + response.getBody();
     }
 
     @Override
