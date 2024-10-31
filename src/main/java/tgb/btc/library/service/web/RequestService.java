@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import tgb.btc.library.interfaces.web.IRequestService;
+import tgb.btc.library.vo.web.ApiResponse;
 import tgb.btc.library.vo.web.RequestHeader;
 import tgb.btc.library.vo.web.RequestParam;
 
@@ -33,11 +34,16 @@ public class RequestService implements IRequestService {
     }
 
     @Override
-    public <T> ResponseEntity<T> get(String url, RequestHeader requestHeader, RequestParam... requestParams) {
+    public <T> ResponseEntity<ApiResponse<T>> getApiResponse(String url, RequestHeader requestHeader, RequestParam requestParam, Class<T> clazz) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(buildUrl(url, List.of(requestParams)), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
+        return restTemplate.exchange(
+                buildUrl(url, List.of(requestParam)),
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
     }
 
     private String buildUrl(String url, List<RequestParam> params) {

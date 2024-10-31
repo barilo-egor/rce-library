@@ -65,16 +65,17 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             authenticate();
         }
         try {
-            ResponseEntity<ApiResponse<BigDecimal>> response = requestService.get(
+            ResponseEntity<ApiResponse<Double>> response = requestService.getApiResponse(
                     balanceUrl,
                     requestAuthorizationHeader,
-                    RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build()
+                    RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
+                    Double.class
             );
             if (Objects.isNull(response.getBody())) {
                 log.error("Тело ответа при получении баланса для {} пустое.", cryptoCurrency.name());
                 throw new BaseException("В ответе должно присутствовать тело.");
             }
-            return Objects.requireNonNull(response.getBody()).getData();
+            return BigDecimal.valueOf(response.getBody().getData());
         } catch (HttpClientErrorException.Forbidden exception) {
             try {
                 requestAuthorizationHeader.clearValue();
