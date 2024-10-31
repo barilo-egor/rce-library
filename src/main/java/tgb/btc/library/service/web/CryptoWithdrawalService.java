@@ -52,7 +52,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     private void authenticate() {
         try {
             ResponseEntity<String> response = requestService.post(authenticateUrl, authenticateParams, String.class);
-            requestAuthorizationHeader.setValue(response.getBody());
+            requestAuthorizationHeader.setValue("Bearer " + response.getBody());
         } catch (Exception e) {
             log.error("Ошибка аутентификации в микросервисе crypto-withdrawal: ", e);
             throw new BaseException("Ошибка аутентификации.", e);
