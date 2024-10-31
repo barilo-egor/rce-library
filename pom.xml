@@ -177,10 +177,5 @@
             <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>tgb.cryptoexchange</groupId>
-            <artifactId>common-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 </project>
