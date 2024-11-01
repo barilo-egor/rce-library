@@ -1,8 +1,10 @@
 package tgb.btc.library.vo.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 //test
 
 /**
@@ -39,6 +41,8 @@ public class ApiResponse<T> {
      */
     @Data
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Error {
 
         private String message;

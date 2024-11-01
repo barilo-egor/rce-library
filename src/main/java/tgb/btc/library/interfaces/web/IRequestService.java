@@ -11,6 +11,8 @@ public interface IRequestService {
 
     <T> ResponseEntity<T> post(String url, List<RequestParam> params, Class<T> clazz);
 
-    <T> ResponseEntity<ApiResponse<T>> getApiResponse(String url, RequestHeader requestHeader,
-                                                      RequestParam requestParam, Class<T> clazz);
+    <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, B body, Class<T> clazz);
+
+    <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader,
+                                           RequestParam requestParam, Class<T> clazz);
 }

@@ -34,7 +34,15 @@ public class RequestService implements IRequestService {
     }
 
     @Override
-    public <T> ResponseEntity<ApiResponse<T>> getApiResponse(String url, RequestHeader requestHeader, RequestParam requestParam, Class<T> clazz) {
+    public <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, B body, Class<T> responseClazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(requestHeader.getName(), requestHeader.getValue());
+        HttpEntity<B> entity = new HttpEntity<>(body, headers);
+        return restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
+    }
+
+    @Override
+    public <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader, RequestParam requestParam, Class<T> responseClazz) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
         HttpEntity<String> entity = new HttpEntity<>(headers);
