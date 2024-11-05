@@ -153,4 +153,39 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
         throw new BaseException("Непредвиденное поведение метода.");
     }
+
+    @Override
+    public boolean isOn(CryptoCurrency cryptoCurrency) {
+        try {
+            try {
+                ResponseEntity<ApiResponse<Boolean>> response = requestService.get(
+                        balanceUrl,
+                        requestAuthorizationHeader,
+                        RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
+                        Boolean.class
+                );
+                if (Objects.isNull(response.getBody())) {
+                    log.error("Тело ответа при попытке узнать включен ли автовывод для криптовалюты {}",
+                            cryptoCurrency.name());
+                    throw new BaseException("В ответе должно присутствовать тело.");
+                }
+                if (Objects.nonNull(response.getBody().getError())) {
+                    log.error("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты {}",
+                            response.getBody().getError().getMessage());
+                    throw new BaseException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
+                }
+                return response.getBody().getData();
+            } catch (HttpClientErrorException.Forbidden exception) {
+                log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
+                log.debug("Выполняется повторная попытка узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
+                requestAuthorizationHeader.clearValue();
+                isOn(cryptoCurrency);
+            }
+        }  catch (Exception e) {
+            log.error("Ошибка при попытке автовывода:", e);
+            withdrawalAttemptsCount = 0;
+            throw new BaseException("Ошибка при попытке автовывода.", e);
+        }
+        throw new BaseException("Непредвиденное поведение метода.");
+    }
 }
