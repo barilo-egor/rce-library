@@ -144,14 +144,13 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
                 log.debug("Выполняется повторная попытка авто вывода.");
                 requestAuthorizationHeader.clearValue();
-                withdrawal(cryptoCurrency, amount, address);
+                return withdrawal(cryptoCurrency, amount, address);
             }
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода:", e);
             withdrawalAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке автовывода.", e);
         }
-        throw new BaseException("Непредвиденное поведение метода.");
     }
 
     @Override
