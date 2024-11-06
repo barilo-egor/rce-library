@@ -30,6 +30,8 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private final String withdrawalUrl;
 
+    private final String isOnUrl;
+
     private final List<RequestParam> authenticateParams;
 
     private final RequestHeader requestAuthorizationHeader;
@@ -39,6 +41,8 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     private int balanceAttemptsCount = 0;
 
     private int withdrawalAttemptsCount = 0;
+
+    private int isOnAttemptsCount = 0;
 
     private final int maxAttemptsCount = 3;
 
@@ -51,6 +55,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         authenticateUrl = cryptoWithdrawalUrl + "/authenticate";
         balanceUrl = cryptoWithdrawalUrl + "/balance";
         withdrawalUrl = cryptoWithdrawalUrl + "/withdrawal";
+        isOnUrl = cryptoWithdrawalUrl + "/isOn";
         authenticateParams = new ArrayList<>();
         authenticateParams.add(RequestParam.builder().key("username").value(username).build());
         authenticateParams.add(RequestParam.builder().key("password").value(password).build());
@@ -156,35 +161,45 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     @Override
     public boolean isOn(CryptoCurrency cryptoCurrency) {
         try {
+            if (requestAuthorizationHeader.isEmpty()) {
+                authenticate();
+            }
+            if (isOnAttemptsCount >= maxAttemptsCount) {
+                throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
+            }
+            isOnAttemptsCount++;
+            ResponseEntity<ApiResponse<Boolean>> response;
             try {
-                ResponseEntity<ApiResponse<Boolean>> response = requestService.get(
-                        balanceUrl,
+                response = requestService.get(
+                        isOnUrl,
                         requestAuthorizationHeader,
                         RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
                         Boolean.class
                 );
-                if (Objects.isNull(response.getBody())) {
-                    log.error("Тело ответа при попытке узнать включен ли автовывод для криптовалюты {}",
-                            cryptoCurrency.name());
-                    throw new BaseException("В ответе должно присутствовать тело.");
-                }
-                if (Objects.nonNull(response.getBody().getError())) {
-                    log.error("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты {}",
-                            response.getBody().getError().getMessage());
-                    throw new BaseException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
-                }
-                return response.getBody().getData();
             } catch (HttpClientErrorException.Forbidden exception) {
                 log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
                 log.debug("Выполняется повторная попытка узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
                 requestAuthorizationHeader.clearValue();
-                isOn(cryptoCurrency);
+                return isOn(cryptoCurrency);
             }
+            isOnAttemptsCount = 0;
+            if (Objects.isNull(response.getBody())) {
+                log.error("Тело ответа при попытке узнать включен ли автовывод для криптовалюты {}",
+                        cryptoCurrency.name());
+                throw new BaseException("В ответе должно присутствовать тело.");
+            }
+            if (Objects.nonNull(response.getBody().getError())) {
+                log.error("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты {}",
+                        response.getBody().getError().getMessage());
+                throw new BaseException("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты "
+                        + cryptoCurrency.name() + ": " + response.getBody().getError().getMessage());
+            }
+            return response.getBody().getData();
         }  catch (Exception e) {
-            log.error("Ошибка при попытке автовывода:", e);
+            log.error("Ошибка при попытке узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
+            log.error("Описание: ", e);
             withdrawalAttemptsCount = 0;
-            throw new BaseException("Ошибка при попытке автовывода.", e);
+            throw new BaseException("Ошибка при попытке узнать включен ли автовывод " + cryptoCurrency.name() + ".", e);
         }
-        throw new BaseException("Непредвиденное поведение метода.");
     }
 }
