@@ -16,6 +16,7 @@ import tgb.btc.library.vo.web.RequestHeader;
 import tgb.btc.library.vo.web.RequestParam;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -42,12 +43,35 @@ public class RequestService implements IRequestService {
     }
 
     @Override
-    public <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader, RequestParam requestParam, Class<T> responseClazz) {
+    public <T, B> ResponseEntity<ApiResponse<T>> delete(String url, RequestHeader requestHeader, Class<T> responseClazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(requestHeader.getName(), requestHeader.getValue());
+        HttpEntity<B> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(url, HttpMethod.DELETE, entity, new ParameterizedTypeReference<>() {});
+    }
+
+    @Override
+    public <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader,
+                                                  ParameterizedTypeReference<ApiResponse<T>> responseClazz) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-                buildUrl(url, List.of(requestParam)),
+                url,
+                HttpMethod.GET,
+                entity,
+                responseClazz
+        );
+    }
+
+    @Override
+    public <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader, RequestParam requestParam,
+                                                  Class<T> responseClazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(requestHeader.getName(), requestHeader.getValue());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+                buildUrl(url, Objects.nonNull(requestParam) ? List.of(requestParam) : null),
                 HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<>() {}
@@ -55,6 +79,9 @@ public class RequestService implements IRequestService {
     }
 
     private String buildUrl(String url, List<RequestParam> params) {
+        if (Objects.isNull(params) || params.isEmpty()) {
+            return url;
+        }
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(url);
         params.forEach(param -> uriComponentsBuilder.queryParam(param.getKey(), param.getValue()));
         return uriComponentsBuilder.build().toUriString();
