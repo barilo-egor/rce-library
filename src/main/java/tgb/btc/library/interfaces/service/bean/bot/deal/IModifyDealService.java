@@ -1,5 +1,6 @@
 package tgb.btc.library.interfaces.service.bean.bot.deal;
 
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.*;
@@ -18,6 +19,9 @@ public interface IModifyDealService {
     void deleteDeal(Long dealPid, Boolean isBanUser);
 
     void confirm(Long dealPid);
+
+    @Transactional
+    void confirm(Long dealPid, String hash);
 
     /**
      * UPDATE

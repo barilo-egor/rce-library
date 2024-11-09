@@ -1,8 +1,6 @@
 package tgb.btc.library.service.process;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotificationsAPI;
 import tgb.btc.api.web.INotifier;
@@ -95,17 +93,6 @@ public class DealPoolService implements IDealPoolService {
             if (Objects.nonNull(initiatorChatId)) {
                 notifier.notifyPoolChanged(initiatorChatId);
             }
-        }
-    }
-
-    @Scheduled(cron = "0 0/10 * * * ?")
-    @Async
-    @Override
-    public void notifyDealsCount() {
-        List<Deal> deals = readDealService.getAllByDealStatusAndCryptoCurrency(DealStatus.AWAITING_WITHDRAWAL, CryptoCurrency.BITCOIN);
-        int size = deals.size();
-        if (size > 0) {
-            notifier.notifyAdmins("В пуле BTC на текущий момент находится " + deals.size() + " сделок.");
         }
     }
 }

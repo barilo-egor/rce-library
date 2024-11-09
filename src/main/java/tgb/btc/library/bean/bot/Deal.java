@@ -104,6 +104,9 @@ public class Deal extends BasePersist {
     @Column(name = "DETAILS")
     private String details;
 
+    @Column(name = "HASH")
+    private String hash;
+
     // TODO заменить на сеттеры геттеры ломбока
     public Boolean getUsedPromo() {
         return isUsedPromo;
@@ -135,5 +138,7 @@ public class Deal extends BasePersist {
                 ", dealStatus=" + (Objects.nonNull(dealStatus) ? dealStatus.name() : "null") +
                 '}';
     }
+
+
 
 }
