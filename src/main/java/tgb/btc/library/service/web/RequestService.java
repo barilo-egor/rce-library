@@ -35,6 +35,14 @@ public class RequestService implements IRequestService {
     }
 
     @Override
+    public <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(requestHeader.getName(), requestHeader.getValue());
+        HttpEntity<B> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
+    }
+
+    @Override
     public <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, B body, Class<T> responseClazz) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
@@ -47,6 +55,15 @@ public class RequestService implements IRequestService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
         HttpEntity<B> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(url, HttpMethod.DELETE, entity, new ParameterizedTypeReference<>() {});
+    }
+
+    @Override
+    public <T, B> ResponseEntity<ApiResponse<T>> delete(String url, RequestHeader requestHeader, B body,
+                                                        Class<T> responseClazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(requestHeader.getName(), requestHeader.getValue());
+        HttpEntity<B> entity = new HttpEntity<>(body, headers);
         return restTemplate.exchange(url, HttpMethod.DELETE, entity, new ParameterizedTypeReference<>() {});
     }
 

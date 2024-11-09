@@ -187,7 +187,11 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             message = BotMessageConst.DEAL_CONFIRMED.getMessage();
         } else {
             if (Objects.nonNull(deal.getHash())) {
-                message = cryptoCurrency.getMessage() + String.format(cryptoCurrency.getHashUrl(), deal.getHash());
+                message = cryptoCurrency.getMessage() + "\n"
+                        + "Ссылка на кошелек:\n"
+                        + String.format(cryptoCurrency.getAddressUrl(), deal.getWallet()) + "\n"
+                        + "Ссылка на транзакцию:\n"
+                        + String.format(cryptoCurrency.getHashUrl(), deal.getHash());
             } else {
                 message = String.format(cryptoCurrency.getSendMessage(), deal.getWallet());
             }

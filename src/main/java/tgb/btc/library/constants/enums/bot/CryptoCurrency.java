@@ -13,33 +13,37 @@ import java.util.function.Function;
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
     BITCOIN("btc", 8, 0.004,
             "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/%s",
-            "Биткоин отправлен ✅\n",
-            "https://blockchair.com/bitcoin/transaction/%s"),
+            "https://blockchair.com/bitcoin/address/%s",
+            "https://blockchair.com/bitcoin/transaction/%s",
+            "Биткоин отправлен ✅"),
     LITECOIN("ltc", 8, 0.7,
             "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/%s",
+            "https://blockchair.com/ru/litecoin/address/%s",
             "https://blockchair.com/litecoin/transaction/%s",
-            "Валюта отправлена.\n"),
+            "Валюта отправлена."),
     USDT("usdt", 6, 50.0,
             "Валюта отправлена.https://tronscan.io/#/address/%s",
-            "", "Валюта отправлена.\n"),
+            "", "", "Валюта отправлена."),
     MONERO("xmr", 8, 0.5,
             "Валюта отправлена.",
-            "", "Валюта отправлена.\n");
+            "", "", "Валюта отправлена.");
 
     final String shortName;
     final int scale;
     final Double defaultCheckValue;
     final String sendMessage;
     final String hashUrl;
+    final String addressUrl;
     final String message;
 
-    CryptoCurrency(String shortName, int scale, Double defaultCheckValue, String sendMessage, String hashUrl,
+    CryptoCurrency(String shortName, int scale, Double defaultCheckValue, String sendMessage, String hashUrl, String addressUrl,
                    String message) {
         this.shortName = shortName;
         this.scale = scale;
         this.defaultCheckValue = defaultCheckValue;
         this.sendMessage = sendMessage;
         this.hashUrl = hashUrl;
+        this.addressUrl = addressUrl;
         this.message = message;
     }
 
@@ -89,5 +93,9 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getAddressUrl() {
+        return addressUrl;
     }
 }

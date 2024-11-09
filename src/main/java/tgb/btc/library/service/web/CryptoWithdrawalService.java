@@ -236,6 +236,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 authenticate();
             }
             if (getAllPoolDealsAttemptsCount >= maxAttemptsCount) {
+                getAllPoolDealsAttemptsCount = 0;
                 throw new BaseException("Не удается получить пул после " + maxAttemptsCount + " попыток.");
             }
             getAllPoolDealsAttemptsCount++;
@@ -280,6 +281,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 authenticate();
             }
             if (addPoolDealAttemptsCount >= maxAttemptsCount) {
+                addPoolDealAttemptsCount = 0;
                 throw new BaseException("Не удается добавить сделку в пул после " + maxAttemptsCount + " попыток.");
             }
             addPoolDealAttemptsCount++;
@@ -325,6 +327,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 authenticate();
             }
             if (deleteAllPoolDealsAttemptsCount >= maxAttemptsCount) {
+                deleteAllPoolDealsAttemptsCount = 0;
                 throw new BaseException("Не удается очистить пул после " + maxAttemptsCount + " попыток.");
             }
             deleteAllPoolDealsAttemptsCount++;
@@ -362,28 +365,40 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     }
 
     @Override
+    public Long deleteFromPool(String bot, Long pid) {
+        return deleteFromPool(PoolDeal.builder().pid(pid).bot(bot).build());
+    }
+
+    @Override
     public Long deleteFromPool(Long id) {
+        return deleteFromPool(PoolDeal.builder().id(id).build());
+    }
+
+    @Override
+    public Long deleteFromPool(PoolDeal poolDeal) {
         try {
-            log.debug("Запрос на удаление сделки id={} из пула.", id);
+            log.debug("Запрос на удаление сделки {} из пула.", poolDeal);
             if (requestAuthorizationHeader.isEmpty()) {
                 authenticate();
             }
             if (deletePoolDealAttemptsCount >= maxAttemptsCount) {
+                deletePoolDealAttemptsCount = 0;
                 throw new BaseException("Не удается удалить сделку из пула после " + maxAttemptsCount + " попыток.");
             }
             deletePoolDealAttemptsCount++;
-            ResponseEntity<ApiResponse<Long>> response;
+            ResponseEntity<ApiResponse<Integer>> response;
             try {
                 response = requestService.delete(
                         poolUrl,
                         requestAuthorizationHeader,
-                        Long.class
+                        poolDeal,
+                        Integer.class
                 );
             } catch (HttpClientErrorException.Forbidden exception) {
                 log.debug("Ошибка аутентификации при попытке удаления сделки из пула: ", exception);
                 log.debug("Выполняется повторная попытка удаления сделки из пула.");
                 requestAuthorizationHeader.clearValue();
-                return deleteFromPool(id);
+                return deleteFromPool(poolDeal);
             }
             deletePoolDealAttemptsCount = 0;
             if (Objects.isNull(response.getBody())) {
@@ -396,7 +411,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 throw new ApiResponseErrorException("Ошибка в ответе при попытке удаления сделки из пула: "
                         + response.getBody().getError().getMessage());
             }
-            return response.getBody().getData();
+            return Long.valueOf(response.getBody().getData());
         }  catch (Exception e) {
             log.error("Ошибка при попытке удаления сделки из пула.");
             log.error("Описание: ", e);
@@ -412,15 +427,16 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 authenticate();
             }
             if (completePoolAttemptsCount >= maxAttemptsCount) {
+                completePoolAttemptsCount = 0;
                 throw new BaseException("Не удается завершить пул после " + maxAttemptsCount + " попыток.");
             }
             completePoolAttemptsCount++;
             ResponseEntity<ApiResponse<String>> response;
             try {
-                response = requestService.get(
+                response = requestService.post(
                         completePoolUrl,
                         requestAuthorizationHeader,
-                        new ParameterizedTypeReference<>() {}
+                        String.class
                 );
             } catch (HttpClientErrorException.Forbidden exception) {
                 log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
