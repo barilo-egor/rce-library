@@ -101,6 +101,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public synchronized BigDecimal getBalance(CryptoCurrency cryptoCurrency) {
         try {
             if (balanceAttemptsCount >= maxAttemptsCount) {
+                balanceAttemptsCount = 0;
                 throw new BaseException("Не удается получить баланс после " + maxAttemptsCount + " попыток.");
             }
             log.debug("Выполнение запроса на получение баланса кошелька {}", cryptoCurrency.name());
@@ -143,6 +144,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
         try {
             if (withdrawalAttemptsCount >= maxAttemptsCount) {
+                withdrawalAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
             }
             if (requestAuthorizationHeader.isEmpty()) {
@@ -188,6 +190,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 authenticate();
             }
             if (isOnAttemptsCount >= maxAttemptsCount) {
+                isOnAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
             }
             isOnAttemptsCount++;
