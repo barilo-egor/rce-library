@@ -30,6 +30,7 @@ import tgb.btc.library.service.schedule.DealDeleteScheduler;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -148,8 +149,14 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         dealDeleteScheduler.deleteDeal(dealPid);
     }
 
-    @Transactional
+    @Override
     public void confirm(Long dealPid) {
+        confirm(dealPid, null);
+    }
+
+    @Override
+    @Transactional
+    public void confirm(Long dealPid, String hash) {
         Deal deal = readDealService.findByPid(dealPid);
         User user = deal.getUser();
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
@@ -159,6 +166,7 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
+        deal.setHash(hash);
         save(deal);
         dealDeleteScheduler.deleteDeal(deal.getPid());
         lotteryService.addLottery(user);
@@ -174,10 +182,15 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private void sendNotify(Deal deal) {
         String message;
+        CryptoCurrency cryptoCurrency = deal.getCryptoCurrency();
         if (!DealType.isBuy(deal.getDealType())) {
             message = BotMessageConst.DEAL_CONFIRMED.getMessage();
         } else {
-            message = String.format(deal.getCryptoCurrency().getSendMessage(), deal.getWallet());
+            if (Objects.nonNull(deal.getHash())) {
+                message = cryptoCurrency.getMessage() + String.format(cryptoCurrency.getHashUrl(), deal.getHash());
+            } else {
+                message = String.format(cryptoCurrency.getSendMessage(), deal.getWallet());
+            }
         }
         notifier.sendNotify(deal.getUser().getChatId(), message);
     }

@@ -11,21 +11,36 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
-    BITCOIN("btc", 8, 0.004, "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/%s"),
-    LITECOIN("ltc", 8, 0.7, "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/%s"),
-    USDT("usdt", 6, 50.0, "Валюта отправлена.https://tronscan.io/#/address/%s"),
-    MONERO("xmr", 8, 0.5, "Валюта отправлена.");
+    BITCOIN("btc", 8, 0.004,
+            "Биткоин отправлен ✅\nhttps://blockchair.com/bitcoin/address/%s",
+            "Биткоин отправлен ✅\n",
+            "https://blockchair.com/bitcoin/transaction/%s"),
+    LITECOIN("ltc", 8, 0.7,
+            "Валюта отправлена.\nhttps://blockchair.com/ru/litecoin/address/%s",
+            "https://blockchair.com/litecoin/transaction/%s",
+            "Валюта отправлена.\n"),
+    USDT("usdt", 6, 50.0,
+            "Валюта отправлена.https://tronscan.io/#/address/%s",
+            "", "Валюта отправлена.\n"),
+    MONERO("xmr", 8, 0.5,
+            "Валюта отправлена.",
+            "", "Валюта отправлена.\n");
 
     final String shortName;
     final int scale;
     final Double defaultCheckValue;
     final String sendMessage;
+    final String hashUrl;
+    final String message;
 
-    CryptoCurrency(String shortName, int scale, Double defaultCheckValue, String sendMessage) {
+    CryptoCurrency(String shortName, int scale, Double defaultCheckValue, String sendMessage, String hashUrl,
+                   String message) {
         this.shortName = shortName;
         this.scale = scale;
         this.defaultCheckValue = defaultCheckValue;
         this.sendMessage = sendMessage;
+        this.hashUrl = hashUrl;
+        this.message = message;
     }
 
     public static final List<CryptoCurrency> ELECTRUM_CURRENCIES = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
@@ -66,5 +81,13 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
 
     public String getSendMessage() {
         return sendMessage;
+    }
+
+    public String getHashUrl() {
+        return hashUrl;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

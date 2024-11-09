@@ -18,4 +18,8 @@ public interface ICryptoWithdrawalService {
     Integer addPoolDeal(PoolDeal poolDeal);
 
     Boolean clearPool();
+
+    Long deleteFromPool(Long id);
+
+    String complete();
 }

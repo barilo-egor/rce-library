@@ -357,4 +357,91 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             throw new BaseException("Ошибка при попытке очистки пула.", e);
         }
     }
+
+    @Override
+    public Long deleteFromPool(Long id) {
+        try {
+            log.debug("Запрос на удаление сделки id={} из пула.", id);
+            if (requestAuthorizationHeader.isEmpty()) {
+                authenticate();
+            }
+            if (deletePoolDealAttemptsCount >= maxAttemptsCount) {
+                throw new BaseException("Не удается удалить сделку из пула после " + maxAttemptsCount + " попыток.");
+            }
+            deletePoolDealAttemptsCount++;
+            ResponseEntity<ApiResponse<Long>> response;
+            try {
+                response = requestService.delete(
+                        poolUrl,
+                        requestAuthorizationHeader,
+                        Long.class
+                );
+            } catch (HttpClientErrorException.Forbidden exception) {
+                log.debug("Ошибка аутентификации при попытке удаления сделки из пула: ", exception);
+                log.debug("Выполняется повторная попытка удаления сделки из пула.");
+                requestAuthorizationHeader.clearValue();
+                return deleteFromPool(id);
+            }
+            deletePoolDealAttemptsCount = 0;
+            if (Objects.isNull(response.getBody())) {
+                log.error("Тело ответа при попытке удаления сделки из пула пустое.");
+                throw new BaseException("В ответе должно присутствовать тело.");
+            }
+            if (Objects.nonNull(response.getBody().getError())) {
+                log.error("Ошибка в ответе при попытке удаления сделки из пула: {}",
+                        response.getBody().getError().getMessage());
+                throw new ApiResponseErrorException("Ошибка в ответе при попытке удаления сделки из пула: "
+                        + response.getBody().getError().getMessage());
+            }
+            return response.getBody().getData();
+        }  catch (Exception e) {
+            log.error("Ошибка при попытке удаления сделки из пула.");
+            log.error("Описание: ", e);
+            deletePoolDealAttemptsCount = 0;
+            throw new BaseException("Ошибка при попытке удаления сделки из пула.", e);
+        }
+    }
+
+    @Override
+    public String complete() {
+        try {
+            if (requestAuthorizationHeader.isEmpty()) {
+                authenticate();
+            }
+            if (completePoolAttemptsCount >= maxAttemptsCount) {
+                throw new BaseException("Не удается завершить пул после " + maxAttemptsCount + " попыток.");
+            }
+            completePoolAttemptsCount++;
+            ResponseEntity<ApiResponse<String>> response;
+            try {
+                response = requestService.get(
+                        completePoolUrl,
+                        requestAuthorizationHeader,
+                        new ParameterizedTypeReference<>() {}
+                );
+            } catch (HttpClientErrorException.Forbidden exception) {
+                log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
+                log.debug("Выполняется повторная попытка завершения пула.");
+                requestAuthorizationHeader.clearValue();
+                return complete();
+            }
+            completePoolAttemptsCount = 0;
+            if (Objects.isNull(response.getBody())) {
+                log.error("Тело ответа при попытке завершить пул пустое.");
+                throw new BaseException("В ответе должно присутствовать тело.");
+            }
+            if (Objects.nonNull(response.getBody().getError())) {
+                log.error("Ошибка в ответе при попытке завершения пула: {}",
+                        response.getBody().getError().getMessage());
+                throw new ApiResponseErrorException("Ошибка в ответе при попытке завершения пула: "
+                        + response.getBody().getError().getMessage());
+            }
+            return response.getBody().getData();
+        }  catch (Exception e) {
+            log.error("Ошибка при попытке завершения пула.");
+            log.error("Описание: ", e);
+            completePoolAttemptsCount = 0;
+            throw new BaseException("Ошибка при попытке завершения пула.", e);
+        }
+    }
 }
