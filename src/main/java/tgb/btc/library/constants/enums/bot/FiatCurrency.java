@@ -14,12 +14,12 @@ public enum FiatCurrency implements ObjectNodeConvertable<FiatCurrency> {
     /**
      * Бел.рубль
      */
-    BYN("byn", "Бел.рубли", "бел.рублей", "\uD83C\uDDE7\uD83C\uDDFE"),
+    BYN("byn", "Бел.рубли", "бел.рублей", "\uD83C\uDDE7\uD83C\uDDFE", 2000),
     /**
      * Рос.рубль
      */
-    RUB("rub", "Рос.рубли", "₽", "\uD83C\uDDF7\uD83C\uDDFA"),
-    UAH("uah", "Гривны", "гривен", "\uD83C\uDDFA\uD83C\uDDE6");
+    RUB("rub", "Рос.рубли", "₽", "\uD83C\uDDF7\uD83C\uDDFA", 50000),
+    UAH("uah", "Гривны", "гривен", "\uD83C\uDDFA\uD83C\uDDE6", 10000);
 
     final String code;
 
@@ -29,11 +29,14 @@ public enum FiatCurrency implements ObjectNodeConvertable<FiatCurrency> {
 
     final String flag;
 
-    FiatCurrency(String code, String displayName, String genitive, String flag) {
+    final Integer defaultMaxSum;
+
+    FiatCurrency(String code, String displayName, String genitive, String flag, Integer defaultMaxSum) {
         this.code = code;
         this.displayName = displayName;
         this.genitive = genitive;
         this.flag = flag;
+        this.defaultMaxSum = defaultMaxSum;
     }
 
     public String getName() {
@@ -50,6 +53,10 @@ public enum FiatCurrency implements ObjectNodeConvertable<FiatCurrency> {
 
     public String getCode() {
         return code;
+    }
+
+    public Integer getDefaultMaxSum() {
+        return defaultMaxSum;
     }
 
     public String getFlag() {

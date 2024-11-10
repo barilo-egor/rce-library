@@ -23,7 +23,8 @@ public enum VariableType {
     USDT_COURSE("Курс USDT", "usdt.course"),
     DEAL_RANK_DISCOUNT_ENABLE("Ранговая скидка для всех", "deal.rank.discount.enable"),
     DEAL_BTC_MAX_ENTERED_SUM("Максимальный введенный BTC", "deal.btc.max.entered.sum"),
-    FIX_COMMISSION_VIP("Фикс комиссия для вип", "commission.fix.vip");
+    FIX_COMMISSION_VIP("Фикс комиссия для вип", "commission.fix.vip"),
+    MAX_SUM("Максимальная сумма обмена", "max.sum");
 
     final String displayName;
     final String key;
