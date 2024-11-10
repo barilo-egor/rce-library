@@ -146,7 +146,7 @@ class ModifyDealServiceTest {
         user.setChatId(chatId);
         deal.setUser(user);
         when(readDealService.findByPid(dealPid)).thenReturn(deal);
-        when(securePaymentDetailsService.hasAccessToPaymentTypes(chatId)).thenReturn(true);
+        when(securePaymentDetailsService.hasAccessToPaymentTypes(eq(chatId), any())).thenReturn(true);
 
         modifyDealService.confirm(dealPid);
 
@@ -175,7 +175,7 @@ class ModifyDealServiceTest {
         deal.setUser(user);
 
         when(readDealService.findByPid(dealPid)).thenReturn(deal);
-        when(securePaymentDetailsService.hasAccessToPaymentTypes(chatId)).thenReturn(false);
+        when(securePaymentDetailsService.hasAccessToPaymentTypes(chatId, deal.getFiatCurrency())).thenReturn(false);
 
         modifyDealService.confirm(dealPid);
 
