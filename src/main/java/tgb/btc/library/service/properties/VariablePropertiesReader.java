@@ -55,6 +55,28 @@ public class VariablePropertiesReader extends PropertiesReader {
         return text;
     }
 
+    public Integer getInt(VariableType variableType, FiatCurrency fiatCurrency, Integer defaultValue) {
+        try {
+            return Integer.parseInt(getVariable(variableType, fiatCurrency, String.valueOf(defaultValue)));
+        } catch (NumberFormatException e) {
+            throw new BaseException("Ошибка парсинга " + variableType.getKey() + "."
+                    + fiatCurrency.getCode() + " к целому числу.");
+        }
+    }
+
+    public String getVariable(VariableType variableType, FiatCurrency fiatCurrency, String defaultValue) {
+        String text;
+        String key = variableType.getKey() + "." + fiatCurrency.getCode();
+        try {
+            text = getString(key);
+        } catch (Exception e) {
+            throw new BaseException("Ошибки при чтении параметра " + key, e);
+        }
+        if (Objects.isNull(text) || text.isBlank())
+            return defaultValue;
+        return text;
+    }
+
     public String getVariable(VariableType variableType, DealType dealType, CryptoCurrency cryptoCurrency) {
         String text;
         String key = variableType.getKey() + "."
