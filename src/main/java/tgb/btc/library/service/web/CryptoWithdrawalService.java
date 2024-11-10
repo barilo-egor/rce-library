@@ -10,6 +10,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.exception.ApiResponseErrorException;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.interfaces.web.ICryptoWithdrawalService;
 import tgb.btc.library.interfaces.web.IRequestService;
 import tgb.btc.library.vo.web.ApiResponse;
@@ -47,6 +49,10 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private final IRequestService requestService;
 
+    private final IReadDealService readDealService;
+
+    private final IBigDecimalService bigDecimalService;
+
     private int balanceAttemptsCount = 0;
 
     private int withdrawalAttemptsCount = 0;
@@ -69,12 +75,16 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public CryptoWithdrawalService(IRequestService requestService,
                                    @Value("${crypto-withdrawal.url}") String cryptoWithdrawalUrl,
                                    @Value("${crypto-withdrawal.username}") String username,
-                                   @Value("${crypto-withdrawal.password}") String password) {
+                                   @Value("${crypto-withdrawal.password}") String password,
+                                   IReadDealService readDealService,
+                                   IBigDecimalService bigDecimalService) {
         this.requestService = requestService;
         authenticateUrl = cryptoWithdrawalUrl + "/authenticate";
         balanceUrl = cryptoWithdrawalUrl + "/balance";
         withdrawalUrl = cryptoWithdrawalUrl + "/withdrawal";
         isOnUrl = cryptoWithdrawalUrl + "/isOn";
+        this.readDealService = readDealService;
+        this.bigDecimalService = bigDecimalService;
         String pool = "/pool";
         poolUrl = cryptoWithdrawalUrl + pool;
         deleteAllPoolUrl = cryptoWithdrawalUrl + pool + "/all";
