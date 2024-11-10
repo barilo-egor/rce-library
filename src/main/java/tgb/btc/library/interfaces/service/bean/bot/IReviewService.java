@@ -15,4 +15,6 @@ public interface IReviewService extends IBasePersistService<Review> {
     List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit, Sort sort);
 
     List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit);
+
+    List<Review> findAllByPids(List<Long> pids);
 }
