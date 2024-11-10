@@ -60,4 +60,9 @@ public class ReviewService extends BasePersistService<Review> implements IReview
         }
         return reviewRepository.findAllByPids(pids);
     }
+
+    @Override
+    public List<Review> findMoreThanPid(Long pid, int limit) {
+        return reviewRepository.findAllByPidOrderByPidAsc(pid, false, PageRequest.of(0, limit));
+    }
 }
