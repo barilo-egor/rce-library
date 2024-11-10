@@ -1,5 +1,7 @@
 package tgb.btc.library.repository.bot;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,4 +14,10 @@ import java.util.List;
 @Transactional
 public interface ReviewRepository extends BaseRepository<Review>, PagingAndSortingRepository<Review, Long> {
     List<Review> findAllByIsPublished(Boolean isPublished);
+
+    @Query("from Review where pid in (:pids)")
+    List<Review> findAllByPids(List<Long> pids);
+
+    @Query("from Review where pid > :pid and isPublished = :isPublished order by pid asc")
+    List<Review> findAllByPidOrderByPidAsc(Long pid, boolean isPublished, Pageable pageable);
 }

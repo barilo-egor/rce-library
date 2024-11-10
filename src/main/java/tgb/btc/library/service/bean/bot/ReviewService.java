@@ -6,12 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.Review;
 import tgb.btc.library.interfaces.service.bean.bot.IReviewService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.ReviewRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,5 +51,18 @@ public class ReviewService extends BasePersistService<Review> implements IReview
     public List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit) {
         return reviewRepository.findAll(Example.of(Review.builder().isPublished(isPublished).build()),
                 PageRequest.of(page, limit)).toList();
+    }
+
+    @Override
+    public List<Review> findAllByPids(List<Long> pids) {
+        if (CollectionUtils.isEmpty(pids)) {
+            return new ArrayList<>();
+        }
+        return reviewRepository.findAllByPids(pids);
+    }
+
+    @Override
+    public List<Review> findMoreThanPid(Long pid, int limit) {
+        return reviewRepository.findAllByPidOrderByPidAsc(pid, false, PageRequest.of(0, limit));
     }
 }
