@@ -35,6 +35,7 @@ public abstract class PropertiesReader {
     }
 
     public String[] getStringArray(String key) {
+        PropertiesConfiguration instance = getInstance();
         return instance.getStringArray(key);
     }
 
