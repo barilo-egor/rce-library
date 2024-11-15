@@ -147,7 +147,9 @@ public interface IPropertiesReader {
                     builder.setAutoSave(true);
 
                     builder.configure(propertyParameters);
-                    properties.put(propertiesReader, builder.getConfiguration());
+                    PropertiesConfiguration configuration = builder.getConfiguration();
+                    properties.put(propertiesReader, configuration);
+                    return configuration;
                 } catch (ConfigurationException e) {
                     logger.error("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
                     throw new RuntimeException("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
