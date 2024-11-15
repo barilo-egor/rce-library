@@ -1,5 +1,6 @@
 package tgb.btc.library.bean.bot;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -9,7 +10,6 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.interfaces.ICommand;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;

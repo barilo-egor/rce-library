@@ -1,7 +1,9 @@
 package tgb.btc.library.service.bean.web;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.web.Role;
 import tgb.btc.library.constants.enums.web.RoleConstants;
 import tgb.btc.library.interfaces.service.bean.web.IRoleService;
@@ -9,8 +11,6 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.web.RoleRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

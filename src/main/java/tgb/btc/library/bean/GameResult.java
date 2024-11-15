@@ -1,5 +1,6 @@
 package tgb.btc.library.bean;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,6 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.Game;
 import tgb.btc.library.constants.enums.bot.GameResultType;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ public class GameResult extends BasePersist {
 
     @Getter
     @Setter
-    @ManyToOne
+    @OneToOne
     private User user;
 
     @Getter

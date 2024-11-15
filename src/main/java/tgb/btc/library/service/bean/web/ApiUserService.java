@@ -1,6 +1,8 @@
 package tgb.btc.library.service.bean.web;
 
-import org.apache.commons.lang.RandomStringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +21,6 @@ import tgb.btc.library.repository.web.ApiPaymentTypeRepository;
 import tgb.btc.library.repository.web.ApiUserRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

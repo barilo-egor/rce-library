@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.bot.user;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.bot.UserRole;
 import tgb.btc.library.repository.bot.UserRepository;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

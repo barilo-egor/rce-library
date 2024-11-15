@@ -1,6 +1,10 @@
 package tgb.btc.library.bean.bot;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -8,10 +12,6 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;

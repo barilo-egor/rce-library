@@ -1,6 +1,7 @@
 package tgb.btc.library.service.enums;
 
-import org.apache.commons.lang.StringUtils;
+import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
@@ -8,7 +9,6 @@ import tgb.btc.library.interfaces.enums.IDeliveryTypeService;
 import tgb.btc.library.service.properties.DesignPropertiesReader;
 import tgb.btc.library.vo.enums.DeliveryTypeVO;
 
-import javax.annotation.PostConstruct;
 import java.util.EnumMap;
 import java.util.Map;
 

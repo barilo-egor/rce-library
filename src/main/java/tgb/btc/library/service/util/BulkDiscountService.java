@@ -1,6 +1,7 @@
 package tgb.btc.library.service.util;
 
-import org.apache.commons.lang.StringUtils;
+import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
@@ -11,7 +12,6 @@ import tgb.btc.library.interfaces.util.IBulkDiscountService;
 import tgb.btc.library.service.properties.BulkDiscountPropertiesReader;
 import tgb.btc.library.vo.BulkDiscount;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;

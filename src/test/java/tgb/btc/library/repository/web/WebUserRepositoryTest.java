@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.web;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -10,7 +11,6 @@ import tgb.btc.library.bean.web.api.ApiUser;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.RoleConstants;
 
-import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

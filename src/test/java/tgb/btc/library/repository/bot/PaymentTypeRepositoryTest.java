@@ -1,6 +1,7 @@
 package tgb.btc.library.repository.bot;
 
-import org.apache.commons.lang.BooleanUtils;
+import jakarta.persistence.EntityManager;
+import org.apache.commons.lang3.BooleanUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;

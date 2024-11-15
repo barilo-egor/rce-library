@@ -1,13 +1,13 @@
 package tgb.btc.library.bean.web;
 
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.BasePersist;
 
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
