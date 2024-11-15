@@ -37,7 +37,7 @@ public interface IPropertiesReader {
 
     default String[] getStringArray(String key) {
         PropertiesConfiguration instance = ReaderSupport.getInstance(this);
-        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), this.getListDelimiter());
+        return instance.getStringArray(key);
     }
 
     default List<String> getStringList(String key) {

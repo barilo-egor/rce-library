@@ -35,7 +35,7 @@ public abstract class PropertiesReader {
     }
 
     public String[] getStringArray(String key) {
-        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), getPropertiesPath().getListDelimiter());
+        return instance.getStringArray(key);
     }
 
     public List<String> getStringList(String key) {
