@@ -140,6 +140,7 @@ public abstract class PropertiesReader {
 
             FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                     PropertiesConfiguration.class);
+            builder.setAutoSave(true);
 
             builder.configure(propertyParameters);
             instance = builder.getConfiguration();

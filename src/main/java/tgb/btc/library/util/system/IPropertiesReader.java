@@ -144,6 +144,7 @@ public interface IPropertiesReader {
 
                     FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                             PropertiesConfiguration.class);
+                    builder.setAutoSave(true);
 
                     builder.configure(propertyParameters);
                     properties.put(propertiesReader, builder.getConfiguration());
