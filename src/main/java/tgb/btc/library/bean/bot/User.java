@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "\"USER\"")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
