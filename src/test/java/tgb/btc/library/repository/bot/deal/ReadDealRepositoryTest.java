@@ -1,6 +1,6 @@
 package tgb.btc.library.repository.bot.deal;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -103,7 +103,7 @@ class ReadDealRepositoryTest {
         assertEquals(0, dealRepository.getPaidDealsPids().size());
         Map<DealStatus, List<Deal>> deals = new EnumMap<>(DealStatus.class);
         for (DealStatus dealStatus : DealStatus.values()) {
-            int randomDealsCount = RandomUtils.nextInt(10);
+            int randomDealsCount = RandomUtils.secure().randomInt(1, 11);
             List<Deal> statusDeals = new ArrayList<>();
             for (int i = 0; i < randomDealsCount; i++) {
                 statusDeals.add(dealRepository.save(Deal.builder().dealStatus(dealStatus).build()));

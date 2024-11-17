@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.web;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;

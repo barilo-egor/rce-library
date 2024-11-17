@@ -1,13 +1,13 @@
 package tgb.btc.library.bean.web.api;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity

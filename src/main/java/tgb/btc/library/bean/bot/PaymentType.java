@@ -1,5 +1,6 @@
 package tgb.btc.library.bean.bot;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -8,7 +9,6 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity

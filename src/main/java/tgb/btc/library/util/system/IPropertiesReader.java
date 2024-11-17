@@ -1,10 +1,14 @@
 package tgb.btc.library.util.system;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.convert.ListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +37,7 @@ public interface IPropertiesReader {
 
     default String[] getStringArray(String key) {
         PropertiesConfiguration instance = ReaderSupport.getInstance(this);
-        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), this.getListDelimiter());
+        return instance.getStringArray(key);
     }
 
     default List<String> getStringList(String key) {
@@ -111,7 +115,7 @@ public interface IPropertiesReader {
     }
 
     default File getFile() {
-        return ReaderSupport.getInstance(this).getFile();
+        return new File(this.getFileName());
     }
 
     default void reload() {
@@ -126,22 +130,30 @@ public interface IPropertiesReader {
     class ReaderSupport {
         private static final Map<IPropertiesReader, PropertiesConfiguration> properties = new HashMap<>();
 
-        private static PropertiesConfiguration getInstance(IPropertiesReader IPropertiesReader) {
-            PropertiesConfiguration instance = properties.get(IPropertiesReader);
+        private static PropertiesConfiguration getInstance(IPropertiesReader propertiesReader) {
+            PropertiesConfiguration instance = properties.get(propertiesReader);
             if (instance == null) {
                 try {
-                    instance = new PropertiesConfiguration();
-                    instance.setFileName(IPropertiesReader.getFileName());
-                    instance.setListDelimiter(IPropertiesReader.getListDelimiter());
-                    instance.setDelimiterParsingDisabled(true);
-                    instance.setAutoSave(true);
-                    instance.setEncoding("UTF-8");
-                    instance.load();
-                    instance.setReloadingStrategy(new FileChangedReloadingStrategy());
-                    properties.put(IPropertiesReader, instance);
+                    File file = new File(propertiesReader.getFileName());
+                    ListDelimiterHandler delimiter = new DefaultListDelimiterHandler(propertiesReader.getListDelimiter());
+
+                    PropertiesBuilderParameters propertyParameters = new Parameters().properties();
+                    propertyParameters.setFile(file);
+                    propertyParameters.setThrowExceptionOnMissing(true);
+                    propertyParameters.setListDelimiterHandler(delimiter);
+                    propertyParameters.setEncoding("UTF-8");
+
+                    FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                            PropertiesConfiguration.class);
+                    builder.setAutoSave(true);
+
+                    builder.configure(propertyParameters);
+                    PropertiesConfiguration configuration = builder.getConfiguration();
+                    properties.put(propertiesReader, configuration);
+                    return configuration;
                 } catch (ConfigurationException e) {
-                    logger.error("Произошла ошибка при чтении параметров из " + IPropertiesReader.getFileName(), e);
-                    throw new RuntimeException("Произошла ошибка при чтении параметров из " + IPropertiesReader.getFileName(), e);
+                    logger.error("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
+                    throw new RuntimeException("Произошла ошибка при чтении параметров из " + propertiesReader.getFileName(), e);
                 }
             }
             return instance;

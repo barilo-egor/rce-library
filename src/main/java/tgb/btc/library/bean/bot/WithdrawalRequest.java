@@ -1,10 +1,10 @@
 package tgb.btc.library.bean.bot;
 
+import jakarta.persistence.*;
 import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.WithdrawalRequestStatus;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "WITHDRAWAL_REQUEST")

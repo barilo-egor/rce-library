@@ -1,10 +1,9 @@
 package tgb.btc.library.bean.bot;
 
+import jakarta.persistence.*;
 import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.ReceiptFormat;
-
-import javax.persistence.*;
 
 @Setter
 @Getter

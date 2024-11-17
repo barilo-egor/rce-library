@@ -1,5 +1,6 @@
 package tgb.btc.library.bean.web.api;
 
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import tgb.btc.library.bean.BasePersist;
@@ -10,7 +11,6 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.bot.ReceiptFormat;
 import tgb.btc.library.constants.enums.web.ApiDealStatus;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

@@ -2,8 +2,9 @@ package tgb.btc.library.bean.web.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.bean.bot.GroupChat;
 import tgb.btc.library.bean.web.WebUser;
@@ -11,7 +12,6 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.interfaces.JsonConvertable;
 import tgb.btc.library.util.web.JacksonUtil;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

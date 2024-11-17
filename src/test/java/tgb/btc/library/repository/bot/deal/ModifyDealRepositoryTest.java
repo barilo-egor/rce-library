@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.bot.deal;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import tgb.btc.library.repository.bot.DealRepository;
 import tgb.btc.library.repository.bot.PaymentTypeRepository;
 import tgb.btc.library.repository.bot.UserRepository;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

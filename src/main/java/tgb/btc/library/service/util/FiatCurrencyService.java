@@ -1,5 +1,6 @@
 package tgb.btc.library.service.util;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.util.IFiatCurrencyService;
 import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

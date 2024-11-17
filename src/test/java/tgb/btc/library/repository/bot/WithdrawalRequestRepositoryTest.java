@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.bot;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.bean.bot.WithdrawalRequest;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;

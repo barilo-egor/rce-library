@@ -1,5 +1,6 @@
 package tgb.btc.library.repository.bot;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

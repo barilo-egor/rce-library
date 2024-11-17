@@ -1,11 +1,15 @@
 package tgb.btc.library.service.properties;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.convert.ListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import tgb.btc.library.constants.enums.properties.PropertiesPath;
 
 import java.io.File;
@@ -31,7 +35,8 @@ public abstract class PropertiesReader {
     }
 
     public String[] getStringArray(String key) {
-        return StringUtils.split(StringUtils.trimToEmpty(getString(key)), getPropertiesPath().getListDelimiter());
+        PropertiesConfiguration instance = getInstance();
+        return instance.getStringArray(key);
     }
 
     public List<String> getStringList(String key) {
@@ -109,7 +114,7 @@ public abstract class PropertiesReader {
     }
 
     public File getFile() {
-        return getInstance().getFile();
+        return new File(getPropertiesPath().getFileName());
     }
 
     public boolean isExist() {
@@ -126,14 +131,21 @@ public abstract class PropertiesReader {
     protected void load() {
         PropertiesPath propertiesPath = getPropertiesPath();
         try {
-            instance = new PropertiesConfiguration();
-            instance.setFileName(propertiesPath.getFileName());
-            instance.setListDelimiter(propertiesPath.getListDelimiter());
-            instance.setDelimiterParsingDisabled(true);
-            instance.setAutoSave(true);
-            instance.setEncoding("UTF-8");
-            instance.load();
-            instance.setReloadingStrategy(new FileChangedReloadingStrategy());
+            File file = new File(propertiesPath.getFileName());
+            ListDelimiterHandler delimiter = new DefaultListDelimiterHandler(propertiesPath.getListDelimiter());
+
+            PropertiesBuilderParameters propertyParameters = new Parameters().properties();
+            propertyParameters.setFile(file);
+            propertyParameters.setThrowExceptionOnMissing(true);
+            propertyParameters.setListDelimiterHandler(delimiter);
+            propertyParameters.setEncoding("UTF-8");
+
+            FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                    PropertiesConfiguration.class);
+            builder.setAutoSave(true);
+
+            builder.configure(propertyParameters);
+            instance = builder.getConfiguration();
         } catch (ConfigurationException e) {
             log.error("Произошла ошибка при чтении параметров из " + propertiesPath.getFileName(), e);
             throw new RuntimeException("Произошла ошибка при чтении параметров из " + propertiesPath.getFileName(), e);

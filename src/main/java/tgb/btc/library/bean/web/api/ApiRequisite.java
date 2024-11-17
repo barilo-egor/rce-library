@@ -1,14 +1,13 @@
 package tgb.btc.library.bean.web.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.istack.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "API_REQUISITE")
@@ -28,7 +27,6 @@ public class ApiRequisite extends BasePersist {
 
     private String comment;
 
-    @NotNull
     @Column(nullable = false)
     private Boolean isOn;
 }
