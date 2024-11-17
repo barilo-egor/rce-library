@@ -5,7 +5,7 @@ import tgb.btc.library.util.system.IPropertiesReader;
 public enum PropertiesPath implements IPropertiesReader {
     CONFIG_PROPERTIES("config/system/config.properties", ','),
     BOT_PROPERTIES("config/bot/bot.properties", ','),
-    MESSAGE_PROPERTIES("config/message.properties", ','),
+    MESSAGE_PROPERTIES("config/message.properties", '`'),
     MESSAGE_BUFFER_PROPERTIES("config/message.properties", ','),
     VARIABLE_PROPERTIES("config/variables.properties", ','),
     VARIABLE_BUFFER_PROPERTIES("config/buffer/variables.properties", ','),
