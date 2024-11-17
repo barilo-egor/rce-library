@@ -138,6 +138,7 @@ public abstract class PropertiesReader {
             propertyParameters.setFile(file);
             propertyParameters.setThrowExceptionOnMissing(true);
             propertyParameters.setListDelimiterHandler(delimiter);
+            propertyParameters.setEncoding("UTF-8");
 
             FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                     PropertiesConfiguration.class);
