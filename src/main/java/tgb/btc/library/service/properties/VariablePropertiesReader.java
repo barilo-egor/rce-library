@@ -146,4 +146,8 @@ public class VariablePropertiesReader extends PropertiesReader {
     public String getWallet(CryptoCurrency cryptoCurrency) {
         return getString(VariableType.WALLET.getKey(cryptoCurrency));
     }
+
+    public void reload() {
+        super.load();
+    }
 }
