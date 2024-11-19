@@ -1,7 +1,5 @@
 package tgb.btc.library.constants.enums;
 
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
-
 public enum SlotValue {
 
     BAR("BAR"),
@@ -17,14 +15,6 @@ public enum SlotValue {
 
     public String getEmojiValue() {
         return emojiValue;
-    }
-
-    public String getTripleAmount() {
-        return PropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".triple"));
-    }
-
-    public String getDoubleAmount() {
-        return PropertiesPath.SLOT_REEL_PROPERTIES.getString(this.name().toLowerCase().concat(".double"));
     }
 
     public SlotValue[] getThree() {
