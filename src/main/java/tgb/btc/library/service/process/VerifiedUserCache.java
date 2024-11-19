@@ -46,11 +46,11 @@ public class VerifiedUserCache {
     }
 
     public boolean check(Long chatId) {
-        Boolean result = VERIFIED_USERS.get(chatId);
-        if (Objects.nonNull(result)) return result;
         if (count < 0) {
             return true;
         }
+        Boolean result = VERIFIED_USERS.get(chatId);
+        if (Objects.nonNull(result)) return result;
         if (BooleanUtils.isTrue(readDealService.dealsByUserChatIdIsExist(chatId, DealStatus.CONFIRMED, count))) {
             add(chatId);
             return Boolean.TRUE;
