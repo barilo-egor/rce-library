@@ -42,6 +42,7 @@ public class DeliveryKindModule implements IModule<DeliveryKind> {
     @Override
     public void set(DeliveryKind deliveryKind) {
         modulesPropertiesReader.setProperty("delivery.kind", deliveryKind.name());
+        current = deliveryKind;
     }
 
 }

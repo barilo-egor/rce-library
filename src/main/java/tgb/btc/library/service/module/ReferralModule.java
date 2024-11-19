@@ -42,5 +42,6 @@ public class ReferralModule implements IModule<ReferralType> {
     @Override
     public void set(ReferralType referralType) {
         modulesPropertiesReader.setProperty("referral.type", referralType.name());
+        current = referralType;
     }
 }

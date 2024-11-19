@@ -45,5 +45,6 @@ public class RPSModule implements IModule<RPSType> {
     @Override
     public void set(RPSType rpsType) {
         gamesPropertiesReader.setProperty("rock.paper.scissors", rpsType.name());
+        current = rpsType;
     }
 }

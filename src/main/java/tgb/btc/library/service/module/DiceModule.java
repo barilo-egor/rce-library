@@ -42,5 +42,6 @@ public class DiceModule implements IModule<DiceType> {
     @Override
     public void set(DiceType diceType) {
         gamesPropertiesReader.setProperty("dice", diceType.name());
+        current = diceType;
     }
 }

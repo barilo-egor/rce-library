@@ -42,5 +42,6 @@ public class SlotReelModule implements IModule<SlotReelType> {
     @Override
     public void set(SlotReelType slotReelType) {
         gamesPropertiesReader.setProperty("slot.reel", slotReelType.name());
+        current = slotReelType;
     }
 }
