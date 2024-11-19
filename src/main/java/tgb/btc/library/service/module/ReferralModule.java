@@ -38,4 +38,10 @@ public class ReferralModule implements IModule<ReferralType> {
             throw new BaseException(message, e);
         }
     }
+
+    @Override
+    public void set(ReferralType referralType) {
+        modulesPropertiesReader.setProperty("referral.type", referralType.name());
+        current = referralType;
+    }
 }

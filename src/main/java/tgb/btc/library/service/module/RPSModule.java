@@ -41,4 +41,10 @@ public class RPSModule implements IModule<RPSType> {
             throw new BaseException(message, e);
         }
     }
+
+    @Override
+    public void set(RPSType rpsType) {
+        gamesPropertiesReader.setProperty("rock.paper.scissors", rpsType.name());
+        current = rpsType;
+    }
 }

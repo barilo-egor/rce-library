@@ -38,4 +38,10 @@ public class SlotReelModule implements IModule<SlotReelType> {
             throw new BaseException(message, e);
         }
     }
+
+    @Override
+    public void set(SlotReelType slotReelType) {
+        gamesPropertiesReader.setProperty("slot.reel", slotReelType.name());
+        current = slotReelType;
+    }
 }
