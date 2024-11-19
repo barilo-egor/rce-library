@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.constants.enums.SlotValue;
-import tgb.btc.library.constants.enums.properties.PropertiesPath;
+import tgb.btc.library.service.properties.SlotReelMessagePropertiesReader;
 import tgb.btc.library.service.properties.SlotReelPropertiesReader;
 import tgb.btc.library.vo.slotReel.ScrollResult;
 
@@ -21,6 +21,13 @@ import java.util.stream.Collectors;
 public class SlotReelService {
 
     private SlotReelPropertiesReader slotReelPropertiesReader;
+
+    private SlotReelMessagePropertiesReader slotReelMessagePropertiesReader;
+
+    @Autowired
+    public void setSlotReelMessagePropertiesReader(SlotReelMessagePropertiesReader slotReelMessagePropertiesReader) {
+        this.slotReelMessagePropertiesReader = slotReelMessagePropertiesReader;
+    }
 
     @Autowired
     public void setSlotReelPropertiesReader(SlotReelPropertiesReader slotReelPropertiesReader) {
@@ -76,7 +83,7 @@ public class SlotReelService {
 
     @Cacheable("slotReelStartMessage")
     public String startMessage() {
-        return PropertiesPath.SLOT_REEL_MESSAGE.getString("start") + System.lineSeparator() + System.lineSeparator() +
+        return slotReelMessagePropertiesReader.getString("start") + System.lineSeparator() + System.lineSeparator() +
                 getStartMessageRow(SlotValue.SEVEN.getThree(), getTripleAmount(SlotValue.SEVEN)) +
                 getStartMessageRow(SlotValue.LEMON.getThree(), getTripleAmount(SlotValue.LEMON)) +
                 getStartMessageRow(SlotValue.CHERRY.getThree(), getTripleAmount(SlotValue.CHERRY)) +
@@ -86,7 +93,7 @@ public class SlotReelService {
                 getStartMessageRow(SlotValue.LEMON.getTwo(), getDoubleAmount(SlotValue.LEMON)) +
                 getStartMessageRow(SlotValue.CHERRY.getTwo(), getDoubleAmount(SlotValue.CHERRY)) +
                 getStartMessageRow(new SlotValue[]{SlotValue.BAR}, getDoubleAmount(SlotValue.BAR)) +
-                System.lineSeparator() + PropertiesPath.SLOT_REEL_MESSAGE.getString("try.cost") + " " +
+                System.lineSeparator() + slotReelMessagePropertiesReader.getString("try.cost") + " " +
                 slotReelPropertiesReader.getString("try") + "₽";
     }
 
