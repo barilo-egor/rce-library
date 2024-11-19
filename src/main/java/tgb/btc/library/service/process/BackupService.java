@@ -2,10 +2,9 @@ package tgb.btc.library.service.process;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tgb.btc.library.conditional.BackupCondition;
 import tgb.btc.library.exception.BackupException;
 
 import java.io.File;
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
 
 @Service
 @Slf4j
-@Conditional(BackupCondition.class)
+@ConditionalOnProperty(name = "auto.backup", havingValue = "true", matchIfMissing = false)
 public class BackupService {
 
     @Value("${spring.datasource.username}")

@@ -3,11 +3,10 @@ package tgb.btc.library.service.schedule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
-import tgb.btc.library.conditional.BackupCondition;
 import tgb.btc.library.service.process.BackupService;
 import tgb.btc.library.service.properties.ConfigPropertiesReader;
 
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Conditional(BackupCondition.class)
+@ConditionalOnProperty(name = "auto.backup", havingValue = "true", matchIfMissing = false)
 @Slf4j
 public class BackupScheduler {
 

@@ -1,8 +1,11 @@
 package tgb.btc.library.constants.enums.properties;
 
-import tgb.btc.library.util.system.IPropertiesReader;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public enum PropertiesPath implements IPropertiesReader {
+@Getter
+@AllArgsConstructor
+public enum PropertiesPath {
     CONFIG_PROPERTIES("config/system/config.properties", ','),
     BOT_PROPERTIES("config/bot/bot.properties", ','),
     MESSAGE_PROPERTIES("config/message.properties", '`'),
@@ -34,19 +37,4 @@ public enum PropertiesPath implements IPropertiesReader {
     private final String fileName;
 
     private final char listDelimiter;
-
-    PropertiesPath(String fileName, char listDelimiter) {
-        this.fileName = fileName;
-        this.listDelimiter = listDelimiter;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
-    }
-
-    @Override
-    public char getListDelimiter() {
-        return listDelimiter;
-    }
 }

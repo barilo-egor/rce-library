@@ -11,4 +11,8 @@ public class MessagePropertiesReader extends PropertiesReader {
         return PropertiesPath.MESSAGE_PROPERTIES;
     }
 
+    public void reload() {
+        super.load();
+    }
+
 }
