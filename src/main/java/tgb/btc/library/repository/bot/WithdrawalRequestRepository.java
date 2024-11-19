@@ -23,7 +23,7 @@ public interface WithdrawalRequestRepository extends BaseRepository<WithdrawalRe
     @Query("from WithdrawalRequest where isActive=true")
     List<WithdrawalRequest> getAllActive();
 
-    @Query("select w.pid from WithdrawalRequest w where w.user.pid in (select pid from User where chatId=:chatId)")
+    @Query("select w.pid from WithdrawalRequest w where w.user.pid in (select pid from User where chatId=:chatId) and w.isActive=true")
     Long getPidByUserChatId(Long chatId);
 
     @Modifying
