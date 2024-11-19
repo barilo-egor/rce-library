@@ -38,4 +38,9 @@ public class DiceModule implements IModule<DiceType> {
             throw new BaseException(message, e);
         }
     }
+
+    @Override
+    public void set(DiceType diceType) {
+        gamesPropertiesReader.setProperty("dice", diceType.name());
+    }
 }

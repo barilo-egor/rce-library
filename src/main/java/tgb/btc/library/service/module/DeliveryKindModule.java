@@ -38,4 +38,10 @@ public class DeliveryKindModule implements IModule<DeliveryKind> {
             throw new BaseException(message, e);
         }
     }
+
+    @Override
+    public void set(DeliveryKind deliveryKind) {
+        modulesPropertiesReader.setProperty("delivery.kind", deliveryKind.name());
+    }
+
 }

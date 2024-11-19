@@ -11,4 +11,6 @@ public interface IModule<T> {
             return false;
         return getCurrent().equals(t);
     }
+
+    void set(T t);
 }
