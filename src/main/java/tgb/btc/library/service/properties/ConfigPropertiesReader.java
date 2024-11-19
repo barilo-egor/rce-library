@@ -12,6 +12,6 @@ public class ConfigPropertiesReader extends PropertiesReader {
     }
 
     public boolean isDev() {
-        return "dev".equals(PropertiesPath.CONFIG_PROPERTIES.getString("instance"));
+        return "dev".equals(getString("instance"));
     }
 }
