@@ -100,7 +100,7 @@ class WithdrawalRequestRepositoryTest {
     @Test
     void getPidByUserChatId() {
         assertNull(withdrawalRequestRepository.getPidByUserChatId(Long.MAX_VALUE));
-        WithdrawalRequest withdrawalRequest = withdrawalRequestRepository.save(WithdrawalRequest.builder().user(user).build());
+        WithdrawalRequest withdrawalRequest = withdrawalRequestRepository.save(WithdrawalRequest.builder().isActive(true).user(user).build());
         assertEquals(withdrawalRequest.getPid(), withdrawalRequestRepository.getPidByUserChatId(chatId));
     }
 
