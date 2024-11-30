@@ -28,7 +28,7 @@ public class ApiDealDeclineScheduler {
     private final INotifier notifier;
 
     public ApiDealDeclineScheduler(IApiDealService apiDealService,
-                                   @Value("{api.deal.decline.time:15}") Integer declineTime,
+                                   @Value("${api.deal.decline.time:15}") Integer declineTime,
                                    INotificationsAPI notificationsAPI, INotifier notifier) {
         this.apiDealService = apiDealService;
         this.declineTime = declineTime;
