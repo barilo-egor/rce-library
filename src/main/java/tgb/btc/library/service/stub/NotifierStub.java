@@ -93,4 +93,9 @@ public class NotifierStub implements INotifier {
     public void notifyPoolChanged(Long aLong) {
         // stub
     }
+
+    @Override
+    public void apiDealDeclined(Long aLong) {
+        // stub
+    }
 }
