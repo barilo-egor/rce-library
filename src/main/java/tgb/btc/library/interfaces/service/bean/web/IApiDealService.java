@@ -80,4 +80,6 @@ public interface IApiDealService extends IBasePersistService<ApiDeal> {
     void dropApiRequisite(Long apiRequisitePid);
 
     void dropApiPaymentType(Long apiPaymentTypePid);
+
+    List<ApiDeal> getAllPaid();
 }

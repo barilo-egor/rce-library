@@ -29,6 +29,8 @@ public class ApiDeal extends BasePersist {
 
     private LocalDateTime dateTime;
 
+    private LocalDateTime paidDateTime;
+
     @Enumerated(EnumType.STRING)
     private DealType dealType;
 

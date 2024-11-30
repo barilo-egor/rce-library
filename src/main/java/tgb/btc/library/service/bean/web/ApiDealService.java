@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -241,6 +242,11 @@ public class ApiDealService extends BasePersistService<ApiDeal> implements IApiD
     @Override
     public void dropApiPaymentType(Long apiPaymentTypePid) {
         apiDealRepository.dropApiPaymentType(apiPaymentTypePid);
+    }
+
+    @Override
+    public List<ApiDeal> getAllPaid() {
+        return apiDealRepository.findAll(Example.of(ApiDeal.builder().apiDealStatus(ApiDealStatus.PAID).build()));
     }
 
     @Override
