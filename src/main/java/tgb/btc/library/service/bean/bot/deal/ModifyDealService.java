@@ -163,7 +163,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             referralService.processReferralDiscount(deal);
         }
         if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId(), deal.getFiatCurrency())) {
-            paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
+            if (Objects.nonNull(deal.getPaymentType())) {
+                paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
+            }
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
         deal.setHash(hash);
