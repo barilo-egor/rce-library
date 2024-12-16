@@ -135,7 +135,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                     log.error("Ошибка в ответе при получении баланса: {}", response.getBody().getError().getMessage());
                     throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
                 }
-                return BigDecimal.valueOf(response.getBody().getData());
+                return BigDecimal.valueOf(((Number) response.getBody().getData()).doubleValue());
             } catch (HttpClientErrorException.Forbidden exception) {
                 log.debug("Ошибка аутентификации при попытке получения баланса: ", exception);
                 log.debug("Выполняется повторная попытка. получения баланса");
