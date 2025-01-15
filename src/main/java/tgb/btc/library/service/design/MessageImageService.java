@@ -6,6 +6,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.bot.IFileDownloader;
@@ -29,7 +31,6 @@ public class MessageImageService implements IMessageImageService {
 
     private static final String FILE_IDS_JSON_PATH = "config/design/message_images/fileIds.json";
 
-
     private static final String HELP_FILE_PATH = "config/design/message_images/help.txt";
 
     private static final List<String> FORMATS = List.of(".png", ".jpg", ".jpeg", ".mp4", ".gif");
@@ -40,6 +41,8 @@ public class MessageImageService implements IMessageImageService {
 
     private final IFileDownloader fileDownloader;
 
+    private final CacheManager cacheManager;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Map<MessageImage, MessageVariable> messages = new EnumMap<>(MessageImage.class);
@@ -49,8 +52,9 @@ public class MessageImageService implements IMessageImageService {
     private FileIdsContainer fileIdsContainers;
 
     @Autowired
-    public MessageImageService(IFileDownloader fileDownloader) {
+    public MessageImageService(IFileDownloader fileDownloader, CacheManager cacheManager) {
         this.fileDownloader = fileDownloader;
+        this.cacheManager = cacheManager;
     }
 
     @PostConstruct
@@ -237,5 +241,59 @@ public class MessageImageService implements IMessageImageService {
         return Objects.nonNull(fileId)
                 ? fileId.getFormat()
                 : ".jpg";
+    }
+
+    @Override
+    public String getFormatNullable(MessageImage messageImage) {
+        String result = null;
+        for (String format: FORMATS) {
+            File imageFile = new File(String.format(IMAGE_PATH, messageImage.name(), format));
+            if (imageFile.exists()) {
+                result = format;
+                break;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public File getFile(MessageImage messageImage) {
+        File imageFile = null;
+        for (String format : FORMATS) {
+            imageFile = new File(String.format(IMAGE_PATH, messageImage.name(), format));
+            if (imageFile.exists()) {
+                break;
+            } else {
+                imageFile = null;
+            }
+        }
+        return imageFile;
+    }
+
+    @Override
+    public void updateText(MessageImage messageImage, String text) {
+        File messagesFile = new File(MESSAGES_JSON_PATH);
+        ImageMessages messagesFromFile;
+        try {
+            messagesFromFile = objectMapper.readValue(messagesFile, ImageMessages.class);
+        } catch (Exception e) {
+            log.error("Ошибка при попытке считать {} для обновления", MESSAGES_JSON_PATH);
+            log.error(e.getMessage(), e);
+            throw new BaseException(e.getMessage(), e);
+        }
+        messages.get(messageImage).setText(text);
+        messagesFromFile.getMessages().stream()
+                .filter(messageVariable -> messageVariable.getType().equals(messageImage))
+                .findFirst()
+                .ifPresent(messageVariable -> messageVariable.setText(text));
+        try {
+            ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+            objectWriter.writeValue(messagesFile, messagesFromFile);
+        } catch (Exception e) {
+            log.error("Ошибка при попытке обновления {} значения: {}", MESSAGES_JSON_PATH, messages);
+            log.error(e.getMessage(), e);
+            throw new BaseException(e.getMessage(), e);
+        }
+        Optional.ofNullable(cacheManager.getCache("messageImageMessagesCache")).ifPresent(Cache::clear);
     }
 }

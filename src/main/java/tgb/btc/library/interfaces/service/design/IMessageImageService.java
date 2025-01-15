@@ -2,6 +2,8 @@ package tgb.btc.library.interfaces.service.design;
 
 import tgb.btc.library.interfaces.enums.MessageImage;
 
+import java.io.File;
+
 public interface IMessageImageService {
 
     String getFileId(MessageImage messageImage);
@@ -11,4 +13,10 @@ public interface IMessageImageService {
     Integer getSubType(MessageImage messageImage);
 
     String getFormat(MessageImage messageImage);
+
+    String getFormatNullable(MessageImage messageImage);
+
+    File getFile(MessageImage messageImage);
+
+    void updateText(MessageImage messageImage, String text);
 }
