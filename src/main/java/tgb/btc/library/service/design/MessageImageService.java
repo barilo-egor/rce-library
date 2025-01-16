@@ -10,6 +10,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tgb.btc.api.bot.IFileDownloader;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.enums.MessageImage;
@@ -19,10 +20,7 @@ import tgb.btc.library.vo.properties.FileIdsContainer;
 import tgb.btc.library.vo.properties.ImageMessages;
 import tgb.btc.library.vo.properties.MessageVariable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 @Service
@@ -246,7 +244,7 @@ public class MessageImageService implements IMessageImageService {
     @Override
     public String getFormatNullable(MessageImage messageImage) {
         String result = null;
-        for (String format: FORMATS) {
+        for (String format : FORMATS) {
             File imageFile = new File(String.format(IMAGE_PATH, messageImage.name(), format));
             if (imageFile.exists()) {
                 result = format;
@@ -295,5 +293,65 @@ public class MessageImageService implements IMessageImageService {
             throw new BaseException(e.getMessage(), e);
         }
         Optional.ofNullable(cacheManager.getCache("messageImageMessagesCache")).ifPresent(Cache::clear);
+    }
+
+    @Override
+    public void setImage(MessageImage messageImage, MultipartFile multipartFile) {
+        if (Objects.isNull(multipartFile.getOriginalFilename())) {
+            throw new BaseException("Отсутствует originalFilename у файла.");
+        }
+        String filePath = String.format(IMAGE_PATH, messageImage.name(),
+                multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".")));
+        try {
+            File destination = new File(filePath);
+            try (InputStream inputStream = multipartFile.getInputStream();
+                 FileOutputStream outputStream = new FileOutputStream(destination)) {
+
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Ошибка при сохранении файла для сообщения: {}", e.getMessage(), e);
+            throw new BaseException("Ошибка при сохранении файла для сообщения.");
+        }
+        fileIdsContainers.getFileIds().removeIf(fileId -> messageImage.equals(fileId.getType()));
+        fileIds.remove(messageImage);
+        Optional.ofNullable(cacheManager.getCache("messageImageFilesIdsCache")).ifPresent(Cache::clear);
+        Optional.ofNullable(cacheManager.getCache("messageImageFormatCache")).ifPresent(Cache::clear);
+    }
+
+    @Override
+    public void deleteImage(MessageImage messageImage) {
+        ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+        try {
+            File imageFile = null;
+            for (String format : FORMATS) {
+                imageFile = new File(String.format(IMAGE_PATH, messageImage.name(), format));
+                if (imageFile.exists()) {
+                    break;
+                } else {
+                    imageFile = null;
+                }
+            }
+            if (Objects.isNull(imageFile)) {
+                throw new BaseException("Файл не найден.");
+            }
+            if (!imageFile.delete()) {
+                throw new BaseException("Файл не был удален для " + messageImage.name());
+            }
+            fileIds.remove(messageImage);
+            fileIdsContainers.getFileIds().removeIf(fileId -> messageImage.equals(fileId.getType()));
+            objectWriter.writeValue(new File(FILE_IDS_JSON_PATH), fileIdsContainers);
+        } catch (IOException e) {
+            log.error("Ошибка при попытке удаления {}.", messageImage.name());
+            log.error(e.getMessage(), e);
+            throw new BaseException(e.getMessage(), e);
+        }
+        Optional.ofNullable(cacheManager.getCache("messageImageFilesIdsCache")).ifPresent(Cache::clear);
+        Optional.ofNullable(cacheManager.getCache("messageImageFormatCache")).ifPresent(Cache::clear);
     }
 }
