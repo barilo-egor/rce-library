@@ -1,10 +1,14 @@
 package tgb.btc.library.vo.web;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
+import tgb.btc.library.constants.serialize.LocalDateTimeDeserializer;
+import tgb.btc.library.constants.serialize.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 
@@ -42,6 +46,8 @@ public class PoolDeal {
     /**
      * Дата и время добавления сделки в пул
      */
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime addDate;
 
     /**
