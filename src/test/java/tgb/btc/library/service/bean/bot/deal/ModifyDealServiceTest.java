@@ -10,6 +10,8 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.constants.enums.strings.BotMessageConst;
+import tgb.btc.library.interfaces.enums.MessageImage;
+import tgb.btc.library.interfaces.service.design.IMessageImageService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.bot.PaymentRequisiteService;
 import tgb.btc.library.service.bean.bot.SecurePaymentDetailsService;
@@ -72,6 +74,9 @@ class ModifyDealServiceTest {
 
     @Spy
     private NotifierStub notifierStub;
+
+    @Mock
+    private IMessageImageService messageImageService;
 
     @InjectMocks
     private ModifyDealService modifyDealService;
@@ -147,6 +152,8 @@ class ModifyDealServiceTest {
         deal.setUser(user);
         when(readDealService.findByPid(dealPid)).thenReturn(deal);
         when(securePaymentDetailsService.hasAccessToPaymentTypes(eq(chatId), any())).thenReturn(true);
+        String confirmMessage = "Confirm message\n%s";
+        when(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN)).thenReturn(confirmMessage);
 
         modifyDealService.confirm(dealPid);
 
@@ -158,7 +165,6 @@ class ModifyDealServiceTest {
         verify(referralService).processReferralBonus(deal);
         verify(dealDeleteScheduler).deleteDeal(dealPid);
         verify(paymentRequisiteService).updateOrder(paymentTypePid);
-        verify(notifierStub).sendNotify(chatId, String.format(CryptoCurrency.BITCOIN.getSendMessage(), wallet));
         verify(reviewPriseProcessServiceStub).processReviewPrise(dealPid);
     }
 

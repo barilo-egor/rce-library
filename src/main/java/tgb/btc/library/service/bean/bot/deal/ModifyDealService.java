@@ -12,6 +12,8 @@ import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.constants.enums.strings.BotMessageConst;
+import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.enums.MessageImage;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
@@ -19,6 +21,7 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
+import tgb.btc.library.interfaces.service.design.IMessageImageService;
 import tgb.btc.library.interfaces.service.process.ILotteryService;
 import tgb.btc.library.interfaces.service.process.IReferralService;
 import tgb.btc.library.repository.BaseRepository;
@@ -61,6 +64,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private IReferralService referralService;
 
     private ILotteryService lotteryService;
+
+    private IMessageImageService messageImageService;
+
+    @Autowired
+    public void setMessageImageService(IMessageImageService messageImageService) {
+        this.messageImageService = messageImageService;
+    }
 
     @Autowired
     public void setLotteryService(ILotteryService lotteryService) {
@@ -162,10 +172,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         if (BooleanUtils.isTrue(deal.getUsedReferralDiscount())) {
             referralService.processReferralDiscount(deal);
         }
-        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId(), deal.getFiatCurrency())) {
-            if (Objects.nonNull(deal.getPaymentType())) {
-                paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
-            }
+        if (securePaymentDetailsService.hasAccessToPaymentTypes(user.getChatId(), deal.getFiatCurrency())
+                && Objects.nonNull(deal.getPaymentType())) {
+            paymentRequisiteService.updateOrder(deal.getPaymentType().getPid());
         }
         deal.setDealStatus(DealStatus.CONFIRMED);
         deal.setHash(hash);
@@ -188,14 +197,18 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         if (!DealType.isBuy(deal.getDealType())) {
             message = BotMessageConst.DEAL_CONFIRMED.getMessage();
         } else {
+            String url;
             if (Objects.nonNull(deal.getHash())) {
-                message = cryptoCurrency.getMessage() + "\n"
-                        + "Ссылка на кошелек:\n"
-                        + String.format(cryptoCurrency.getAddressUrl(), deal.getWallet()) + "\n"
-                        + "Ссылка на транзакцию:\n"
-                        + String.format(cryptoCurrency.getHashUrl(), deal.getHash());
+                url = String.format(cryptoCurrency.getHashUrl(), deal.getHash());
             } else {
-                message = String.format(cryptoCurrency.getSendMessage(), deal.getWallet());
+                url = String.format(cryptoCurrency.getAddressUrl(), deal.getWallet());
+            }
+            switch (cryptoCurrency) {
+                case BITCOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN), url);
+                case LITECOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_LITECOIN), url);
+                case USDT -> message = String.format(messageImageService.getMessage(MessageImage.USDT_INPUT_WALLET), url);
+                case MONERO -> message = String.format(messageImageService.getMessage(MessageImage.MONERO_INPUT_WALLET), url);
+                default -> throw new BaseException();
             }
         }
         notifier.sendNotify(deal.getUser().getChatId(), message);
