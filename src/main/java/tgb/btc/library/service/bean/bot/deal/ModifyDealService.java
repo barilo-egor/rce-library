@@ -206,8 +206,8 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
             switch (cryptoCurrency) {
                 case BITCOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN), url);
                 case LITECOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_LITECOIN), url);
-                case USDT -> message = String.format(messageImageService.getMessage(MessageImage.USDT_INPUT_WALLET), url);
-                case MONERO -> message = String.format(messageImageService.getMessage(MessageImage.MONERO_INPUT_WALLET), url);
+                case USDT -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_USDT), url);
+                case MONERO -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_MONERO), url);
                 default -> throw new BaseException();
             }
         }
