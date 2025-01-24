@@ -151,7 +151,6 @@ class ModifyDealServiceTest {
         user.setChatId(chatId);
         deal.setUser(user);
         when(readDealService.findByPid(dealPid)).thenReturn(deal);
-        when(securePaymentDetailsService.hasAccessToPaymentTypes(eq(chatId), any())).thenReturn(true);
         String confirmMessage = "Confirm message\n%s";
         when(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN)).thenReturn(confirmMessage);
 
@@ -164,7 +163,6 @@ class ModifyDealServiceTest {
         assertEquals(DealStatus.CONFIRMED, actualDeal.getDealStatus());
         verify(referralService).processReferralBonus(deal);
         verify(dealDeleteScheduler).deleteDeal(dealPid);
-        verify(paymentRequisiteService).updateOrder(paymentTypePid);
         verify(reviewPriseProcessServiceStub).processReviewPrise(dealPid);
     }
 
@@ -181,11 +179,9 @@ class ModifyDealServiceTest {
         deal.setUser(user);
 
         when(readDealService.findByPid(dealPid)).thenReturn(deal);
-        when(securePaymentDetailsService.hasAccessToPaymentTypes(chatId, deal.getFiatCurrency())).thenReturn(false);
 
         modifyDealService.confirm(dealPid);
 
-        verify(paymentRequisiteService, never()).updateOrder(anyLong());
         verify(referralService, never()).processReferralBonus(deal);
         verify(notifierStub).sendNotify(chatId, BotMessageConst.DEAL_CONFIRMED.getMessage());
     }

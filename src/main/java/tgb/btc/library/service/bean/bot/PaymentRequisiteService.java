@@ -83,6 +83,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         if (CollectionUtils.isEmpty(turnedRequisites))
             throw new BaseException("Не найден ни один включенный реквизит.");
         Integer order = getOrder(paymentType.getPid());
+        updateOrder(paymentType.getPid());
         return turnedRequisites.get(order).getRequisite();
     }
 
