@@ -1,19 +1,18 @@
 package tgb.btc.library.bean.bot;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
+import tgb.btc.library.constants.enums.bot.BalanceAuditType;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@SuperBuilder
+@Builder
 public class BalanceAudit extends Audit {
 
     /**
@@ -37,4 +36,10 @@ public class BalanceAudit extends Audit {
      * Баланс после изменения
      */
     private Integer newBalance;
+
+    /**
+     * Тип изменения
+     */
+    @Enumerated(EnumType.STRING)
+    private BalanceAuditType type;
 }
