@@ -1,5 +1,7 @@
 package tgb.btc.library.service.bean.bot;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.BalanceAudit;
 import tgb.btc.library.bean.bot.User;
@@ -8,6 +10,7 @@ import tgb.btc.library.interfaces.service.bean.bot.IBalanceAuditService;
 import tgb.btc.library.repository.bot.BalanceAuditRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class BalanceAuditService implements IBalanceAuditService {
@@ -41,5 +44,20 @@ public class BalanceAuditService implements IBalanceAuditService {
                 .build();
         balanceAudit.setDateTime(LocalDateTime.now());
         balanceAuditRepository.save(balanceAudit);
+    }
+
+    @Override
+    public List<BalanceAudit> findAll(Integer page, Integer limit, Sort sort) {
+        return balanceAuditRepository.findAll(PageRequest.of(page, limit, sort)).toList();
+    }
+
+    @Override
+    public List<BalanceAudit> findAll(Integer page, Integer limit) {
+        return balanceAuditRepository.findAll(PageRequest.of(page, limit)).toList();
+    }
+
+    @Override
+    public long count() {
+        return balanceAuditRepository.count();
     }
 }
