@@ -10,11 +10,13 @@ import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.ReferralType;
+import tgb.btc.library.constants.enums.bot.BalanceAuditType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.IModule;
+import tgb.btc.library.interfaces.service.bean.bot.IBalanceAuditService;
 import tgb.btc.library.service.bean.bot.user.ModifyUserService;
 import tgb.btc.library.service.bean.bot.user.ReadUserService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
@@ -50,6 +52,9 @@ class ReferralServiceTest {
     @Spy
     private BigDecimalService bigDecimalService;
 
+    @Mock
+    private IBalanceAuditService balanceAuditService;
+
     @InjectMocks
     private ReferralService referralService;
 
@@ -64,6 +69,7 @@ class ReferralServiceTest {
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
 
         referralService.processReferralDiscount(deal);
+        verify(balanceAuditService).save(user, 1000, BalanceAuditType.REFERRAL_DEBITING);
         assertAll(
                 () -> assertEquals(0, deal.getUser().getReferralBalance()),
                 () -> assertEquals(0, new BigDecimal(1000).compareTo(deal.getAmount()))
@@ -81,6 +87,7 @@ class ReferralServiceTest {
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(false);
 
         referralService.processReferralDiscount(deal);
+        verify(balanceAuditService).save(user, 1500, BalanceAuditType.REFERRAL_DEBITING);
         assertAll(
                 () -> assertEquals(1500, deal.getUser().getReferralBalance()),
                 () -> assertEquals(0, BigDecimal.ZERO.compareTo(deal.getAmount()))
@@ -101,6 +108,7 @@ class ReferralServiceTest {
         when(variablePropertiesReader.getBigDecimal("course.rub.byn")).thenReturn(new BigDecimal("0.1"));
 
         referralService.processReferralDiscount(deal);
+        verify(balanceAuditService).save(user, 1000, BalanceAuditType.REFERRAL_DEBITING);
         assertAll(
                 () -> assertEquals(0, deal.getUser().getReferralBalance()),
                 () -> assertEquals(0, new BigDecimal(100).compareTo(deal.getAmount()))
@@ -121,6 +129,7 @@ class ReferralServiceTest {
         when(variablePropertiesReader.getBigDecimal(any())).thenReturn(new BigDecimal("0.1"));
 
         referralService.processReferralDiscount(deal);
+        verify(balanceAuditService).save(user, 500, BalanceAuditType.REFERRAL_DEBITING);
         assertAll(
                 () -> assertEquals(500, deal.getUser().getReferralBalance()),
                 () -> assertEquals(0, BigDecimal.ZERO.compareTo(deal.getAmount()))
@@ -138,6 +147,7 @@ class ReferralServiceTest {
 
         when(referralModule.isCurrent(ReferralType.STANDARD)).thenReturn(true);
         referralService.processReferralDiscount(deal);
+        verify(balanceAuditService).save(user, 50, BalanceAuditType.REFERRAL_DEBITING);
         verify(variablePropertiesReader, never()).getBigDecimal(any());
     }
 
@@ -193,6 +203,7 @@ class ReferralServiceTest {
         verify(modifyUserService).updateReferralBalanceByChatId(102, fromChatId);
         verify(notifier).sendNotify(fromChatId, String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(), 2));
         verify(modifyUserService).updateChargesByChatId(202, fromChatId);
+        verify(balanceAuditService).save(referralUser, 2, BalanceAuditType.REFERRAL_ADDITION);
     }
 
     @Test
@@ -220,6 +231,7 @@ class ReferralServiceTest {
         referralService.processReferralBonus(deal);
 
         verify(calculateService).getPercentsFactor(referralPercent);
+        verify(balanceAuditService).save(referralUser, 5, BalanceAuditType.REFERRAL_ADDITION);
     }
 
     @Test
@@ -248,6 +260,7 @@ class ReferralServiceTest {
         referralService.processReferralBonus(deal);
 
         verify(variablePropertiesReader, never()).getBigDecimal("course.byn.rub");
+        verify(balanceAuditService).save(referralUser, 5, BalanceAuditType.REFERRAL_ADDITION);
     }
 
     @Test
@@ -331,6 +344,7 @@ class ReferralServiceTest {
         verify(modifyUserService).updateReferralBalanceByChatId(120, fromChatId);
         verify(notifier).sendNotify(fromChatId, String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(), 20));
         verify(modifyUserService).updateChargesByChatId(220, fromChatId);
+        verify(balanceAuditService).save(referralUser, 20, BalanceAuditType.REFERRAL_ADDITION);
     }
 
     @Test

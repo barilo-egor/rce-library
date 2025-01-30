@@ -6,11 +6,13 @@ import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.User;
 import tgb.btc.library.constants.enums.ReferralType;
+import tgb.btc.library.constants.enums.bot.BalanceAuditType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.IModule;
+import tgb.btc.library.interfaces.service.bean.bot.IBalanceAuditService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IModifyUserService;
 import tgb.btc.library.interfaces.service.bean.bot.user.IReadUserService;
 import tgb.btc.library.interfaces.service.process.IReferralService;
@@ -38,11 +40,14 @@ public class ReferralService implements IReferralService {
 
     private final IModifyUserService modifyUserService;
 
+    private final IBalanceAuditService balanceAuditService;
+
     @Autowired
     public ReferralService(IModule<ReferralType> referralModule, VariablePropertiesReader variablePropertiesReader,
                            IReadUserService readUserService, BigDecimalService bigDecimalService,
                            @Autowired(required = false) INotifier notifier,
-                           CalculateService calculateService, IModifyUserService modifyUserService) {
+                           CalculateService calculateService, IModifyUserService modifyUserService,
+                           IBalanceAuditService balanceAuditService) {
         this.referralModule = referralModule;
         this.variablePropertiesReader = variablePropertiesReader;
         this.readUserService = readUserService;
@@ -50,6 +55,7 @@ public class ReferralService implements IReferralService {
         this.notifier = notifier;
         this.calculateService = calculateService;
         this.modifyUserService = modifyUserService;
+        this.balanceAuditService = balanceAuditService;
     }
 
     @Override
@@ -62,8 +68,10 @@ public class ReferralService implements IReferralService {
             checkCoursesNotBlank();
             referralBalance = referralBalance.multiply(variablePropertiesReader.getBigDecimal("course.rub.byn"));
         }
+        int amount;
         if (referralBalance.compareTo(deal.getOriginalPrice()) < 1) {
             sumWithDiscount = deal.getOriginalPrice().subtract(referralBalance);
+            amount = deal.getUser().getReferralBalance();
             referralBalance = BigDecimal.ZERO;
         } else {
             sumWithDiscount = BigDecimal.ZERO;
@@ -71,9 +79,11 @@ public class ReferralService implements IReferralService {
             if (isConversionNeeded) {
                 referralBalance = referralBalance.divide(variablePropertiesReader.getBigDecimal("course.byn.rub"), RoundingMode.HALF_UP);
             }
+            amount = deal.getUser().getReferralBalance() - referralBalance.intValue();
         }
         deal.getUser().setReferralBalance(referralBalance.intValue());
         deal.setAmount(sumWithDiscount);
+        balanceAuditService.save(deal.getUser(), amount, BalanceAuditType.REFERRAL_DEBITING);
     }
 
     @Override
@@ -89,6 +99,7 @@ public class ReferralService implements IReferralService {
         }
         Integer total = refUser.getReferralBalance() + sumToAdd.intValue();
         modifyUserService.updateReferralBalanceByChatId(total, refUser.getChatId());
+        balanceAuditService.save(refUser, sumToAdd.intValue(), BalanceAuditType.REFERRAL_ADDITION);
         if (BigDecimal.ZERO.compareTo(sumToAdd) != 0) {
             notifier.sendNotify(refUser.getChatId(), String.format(BotMessageConst.FROM_REFERRAL_BALANCE_PURCHASE.getMessage(),
                     sumToAdd.intValue()));
