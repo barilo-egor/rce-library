@@ -12,9 +12,9 @@ public interface IBalanceAuditService {
 
     void save(User target, Integer amount, BalanceAuditType type);
 
-    List<BalanceAudit> findAll(Integer page, Integer limit, Sort sort);
+    List<BalanceAudit> findAll(Long targetChatId, Long initiatorChatId, Integer page, Integer limit, Sort sort);
 
-    List<BalanceAudit> findAll(Integer page, Integer limit);
+    List<BalanceAudit> findAll(Long targetChatId, Long initiatorChatId, Integer page, Integer limit);
 
-    long count();
+    long count(Long targetChatId, Long initiatorChatId);
 }

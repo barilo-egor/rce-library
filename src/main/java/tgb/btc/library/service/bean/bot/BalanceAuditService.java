@@ -1,5 +1,6 @@
 package tgb.btc.library.service.bean.bot;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import tgb.btc.library.repository.bot.BalanceAuditRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BalanceAuditService implements IBalanceAuditService {
@@ -47,17 +49,38 @@ public class BalanceAuditService implements IBalanceAuditService {
     }
 
     @Override
-    public List<BalanceAudit> findAll(Integer page, Integer limit, Sort sort) {
-        return balanceAuditRepository.findAll(PageRequest.of(page, limit, sort)).toList();
+    public List<BalanceAudit> findAll(Long targetChatId, Long initiatorChatId, Integer page, Integer limit, Sort sort) {
+        return balanceAuditRepository.findAll(Example.of(getExample(targetChatId, initiatorChatId)),
+                PageRequest.of(page, limit, sort)).toList();
     }
 
     @Override
-    public List<BalanceAudit> findAll(Integer page, Integer limit) {
-        return balanceAuditRepository.findAll(PageRequest.of(page, limit)).toList();
+    public List<BalanceAudit> findAll(Long targetChatId, Long initiatorChatId, Integer page, Integer limit) {
+        return balanceAuditRepository.findAll(Example.of(getExample(targetChatId, initiatorChatId)),
+                PageRequest.of(page, limit)).toList();
+    }
+
+    private BalanceAudit getExample(Long targetChatId, Long initiatorChatId) {
+        BalanceAudit example = new BalanceAudit();
+        if (Objects.nonNull(targetChatId)) {
+            User user = new User();
+            user.setChatId(targetChatId);
+            user.setUserRole(null);
+            user.setReferralBalance(null);
+            example.setTarget(user);
+        }
+        if (Objects.nonNull(initiatorChatId)) {
+            User user = new User();
+            user.setChatId(initiatorChatId);
+            user.setUserRole(null);
+            user.setReferralBalance(null);
+            example.setInitiator(user);
+        }
+        return example;
     }
 
     @Override
-    public long count() {
-        return balanceAuditRepository.count();
+    public long count(Long targetChatId, Long initiatorChatId) {
+        return balanceAuditRepository.count(Example.of(getExample(targetChatId, initiatorChatId)));
     }
 }
