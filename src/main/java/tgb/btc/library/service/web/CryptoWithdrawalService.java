@@ -10,8 +10,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.exception.ApiResponseErrorException;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
-import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.interfaces.web.ICryptoWithdrawalService;
 import tgb.btc.library.interfaces.web.IRequestService;
 import tgb.btc.library.vo.web.ApiResponse;
@@ -81,9 +79,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public CryptoWithdrawalService(IRequestService requestService,
                                    @Value("${crypto-withdrawal.url}") String cryptoWithdrawalUrl,
                                    @Value("${crypto-withdrawal.username}") String username,
-                                   @Value("${crypto-withdrawal.password}") String password,
-                                   IReadDealService readDealService,
-                                   IBigDecimalService bigDecimalService) {
+                                   @Value("${crypto-withdrawal.password}") String password) {
         this.requestService = requestService;
         authenticateUrl = cryptoWithdrawalUrl + "/authenticate";
         balanceUrl = cryptoWithdrawalUrl + "/balance";
@@ -150,7 +146,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 log.error("Ошибка в ответе при получении баланса: {}", response.getBody().getError().getMessage());
                 throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
             }
-            return BigDecimal.valueOf(response.getBody().getData().doubleValue());
+            return BigDecimal.valueOf(response.getBody().getData());
         } catch (HttpClientErrorException.Forbidden exception) {
             log.debug("Ошибка аутентификации при попытке получения баланса: ", exception);
             log.debug("Выполняется повторная попытка. получения баланса");
