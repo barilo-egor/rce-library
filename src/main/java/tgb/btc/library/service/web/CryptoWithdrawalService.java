@@ -43,6 +43,8 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private final String completePoolUrl;
 
+    private final String walletUrl;
+
     private final List<RequestParam> authenticateParams;
 
     private final RequestHeader requestAuthorizationHeader;
@@ -69,6 +71,8 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private int completePoolAttemptsCount = 0;
 
+    private int changeWalletAttemptsCount = 0;
+
     private final int maxAttemptsCount = 3;
 
     @Autowired
@@ -89,6 +93,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         poolUrl = cryptoWithdrawalUrl + pool;
         deleteAllPoolUrl = cryptoWithdrawalUrl + pool + "/all";
         completePoolUrl = cryptoWithdrawalUrl + pool + "/complete";
+        walletUrl = cryptoWithdrawalUrl + "/wallet/%s";
         authenticateParams = new ArrayList<>();
         authenticateParams.add(RequestParam.builder().key("username").value(username).build());
         authenticateParams.add(RequestParam.builder().key("password").value(password).build());
@@ -97,7 +102,10 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         log.debug("Сервис для взаимодействия с микросервисом crypto-withdrawal успешно загружен в контекст. Url = {}", cryptoWithdrawalUrl);
     }
 
-    private void authenticate() {
+    private synchronized void authenticate() {
+        if (!requestAuthorizationHeader.isEmpty()) {
+            return;
+        }
         try {
             ResponseEntity<String> response = requestService.post(authenticateUrl, authenticateParams, String.class);
             requestAuthorizationHeader.setValue("Bearer " + response.getBody());
@@ -115,9 +123,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 throw new BaseException("Не удается получить баланс после " + maxAttemptsCount + " попыток.");
             }
             log.debug("Выполнение запроса на получение баланса кошелька {}", cryptoCurrency.name());
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             try {
                 balanceAttemptsCount++;
                 ResponseEntity<ApiResponse<Double>> response = requestService.get(
@@ -157,9 +163,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 withdrawalAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
             }
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             try {
                 withdrawalAttemptsCount++;
                 ResponseEntity<ApiResponse<String>> response = requestService.post(
@@ -196,9 +200,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     @Override
     public synchronized boolean isOn(CryptoCurrency cryptoCurrency) {
         try {
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (isOnAttemptsCount >= maxAttemptsCount) {
                 isOnAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
@@ -242,9 +244,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     @Override
     public List<PoolDeal> getAllPoolDeals() {
         try {
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (getAllPoolDealsAttemptsCount >= maxAttemptsCount) {
                 getAllPoolDealsAttemptsCount = 0;
                 throw new BaseException("Не удается получить пул после " + maxAttemptsCount + " попыток.");
@@ -287,9 +287,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public Integer addPoolDeal(PoolDeal poolDeal) {
         try {
             log.debug("Запрос на добавление сделки {} в пул.", poolDeal.getPid());
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (addPoolDealAttemptsCount >= maxAttemptsCount) {
                 addPoolDealAttemptsCount = 0;
                 throw new BaseException("Не удается добавить сделку в пул после " + maxAttemptsCount + " попыток.");
@@ -333,9 +331,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public Boolean clearPool() {
         try {
             log.debug("Запрос на очистку пула.");
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (deleteAllPoolDealsAttemptsCount >= maxAttemptsCount) {
                 deleteAllPoolDealsAttemptsCount = 0;
                 throw new BaseException("Не удается очистить пул после " + maxAttemptsCount + " попыток.");
@@ -388,9 +384,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     public Long deleteFromPool(PoolDeal poolDeal) {
         try {
             log.debug("Запрос на удаление сделки {} из пула.", poolDeal);
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (deletePoolDealAttemptsCount >= maxAttemptsCount) {
                 deletePoolDealAttemptsCount = 0;
                 throw new BaseException("Не удается удалить сделку из пула после " + maxAttemptsCount + " попыток.");
@@ -433,9 +427,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     @Override
     public String complete() {
         try {
-            if (requestAuthorizationHeader.isEmpty()) {
-                authenticate();
-            }
+            authenticate();
             if (completePoolAttemptsCount >= maxAttemptsCount) {
                 completePoolAttemptsCount = 0;
                 throw new BaseException("Не удается завершить пул после " + maxAttemptsCount + " попыток.");
@@ -471,6 +463,42 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             log.error("Описание: ", e);
             completePoolAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке завершения пула.", e);
+        }
+    }
+
+    @Autowired
+    public void changeWallet(CryptoCurrency cryptoCurrency, String seedPhrase) {
+        if (Objects.isNull(seedPhrase) || seedPhrase.isEmpty()) {
+            throw new BaseException("Сид фраза не может быть пуста.");
+        }
+        if (Objects.isNull(cryptoCurrency)) {
+            throw new BaseException("Не указана криптовалюта.");
+        }
+        ResponseEntity<ApiResponse<Object>> response;
+        try {
+            authenticate();
+            if (changeWalletAttemptsCount >= maxAttemptsCount) {
+                changeWalletAttemptsCount = 0;
+                throw new BaseException("Не удается заменить кошелек после " + maxAttemptsCount + " попыток.");
+            }
+            changeWalletAttemptsCount++;
+            response = requestService.post(
+                    String.format(walletUrl, cryptoCurrency.name()),
+                    requestAuthorizationHeader,
+                    Object.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке замены кошелька: ", exception);
+            log.debug("Выполняется повторная попытка замены кошелька");
+            requestAuthorizationHeader.clearValue();
+            changeWallet(cryptoCurrency, seedPhrase);
+            return;
+        }
+        if (Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке замены кошелька: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке замены кошелька: "
+                    + response.getBody().getError().getMessage());
         }
     }
 }
