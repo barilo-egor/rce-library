@@ -29,6 +29,12 @@ import java.util.Objects;
 @Slf4j
 public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
+    private static final String ATTEMPTS_STRING = " попыток.";
+
+    private static final String RESPONSE_BODY_REQUIRED = "В ответе должно присутствовать тело.";
+
+    private static final String DESCRIPTION = "Описание: ";
+
     private final String authenticateUrl;
 
     private final String balanceUrl;
@@ -51,10 +57,6 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private final IRequestService requestService;
 
-    private final IReadDealService readDealService;
-
-    private final IBigDecimalService bigDecimalService;
-
     private int balanceAttemptsCount = 0;
 
     private int withdrawalAttemptsCount = 0;
@@ -73,7 +75,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private int changeWalletAttemptsCount = 0;
 
-    private final int maxAttemptsCount = 3;
+    private static final int MAX_ATTEMPTS_COUNT = 3;
 
     @Autowired
     public CryptoWithdrawalService(IRequestService requestService,
@@ -87,8 +89,6 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         balanceUrl = cryptoWithdrawalUrl + "/balance";
         withdrawalUrl = cryptoWithdrawalUrl + "/withdrawal";
         isOnUrl = cryptoWithdrawalUrl + "/isOn";
-        this.readDealService = readDealService;
-        this.bigDecimalService = bigDecimalService;
         String pool = "/pool";
         poolUrl = cryptoWithdrawalUrl + pool;
         deleteAllPoolUrl = cryptoWithdrawalUrl + pool + "/all";
@@ -118,37 +118,13 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     @Override
     public synchronized BigDecimal getBalance(CryptoCurrency cryptoCurrency) {
         try {
-            if (balanceAttemptsCount >= maxAttemptsCount) {
+            if (balanceAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 balanceAttemptsCount = 0;
-                throw new BaseException("Не удается получить баланс после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается получить баланс после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             log.debug("Выполнение запроса на получение баланса кошелька {}", cryptoCurrency.name());
             authenticate();
-            try {
-                balanceAttemptsCount++;
-                ResponseEntity<ApiResponse<Double>> response = requestService.get(
-                        balanceUrl,
-                        requestAuthorizationHeader,
-                        RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
-                        Double.class
-                );
-                balanceAttemptsCount = 0;
-                if (Objects.isNull(response.getBody())) {
-                    log.error("Тело ответа при получении баланса для {} пустое.", cryptoCurrency.name());
-                    throw new BaseException("В ответе должно присутствовать тело.");
-                }
-                if (Objects.nonNull(response.getBody().getError())) {
-                    log.error("Ошибка в ответе при получении баланса: {}", response.getBody().getError().getMessage());
-                    throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
-                }
-                return BigDecimal.valueOf(((Number) response.getBody().getData()).doubleValue());
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке получения баланса: ", exception);
-                log.debug("Выполняется повторная попытка. получения баланса");
-                requestAuthorizationHeader.clearValue();
-                authenticate();
-                return getBalance(cryptoCurrency);
-            }
+            return makeGetBalanceRequest(cryptoCurrency);
         } catch (Exception e) {
             log.error("Ошибка при попытке получения баланса:", e);
             balanceAttemptsCount = 0;
@@ -156,40 +132,43 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
+    private BigDecimal makeGetBalanceRequest(CryptoCurrency cryptoCurrency) {
+        try {
+            balanceAttemptsCount++;
+            ResponseEntity<ApiResponse<Double>> response = requestService.get(
+                    balanceUrl,
+                    requestAuthorizationHeader,
+                    RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
+                    Double.class
+            );
+            balanceAttemptsCount = 0;
+            if (Objects.isNull(response.getBody())) {
+                log.error("Тело ответа при получении баланса для {} пустое.", cryptoCurrency.name());
+                throw new BaseException(RESPONSE_BODY_REQUIRED);
+            }
+            if (Objects.nonNull(response.getBody().getError())) {
+                log.error("Ошибка в ответе при получении баланса: {}", response.getBody().getError().getMessage());
+                throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
+            }
+            return BigDecimal.valueOf(response.getBody().getData().doubleValue());
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке получения баланса: ", exception);
+            log.debug("Выполняется повторная попытка. получения баланса");
+            requestAuthorizationHeader.clearValue();
+            authenticate();
+            return getBalance(cryptoCurrency);
+        }
+    }
+
     @Override
     public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
         try {
-            if (withdrawalAttemptsCount >= maxAttemptsCount) {
+            if (withdrawalAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 withdrawalAttemptsCount = 0;
-                throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается совершить авто вывод после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             authenticate();
-            try {
-                withdrawalAttemptsCount++;
-                ResponseEntity<ApiResponse<String>> response = requestService.post(
-                        withdrawalUrl,
-                        requestAuthorizationHeader,
-                        WithdrawalRequest.builder().cryptoCurrency(cryptoCurrency).amount(amount.toPlainString())
-                                .address(address).build(),
-                        String.class
-                );
-                withdrawalAttemptsCount = 0;
-                if (Objects.isNull(response.getBody())) {
-                    log.error("Тело ответа при попытке авто вывода для {} пустое.Address={}, amount={}",
-                            cryptoCurrency.name(), address, amount);
-                    throw new BaseException("В ответе должно присутствовать тело.");
-                }
-                if (Objects.nonNull(response.getBody().getError())) {
-                    log.error("Ошибка в ответе при попытке авто вывода: {}", response.getBody().getError().getMessage());
-                    throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
-                }
-                return response.getBody().getData();
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
-                log.debug("Выполняется повторная попытка авто вывода.");
-                requestAuthorizationHeader.clearValue();
-                return withdrawal(cryptoCurrency, amount, address);
-            }
+            return makeWithdrawalRequest(cryptoCurrency, amount, address);
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода:", e);
             withdrawalAttemptsCount = 0;
@@ -197,90 +176,127 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
+    private String makeWithdrawalRequest(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
+        try {
+            withdrawalAttemptsCount++;
+            ResponseEntity<ApiResponse<String>> response = requestService.post(
+                    withdrawalUrl,
+                    requestAuthorizationHeader,
+                    WithdrawalRequest.builder().cryptoCurrency(cryptoCurrency).amount(amount.toPlainString())
+                            .address(address).build(),
+                    String.class
+            );
+            withdrawalAttemptsCount = 0;
+            if (Objects.isNull(response.getBody())) {
+                log.error("Тело ответа при попытке авто вывода для {} пустое.Address={}, amount={}",
+                        cryptoCurrency.name(), address, amount);
+                throw new BaseException(RESPONSE_BODY_REQUIRED);
+            }
+            if (Objects.nonNull(response.getBody().getError())) {
+                log.error("Ошибка в ответе при попытке авто вывода: {}", response.getBody().getError().getMessage());
+                throw new ApiResponseErrorException("Ошибка в ответе при авто выводе: " + response.getBody().getError().getMessage());
+            }
+            return response.getBody().getData();
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
+            log.debug("Выполняется повторная попытка авто вывода.");
+            requestAuthorizationHeader.clearValue();
+            return withdrawal(cryptoCurrency, amount, address);
+        }
+    }
+
     @Override
     public synchronized boolean isOn(CryptoCurrency cryptoCurrency) {
         try {
-            authenticate();
-            if (isOnAttemptsCount >= maxAttemptsCount) {
+            if (isOnAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 isOnAttemptsCount = 0;
-                throw new BaseException("Не удается совершить авто вывод после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается совершить авто вывод после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
+            authenticate();
             isOnAttemptsCount++;
-            ResponseEntity<ApiResponse<Boolean>> response;
-            try {
-                response = requestService.get(
-                        isOnUrl,
-                        requestAuthorizationHeader,
-                        RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
-                        Boolean.class
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при узнать включен ли автовывод для криптовалюты.", exception);
-                log.debug("Выполняется повторная попытка узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
-                requestAuthorizationHeader.clearValue();
-                return isOn(cryptoCurrency);
-            }
-            isOnAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке узнать включен ли автовывод для криптовалюты {} пустое.",
-                        cryptoCurrency.name());
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты "
-                        + cryptoCurrency.name() + ": " + response.getBody().getError().getMessage());
-            }
-            return response.getBody().getData();
+            return makeIsOnRequest(cryptoCurrency);
         }  catch (Exception e) {
             log.error("Ошибка при попытке узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             isOnAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке узнать включен ли автовывод " + cryptoCurrency.name() + ".", e);
         }
     }
 
+    private boolean makeIsOnRequest(CryptoCurrency cryptoCurrency) {
+        ResponseEntity<ApiResponse<Boolean>> response;
+        try {
+            response = requestService.get(
+                    isOnUrl,
+                    requestAuthorizationHeader,
+                    RequestParam.builder().key("cryptoCurrency").value(cryptoCurrency.name()).build(),
+                    Boolean.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при узнать включен ли автовывод для криптовалюты.", exception);
+            log.debug("Выполняется повторная попытка узнать включен ли автовывод для криптовалюты {}.", cryptoCurrency.name());
+            requestAuthorizationHeader.clearValue();
+            return isOn(cryptoCurrency);
+        }
+        isOnAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке узнать включен ли автовывод для криптовалюты {} пустое.",
+                    cryptoCurrency.name());
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке узнать включен ли автовывод для криптовалюты "
+                    + cryptoCurrency.name() + ": " + response.getBody().getError().getMessage());
+        }
+        return response.getBody().getData();
+    }
+
     @Override
     public List<PoolDeal> getAllPoolDeals() {
         try {
-            authenticate();
-            if (getAllPoolDealsAttemptsCount >= maxAttemptsCount) {
+            if (getAllPoolDealsAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 getAllPoolDealsAttemptsCount = 0;
-                throw new BaseException("Не удается получить пул после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается получить пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
+            authenticate();
             getAllPoolDealsAttemptsCount++;
-            ResponseEntity<ApiResponse<List<PoolDeal>>> response;
-            try {
-                response = requestService.get(
-                        poolUrl,
-                        requestAuthorizationHeader,
-                        new ParameterizedTypeReference<>() {}
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке получения пула: ", exception);
-                log.debug("Выполняется повторная попытка получения пула.");
-                requestAuthorizationHeader.clearValue();
-                return getAllPoolDeals();
-            }
-            getAllPoolDealsAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке получить пул пустое.");
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке получения пула: {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке получения пула: "
-                        + response.getBody().getError().getMessage());
-            }
-            return response.getBody().getData();
+            return makeGetAllPoolDealsRequest();
         }  catch (Exception e) {
             log.error("Ошибка при попытке получения пула.");
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             getAllPoolDealsAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке получения пула.", e);
         }
+    }
+
+    private List<PoolDeal> makeGetAllPoolDealsRequest() {
+        ResponseEntity<ApiResponse<List<PoolDeal>>> response;
+        try {
+            response = requestService.get(
+                    poolUrl,
+                    requestAuthorizationHeader,
+                    new ParameterizedTypeReference<>() {}
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке получения пула: ", exception);
+            log.debug("Выполняется повторная попытка получения пула.");
+            requestAuthorizationHeader.clearValue();
+            return getAllPoolDeals();
+        }
+        getAllPoolDealsAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке получить пул пустое.");
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке получения пула: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке получения пула: "
+                    + response.getBody().getError().getMessage());
+        }
+        return response.getBody().getData();
     }
 
     @Override
@@ -288,43 +304,47 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         try {
             log.debug("Запрос на добавление сделки {} в пул.", poolDeal.getPid());
             authenticate();
-            if (addPoolDealAttemptsCount >= maxAttemptsCount) {
+            if (addPoolDealAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 addPoolDealAttemptsCount = 0;
-                throw new BaseException("Не удается добавить сделку в пул после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается добавить сделку в пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             addPoolDealAttemptsCount++;
-            ResponseEntity<ApiResponse<Integer>> response;
-            try {
-                response = requestService.post(
-                        poolUrl,
-                        requestAuthorizationHeader,
-                        poolDeal,
-                        Integer.class
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке добавления сделки в пул: ", exception);
-                log.debug("Выполняется повторная попытка добавления сделки в пул.");
-                requestAuthorizationHeader.clearValue();
-                return addPoolDeal(poolDeal);
-            }
-            addPoolDealAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке добавить сделку в пул пустое.");
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке добавления сделки в пул: {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке добавления сделки в пул: "
-                        + response.getBody().getError().getMessage());
-            }
-            return response.getBody().getData();
+            return makeAddPoolDealRequest(poolDeal);
         }  catch (Exception e) {
             log.error("Ошибка при попытке добавления сделки в пул.");
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             addPoolDealAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке добавления сделки в пул.", e);
         }
+    }
+
+    private Integer makeAddPoolDealRequest(PoolDeal poolDeal) {
+        ResponseEntity<ApiResponse<Integer>> response;
+        try {
+            response = requestService.post(
+                    poolUrl,
+                    requestAuthorizationHeader,
+                    poolDeal,
+                    Integer.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке добавления сделки в пул: ", exception);
+            log.debug("Выполняется повторная попытка добавления сделки в пул.");
+            requestAuthorizationHeader.clearValue();
+            return addPoolDeal(poolDeal);
+        }
+        addPoolDealAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке добавить сделку в пул пустое.");
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке добавления сделки в пул: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке добавления сделки в пул: "
+                    + response.getBody().getError().getMessage());
+        }
+        return response.getBody().getData();
     }
 
     @Override
@@ -332,42 +352,46 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         try {
             log.debug("Запрос на очистку пула.");
             authenticate();
-            if (deleteAllPoolDealsAttemptsCount >= maxAttemptsCount) {
+            if (deleteAllPoolDealsAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 deleteAllPoolDealsAttemptsCount = 0;
-                throw new BaseException("Не удается очистить пул после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается очистить пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             deleteAllPoolDealsAttemptsCount++;
-            ResponseEntity<ApiResponse<Boolean>> response;
-            try {
-                response = requestService.delete(
-                        deleteAllPoolUrl,
-                        requestAuthorizationHeader,
-                        Boolean.class
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке очистки пула: ", exception);
-                log.debug("Выполняется повторная попытка очистки пула.");
-                requestAuthorizationHeader.clearValue();
-                return clearPool();
-            }
-            deleteAllPoolDealsAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке очистки пула пустое.");
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке очистки пула: {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке очистки пула: "
-                        + response.getBody().getError().getMessage());
-            }
-            return response.getBody().getData();
+            return makeClearPoolRequest();
         }  catch (Exception e) {
             log.error("Ошибка при попытке очистки пула.");
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             deleteAllPoolDealsAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке очистки пула.", e);
         }
+    }
+
+    private Boolean makeClearPoolRequest() {
+        ResponseEntity<ApiResponse<Boolean>> response;
+        try {
+            response = requestService.delete(
+                    deleteAllPoolUrl,
+                    requestAuthorizationHeader,
+                    Boolean.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке очистки пула: ", exception);
+            log.debug("Выполняется повторная попытка очистки пула.");
+            requestAuthorizationHeader.clearValue();
+            return clearPool();
+        }
+        deleteAllPoolDealsAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке очистки пула пустое.");
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке очистки пула: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке очистки пула: "
+                    + response.getBody().getError().getMessage());
+        }
+        return response.getBody().getData();
     }
 
     @Override
@@ -385,85 +409,93 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         try {
             log.debug("Запрос на удаление сделки {} из пула.", poolDeal);
             authenticate();
-            if (deletePoolDealAttemptsCount >= maxAttemptsCount) {
+            if (deletePoolDealAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 deletePoolDealAttemptsCount = 0;
-                throw new BaseException("Не удается удалить сделку из пула после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается удалить сделку из пула после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             deletePoolDealAttemptsCount++;
-            ResponseEntity<ApiResponse<Integer>> response;
-            try {
-                response = requestService.delete(
-                        poolUrl,
-                        requestAuthorizationHeader,
-                        poolDeal,
-                        Integer.class
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке удаления сделки из пула: ", exception);
-                log.debug("Выполняется повторная попытка удаления сделки из пула.");
-                requestAuthorizationHeader.clearValue();
-                return deleteFromPool(poolDeal);
-            }
-            deletePoolDealAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке удаления сделки из пула пустое.");
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке удаления сделки из пула: {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке удаления сделки из пула: "
-                        + response.getBody().getError().getMessage());
-            }
-            return Long.valueOf(response.getBody().getData());
+            return makeDeleteFromPoolRequest(poolDeal);
         }  catch (Exception e) {
             log.error("Ошибка при попытке удаления сделки из пула.");
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             deletePoolDealAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке удаления сделки из пула.", e);
         }
+    }
+
+    private Long makeDeleteFromPoolRequest(PoolDeal poolDeal) {
+        ResponseEntity<ApiResponse<Integer>> response;
+        try {
+            response = requestService.delete(
+                    poolUrl,
+                    requestAuthorizationHeader,
+                    poolDeal,
+                    Integer.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке удаления сделки из пула: ", exception);
+            log.debug("Выполняется повторная попытка удаления сделки из пула.");
+            requestAuthorizationHeader.clearValue();
+            return deleteFromPool(poolDeal);
+        }
+        deletePoolDealAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке удаления сделки из пула пустое.");
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке удаления сделки из пула: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке удаления сделки из пула: "
+                    + response.getBody().getError().getMessage());
+        }
+        return Long.valueOf(response.getBody().getData());
     }
 
     @Override
     public String complete() {
         try {
             authenticate();
-            if (completePoolAttemptsCount >= maxAttemptsCount) {
+            if (completePoolAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 completePoolAttemptsCount = 0;
-                throw new BaseException("Не удается завершить пул после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается завершить пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             completePoolAttemptsCount++;
-            ResponseEntity<ApiResponse<String>> response;
-            try {
-                response = requestService.post(
-                        completePoolUrl,
-                        requestAuthorizationHeader,
-                        String.class
-                );
-            } catch (HttpClientErrorException.Forbidden exception) {
-                log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
-                log.debug("Выполняется повторная попытка завершения пула.");
-                requestAuthorizationHeader.clearValue();
-                return complete();
-            }
-            completePoolAttemptsCount = 0;
-            if (Objects.isNull(response.getBody())) {
-                log.error("Тело ответа при попытке завершить пул пустое.");
-                throw new BaseException("В ответе должно присутствовать тело.");
-            }
-            if (Objects.nonNull(response.getBody().getError())) {
-                log.error("Ошибка в ответе при попытке завершения пула: {}",
-                        response.getBody().getError().getMessage());
-                throw new ApiResponseErrorException("Ошибка в ответе при попытке завершения пула: "
-                        + response.getBody().getError().getMessage());
-            }
-            return response.getBody().getData();
+            return makeCompleteRequest();
         }  catch (Exception e) {
             log.error("Ошибка при попытке завершения пула.");
-            log.error("Описание: ", e);
+            log.error(DESCRIPTION, e);
             completePoolAttemptsCount = 0;
             throw new BaseException("Ошибка при попытке завершения пула.", e);
         }
+    }
+
+    private String makeCompleteRequest() {
+        ResponseEntity<ApiResponse<String>> response;
+        try {
+            response = requestService.post(
+                    completePoolUrl,
+                    requestAuthorizationHeader,
+                    String.class
+            );
+        } catch (HttpClientErrorException.Forbidden exception) {
+            log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
+            log.debug("Выполняется повторная попытка завершения пула.");
+            requestAuthorizationHeader.clearValue();
+            return complete();
+        }
+        completePoolAttemptsCount = 0;
+        if (Objects.isNull(response.getBody())) {
+            log.error("Тело ответа при попытке завершить пул пустое.");
+            throw new BaseException(RESPONSE_BODY_REQUIRED);
+        }
+        if (Objects.nonNull(response.getBody().getError())) {
+            log.error("Ошибка в ответе при попытке завершения пула: {}",
+                    response.getBody().getError().getMessage());
+            throw new ApiResponseErrorException("Ошибка в ответе при попытке завершения пула: "
+                    + response.getBody().getError().getMessage());
+        }
+        return response.getBody().getData();
     }
 
     @Override
@@ -477,14 +509,15 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         ResponseEntity<ApiResponse<Object>> response;
         try {
             authenticate();
-            if (changeWalletAttemptsCount >= maxAttemptsCount) {
+            if (changeWalletAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 changeWalletAttemptsCount = 0;
-                throw new BaseException("Не удается заменить кошелек после " + maxAttemptsCount + " попыток.");
+                throw new BaseException("Не удается заменить кошелек после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             changeWalletAttemptsCount++;
             response = requestService.post(
                     String.format(walletUrl, cryptoCurrency.name()),
                     requestAuthorizationHeader,
+                    seedPhrase,
                     Object.class
             );
         } catch (HttpClientErrorException.Forbidden exception) {
