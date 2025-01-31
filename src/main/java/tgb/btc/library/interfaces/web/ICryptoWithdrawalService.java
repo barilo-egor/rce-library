@@ -9,7 +9,7 @@ import java.util.List;
 public interface ICryptoWithdrawalService {
     BigDecimal getBalance(CryptoCurrency cryptoCurrency);
 
-    String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address);
+    String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address, String feeRate);
 
     boolean isOn(CryptoCurrency cryptoCurrency);
 
@@ -25,7 +25,7 @@ public interface ICryptoWithdrawalService {
 
     Long deleteFromPool(PoolDeal poolDeal);
 
-    String complete();
+    String complete(String feeRate);
 
     void changeWallet(CryptoCurrency cryptoCurrency, String seedPhrase);
 }

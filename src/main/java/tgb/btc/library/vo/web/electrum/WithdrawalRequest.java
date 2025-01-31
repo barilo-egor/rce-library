@@ -13,4 +13,6 @@ public class WithdrawalRequest {
     private String amount;
 
     private String address;
+
+    private String fee;
 }

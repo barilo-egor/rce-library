@@ -14,6 +14,8 @@ public interface IRequestService {
 
     <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, Class<T> clazz);
 
+    <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, RequestParam requestParam, Class<T> clazz);
+
     <T, B> ResponseEntity<ApiResponse<T>> post(String url, RequestHeader requestHeader, B body, Class<T> clazz);
 
     <T, B> ResponseEntity<ApiResponse<T>> delete(String url, RequestHeader requestHeader, Class<T> responseClazz);

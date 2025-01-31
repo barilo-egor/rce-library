@@ -157,14 +157,14 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     }
 
     @Override
-    public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
+    public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address, String feeRate) {
         try {
             if (withdrawalAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 withdrawalAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             authenticate();
-            return makeWithdrawalRequest(cryptoCurrency, amount, address);
+            return makeWithdrawalRequest(cryptoCurrency, amount, address, feeRate);
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода:", e);
             withdrawalAttemptsCount = 0;
@@ -172,14 +172,14 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
-    private String makeWithdrawalRequest(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
+    private String makeWithdrawalRequest(CryptoCurrency cryptoCurrency, BigDecimal amount, String address, String feeRate) {
         try {
             withdrawalAttemptsCount++;
             ResponseEntity<ApiResponse<String>> response = requestService.post(
                     withdrawalUrl,
                     requestAuthorizationHeader,
                     WithdrawalRequest.builder().cryptoCurrency(cryptoCurrency).amount(amount.toPlainString())
-                            .address(address).build(),
+                            .address(address).fee(feeRate).build(),
                     String.class
             );
             withdrawalAttemptsCount = 0;
@@ -197,7 +197,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
             log.debug("Выполняется повторная попытка авто вывода.");
             requestAuthorizationHeader.clearValue();
-            return withdrawal(cryptoCurrency, amount, address);
+            return withdrawal(cryptoCurrency, amount, address, feeRate);
         }
     }
 
@@ -449,7 +449,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     }
 
     @Override
-    public String complete() {
+    public String complete(String feeRate) {
         try {
             authenticate();
             if (completePoolAttemptsCount >= MAX_ATTEMPTS_COUNT) {
@@ -457,7 +457,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 throw new BaseException("Не удается завершить пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             completePoolAttemptsCount++;
-            return makeCompleteRequest();
+            return makeCompleteRequest(feeRate);
         }  catch (Exception e) {
             log.error("Ошибка при попытке завершения пула.");
             log.error(DESCRIPTION, e);
@@ -466,19 +466,20 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
-    private String makeCompleteRequest() {
+    private String makeCompleteRequest(String feeRate) {
         ResponseEntity<ApiResponse<String>> response;
         try {
             response = requestService.post(
                     completePoolUrl,
                     requestAuthorizationHeader,
+                    RequestParam.builder().key("fee").value(feeRate).build(),
                     String.class
             );
         } catch (HttpClientErrorException.Forbidden exception) {
             log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
             log.debug("Выполняется повторная попытка завершения пула.");
             requestAuthorizationHeader.clearValue();
-            return complete();
+            return complete(feeRate);
         }
         completePoolAttemptsCount = 0;
         if (Objects.isNull(response.getBody())) {
