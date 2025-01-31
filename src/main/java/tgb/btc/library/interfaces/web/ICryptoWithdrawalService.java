@@ -26,4 +26,6 @@ public interface ICryptoWithdrawalService {
     Long deleteFromPool(PoolDeal poolDeal);
 
     String complete();
+
+    void changeWallet(CryptoCurrency cryptoCurrency, String seedPhrase);
 }

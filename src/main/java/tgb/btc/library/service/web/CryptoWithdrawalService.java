@@ -466,7 +466,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
-    @Autowired
+    @Override
     public void changeWallet(CryptoCurrency cryptoCurrency, String seedPhrase) {
         if (Objects.isNull(seedPhrase) || seedPhrase.isEmpty()) {
             throw new BaseException("Сид фраза не может быть пуста.");
