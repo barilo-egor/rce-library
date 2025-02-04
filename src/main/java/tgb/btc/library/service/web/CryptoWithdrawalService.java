@@ -19,9 +19,7 @@ import tgb.btc.library.vo.web.RequestParam;
 import tgb.btc.library.vo.web.electrum.WithdrawalRequest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -75,6 +73,13 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private static final int MAX_ATTEMPTS_COUNT = 3;
 
+    public static final String AUTO = "Авто";
+
+    /**
+     * Последняя введенная оператором комиссия в sat/vB (целое число сатоши/байт)
+     */
+    private final Map<CryptoCurrency, String> lastFeeRate;
+
     @Autowired
     public CryptoWithdrawalService(IRequestService requestService,
                                    @Value("${crypto-withdrawal.url}") String cryptoWithdrawalUrl,
@@ -95,7 +100,36 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         authenticateParams.add(RequestParam.builder().key("password").value(password).build());
         requestAuthorizationHeader = new RequestHeader();
         requestAuthorizationHeader.setName("Authorization");
+        lastFeeRate = new EnumMap<>(CryptoCurrency.class);
+        for (CryptoCurrency cryptoCurrency : CryptoCurrency.values()) {
+            lastFeeRate.put(cryptoCurrency, AUTO);
+        }
         log.debug("Сервис для взаимодействия с микросервисом crypto-withdrawal успешно загружен в контекст. Url = {}", cryptoWithdrawalUrl);
+    }
+
+    @Override
+    public String getAutoName() {
+        return AUTO;
+    }
+
+    @Override
+    public boolean isAutoFeeRate(CryptoCurrency cryptoCurrency) {
+        return lastFeeRate.get(cryptoCurrency).equals(AUTO);
+    }
+
+    @Override
+    public String getFeeRate(CryptoCurrency cryptoCurrency) {
+        return lastFeeRate.get(cryptoCurrency);
+    }
+
+    @Override
+    public void putFeeRate(CryptoCurrency cryptoCurrency, String feeRate) {
+        lastFeeRate.put(cryptoCurrency, feeRate);
+    }
+
+    @Override
+    public void putAutoFeeRate(CryptoCurrency cryptoCurrency) {
+        lastFeeRate.put(cryptoCurrency, AUTO);
     }
 
     private synchronized void authenticate() {
@@ -157,14 +191,14 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     }
 
     @Override
-    public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address, String feeRate) {
+    public synchronized String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
         try {
             if (withdrawalAttemptsCount >= MAX_ATTEMPTS_COUNT) {
                 withdrawalAttemptsCount = 0;
                 throw new BaseException("Не удается совершить авто вывод после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             authenticate();
-            return makeWithdrawalRequest(cryptoCurrency, amount, address, feeRate);
+            return makeWithdrawalRequest(cryptoCurrency, amount, address);
         } catch (Exception e) {
             log.error("Ошибка при попытке автовывода:", e);
             withdrawalAttemptsCount = 0;
@@ -172,14 +206,14 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
-    private String makeWithdrawalRequest(CryptoCurrency cryptoCurrency, BigDecimal amount, String address, String feeRate) {
+    private String makeWithdrawalRequest(CryptoCurrency cryptoCurrency, BigDecimal amount, String address) {
         try {
             withdrawalAttemptsCount++;
             ResponseEntity<ApiResponse<String>> response = requestService.post(
                     withdrawalUrl,
                     requestAuthorizationHeader,
                     WithdrawalRequest.builder().cryptoCurrency(cryptoCurrency).amount(amount.toPlainString())
-                            .address(address).fee(feeRate).build(),
+                            .address(address).fee(isAutoFeeRate(cryptoCurrency) ? null : getFeeRate(cryptoCurrency)).build(),
                     String.class
             );
             withdrawalAttemptsCount = 0;
@@ -197,7 +231,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             log.debug("Ошибка аутентификации при попытке авто вывода: ", exception);
             log.debug("Выполняется повторная попытка авто вывода.");
             requestAuthorizationHeader.clearValue();
-            return withdrawal(cryptoCurrency, amount, address, feeRate);
+            return withdrawal(cryptoCurrency, amount, address);
         }
     }
 
@@ -449,7 +483,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     }
 
     @Override
-    public String complete(String feeRate) {
+    public String complete() {
         try {
             authenticate();
             if (completePoolAttemptsCount >= MAX_ATTEMPTS_COUNT) {
@@ -457,7 +491,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                 throw new BaseException("Не удается завершить пул после " + MAX_ATTEMPTS_COUNT + ATTEMPTS_STRING);
             }
             completePoolAttemptsCount++;
-            return makeCompleteRequest(feeRate);
+            return makeCompleteRequest();
         }  catch (Exception e) {
             log.error("Ошибка при попытке завершения пула.");
             log.error(DESCRIPTION, e);
@@ -466,20 +500,20 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         }
     }
 
-    private String makeCompleteRequest(String feeRate) {
+    private String makeCompleteRequest() {
         ResponseEntity<ApiResponse<String>> response;
         try {
             response = requestService.post(
                     completePoolUrl,
                     requestAuthorizationHeader,
-                    RequestParam.builder().key("fee").value(feeRate).build(),
+                    RequestParam.builder().key("fee").value(lastFeeRate.get(CryptoCurrency.BITCOIN)).build(),
                     String.class
             );
         } catch (HttpClientErrorException.Forbidden exception) {
             log.debug("Ошибка аутентификации при попытке завершения пула: ", exception);
             log.debug("Выполняется повторная попытка завершения пула.");
             requestAuthorizationHeader.clearValue();
-            return complete(feeRate);
+            return complete();
         }
         completePoolAttemptsCount = 0;
         if (Objects.isNull(response.getBody())) {
