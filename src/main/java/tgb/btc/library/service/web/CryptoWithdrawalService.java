@@ -503,10 +503,14 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
     private String makeCompleteRequest() {
         ResponseEntity<ApiResponse<String>> response;
         try {
+            RequestParam requestParam = null;
+            if (!isAutoFeeRate(CryptoCurrency.BITCOIN)) {
+                requestParam = RequestParam.builder().key("fee").value(lastFeeRate.get(CryptoCurrency.BITCOIN)).build();
+            }
             response = requestService.post(
                     completePoolUrl,
                     requestAuthorizationHeader,
-                    RequestParam.builder().key("fee").value(lastFeeRate.get(CryptoCurrency.BITCOIN)).build(),
+                    requestParam,
                     String.class
             );
         } catch (HttpClientErrorException.Forbidden exception) {
