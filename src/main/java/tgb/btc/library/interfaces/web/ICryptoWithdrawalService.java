@@ -7,6 +7,16 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ICryptoWithdrawalService {
+    String getAutoName();
+
+    boolean isAutoFeeRate(CryptoCurrency cryptoCurrency);
+
+    String getFeeRate(CryptoCurrency cryptoCurrency);
+
+    void putFeeRate(CryptoCurrency cryptoCurrency, String feeRate);
+
+    void putAutoFeeRate(CryptoCurrency cryptoCurrency);
+
     BigDecimal getBalance(CryptoCurrency cryptoCurrency);
 
     String withdrawal(CryptoCurrency cryptoCurrency, BigDecimal amount, String address);

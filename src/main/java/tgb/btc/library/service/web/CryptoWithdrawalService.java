@@ -19,9 +19,7 @@ import tgb.btc.library.vo.web.RequestParam;
 import tgb.btc.library.vo.web.electrum.WithdrawalRequest;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -75,6 +73,13 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
 
     private static final int MAX_ATTEMPTS_COUNT = 3;
 
+    public static final String AUTO = "Авто";
+
+    /**
+     * Последняя введенная оператором комиссия в sat/vB (целое число сатоши/байт)
+     */
+    private final Map<CryptoCurrency, String> lastFeeRate;
+
     @Autowired
     public CryptoWithdrawalService(IRequestService requestService,
                                    @Value("${crypto-withdrawal.url}") String cryptoWithdrawalUrl,
@@ -95,7 +100,36 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
         authenticateParams.add(RequestParam.builder().key("password").value(password).build());
         requestAuthorizationHeader = new RequestHeader();
         requestAuthorizationHeader.setName("Authorization");
+        lastFeeRate = new EnumMap<>(CryptoCurrency.class);
+        for (CryptoCurrency cryptoCurrency : CryptoCurrency.values()) {
+            lastFeeRate.put(cryptoCurrency, AUTO);
+        }
         log.debug("Сервис для взаимодействия с микросервисом crypto-withdrawal успешно загружен в контекст. Url = {}", cryptoWithdrawalUrl);
+    }
+
+    @Override
+    public String getAutoName() {
+        return AUTO;
+    }
+
+    @Override
+    public boolean isAutoFeeRate(CryptoCurrency cryptoCurrency) {
+        return lastFeeRate.get(cryptoCurrency).equals(AUTO);
+    }
+
+    @Override
+    public String getFeeRate(CryptoCurrency cryptoCurrency) {
+        return lastFeeRate.get(cryptoCurrency);
+    }
+
+    @Override
+    public void putFeeRate(CryptoCurrency cryptoCurrency, String feeRate) {
+        lastFeeRate.put(cryptoCurrency, feeRate);
+    }
+
+    @Override
+    public void putAutoFeeRate(CryptoCurrency cryptoCurrency) {
+        lastFeeRate.put(cryptoCurrency, AUTO);
     }
 
     private synchronized void authenticate() {
@@ -179,7 +213,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
                     withdrawalUrl,
                     requestAuthorizationHeader,
                     WithdrawalRequest.builder().cryptoCurrency(cryptoCurrency).amount(amount.toPlainString())
-                            .address(address).build(),
+                            .address(address).fee(isAutoFeeRate(cryptoCurrency) ? null : getFeeRate(cryptoCurrency)).build(),
                     String.class
             );
             withdrawalAttemptsCount = 0;
@@ -472,6 +506,7 @@ public class CryptoWithdrawalService implements ICryptoWithdrawalService {
             response = requestService.post(
                     completePoolUrl,
                     requestAuthorizationHeader,
+                    RequestParam.builder().key("fee").value(lastFeeRate.get(CryptoCurrency.BITCOIN)).build(),
                     String.class
             );
         } catch (HttpClientErrorException.Forbidden exception) {
