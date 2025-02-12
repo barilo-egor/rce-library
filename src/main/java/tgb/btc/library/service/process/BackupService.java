@@ -72,6 +72,7 @@ public class BackupService {
                 consumer.accept(splitFile);
             }
         } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
             throw new BackupException(ex.getMessage());
         } finally {
             // Удаляем временные файлы

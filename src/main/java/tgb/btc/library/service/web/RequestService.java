@@ -47,7 +47,10 @@ public class RequestService implements IRequestService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(requestHeader.getName(), requestHeader.getValue());
         HttpEntity<B> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(buildUrl(url, List.of(requestParam)), HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
+        if (Objects.nonNull(requestParam)) {
+            url = buildUrl(url, List.of(requestParam));
+        }
+        return restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<>() {});
     }
 
     @Override
