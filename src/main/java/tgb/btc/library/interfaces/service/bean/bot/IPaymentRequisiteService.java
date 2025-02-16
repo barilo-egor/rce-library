@@ -24,6 +24,8 @@ public interface IPaymentRequisiteService extends IBasePersistService<PaymentReq
 
     String getRequisite(PaymentType paymentType);
 
+    void checkOrder(Long paymentTypePid);
+
     void updateOrder(Long paymentTypePid);
 
     void removeOrder(Long paymentTypePid);
