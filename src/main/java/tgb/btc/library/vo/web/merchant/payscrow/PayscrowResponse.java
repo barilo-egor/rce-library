@@ -1,6 +1,8 @@
 package tgb.btc.library.vo.web.merchant.payscrow;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.ErrorCode;
 
 @Data
 public class PayscrowResponse {
@@ -9,5 +11,6 @@ public class PayscrowResponse {
 
     private String message;
 
-    private Integer errorCode;
+    @JsonDeserialize(using = ErrorCode.Deserializer.class)
+    private ErrorCode errorCode;
 }
