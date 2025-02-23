@@ -141,4 +141,9 @@ public class PaymentTypeService extends BasePersistService<PaymentType> implemen
     public boolean isNameFree(String name) {
         return paymentTypeRepository.countByNameLike(name) == 0;
     }
+
+    @Override
+    public String getPayscrowPaymentMethodId(Long paymentTypePid) {
+        return paymentTypeRepository.getPayscrowPaymentMethodId(paymentTypePid);
+    }
 }

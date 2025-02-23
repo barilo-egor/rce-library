@@ -47,4 +47,6 @@ public interface IPaymentTypeService extends IBasePersistService<PaymentType> {
     void updateMinSumByPid(BigDecimal minSum, Long pid);
 
     void updateIsDynamicOnByPid(Boolean isDynamicOn, Long pid);
+
+    String getPayscrowPaymentMethodId(Long paymentTypePid);
 }
