@@ -1,10 +1,7 @@
 package tgb.btc.library.bean.bot;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
@@ -17,6 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
+@Data
 public class PaymentType extends BasePersist {
 
     @Column(name = "NAME")
@@ -41,44 +39,12 @@ public class PaymentType extends BasePersist {
 
     private String payscrowPaymentMethodId;
 
-    public FiatCurrency getFiatCurrency() {
-        return fiatCurrency;
-    }
-
-    public void setFiatCurrency(FiatCurrency fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Boolean getOn() {
         return isOn;
     }
 
     public void setOn(Boolean on) {
         isOn = on;
-    }
-
-    public BigDecimal getMinSum() {
-        return minSum;
-    }
-
-    public void setMinSum(BigDecimal minSum) {
-        this.minSum = minSum;
-    }
-
-    public DealType getDealType() {
-        return dealType;
-    }
-
-    public void setDealType(DealType dealType) {
-        this.dealType = dealType;
     }
 
     public Boolean getDynamicOn() {
