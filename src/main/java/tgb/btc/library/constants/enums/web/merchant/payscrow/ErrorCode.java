@@ -12,6 +12,7 @@ import java.io.IOException;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+    OK(0, "Ok"),
     ORDER_NOT_FOUND_BY_ID(101, "Не удается найти ордер по указанному Id."),
     ORDER_NOT_FOUND_BY_EXTERNAL_ID(102, "Не удается найти ордер по указанному External Id."),
     INVALID_ORDER_STATUS_FOR_OPERATION(103, "Недопустимый текущий статус ордера для вызываемого метода."),
@@ -75,7 +76,7 @@ public enum ErrorCode {
     public static class Deserializer extends JsonDeserializer<ErrorCode> {
         @Override
         public ErrorCode deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
-            return ErrorCode.valueOf(jsonParser.getValueAsString());
+            return ErrorCode.fromCode(Integer.parseInt(jsonParser.getValueAsString()));
         }
     }
 }

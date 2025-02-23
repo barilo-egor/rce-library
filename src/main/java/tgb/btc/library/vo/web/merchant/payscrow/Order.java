@@ -33,7 +33,7 @@ public class Order {
     @JsonDeserialize(using = CurrencyType.Deserializer.class)
     private CurrencyType currencyType;
 
-    private Currency currency;
+    private String currency;
 
     private String holderName;
 

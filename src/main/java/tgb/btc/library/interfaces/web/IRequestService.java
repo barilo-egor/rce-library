@@ -27,4 +27,6 @@ public interface IRequestService {
 
     <T> ResponseEntity<ApiResponse<T>> get(String url, RequestHeader requestHeader,
                                            RequestParam requestParam, Class<T> clazz);
+
+    <T> ResponseEntity<ApiResponse<T>> get(String url, List<RequestHeader> requestHeaders);
 }

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.*;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.PaymentMethodType;
 import tgb.btc.library.constants.serialize.BigDecimalDeserializer;
 
 import java.math.BigDecimal;
@@ -34,7 +37,7 @@ public class PayscrowOrderResponse extends PayscrowResponse {
     @JsonDeserialize(using = CurrencyType.Deserializer.class)
     private CurrencyType currencyType;
 
-    private Currency currency;
+    private String currency;
 
     private String holderName;
 

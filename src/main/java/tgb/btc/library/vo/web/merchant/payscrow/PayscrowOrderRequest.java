@@ -3,7 +3,6 @@ package tgb.btc.library.vo.web.merchant.payscrow;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.Currency;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
@@ -30,11 +29,11 @@ public class PayscrowOrderRequest {
 
     private CurrencyType currencyType;
 
-    private Currency currency;
+    private String currency;
 
     private String customerName;
 
     private String customerPaymentAccount;
 
-    private Currency balanceCurrency;
+    private String balanceCurrency;
 }
