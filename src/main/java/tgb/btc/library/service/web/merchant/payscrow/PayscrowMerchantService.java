@@ -47,13 +47,18 @@ public class PayscrowMerchantService {
     @Value("${payscrow.api.secret}")
     private String apiSecret;
 
-    private final String domain;
+    @Value("${bot.name}")
+    private String botName;
 
     private final RestTemplate restTemplate;
-    
+
     private final String relativePaymentMethodsUrl = "/api/v1/Misc/ListPaymentMethods";
 
     private final String relativeCreateOrderUrl = "/api/v1/Orders/Create";
+
+    private final String relativeCancelOrderUrl = "/api/v1/Orders/Cancel";
+
+    private final String cancelOrderUrl;
 
     private final String paymentMethodsUrl;
 
@@ -61,9 +66,9 @@ public class PayscrowMerchantService {
 
     public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain) {
         this.restTemplate = restTemplate;
-        this.domain = domain;
         paymentMethodsUrl = domain + relativePaymentMethodsUrl;
         createOrderUrl = domain + relativeCreateOrderUrl;
+        cancelOrderUrl = domain + relativeCancelOrderUrl;
     }
 
     public String getPaymentMethodName(String methodId) {
@@ -137,8 +142,9 @@ public class PayscrowMerchantService {
     }
 
     public PayscrowOrderResponse createBuyOrder(Deal deal) {
+        log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
         PayscrowOrderRequest request = PayscrowOrderRequest.builder()
-                .externalOrderId(deal.getPid().toString())
+                .externalOrderId(botName + deal.getPid().toString())
                 .orderSide(OrderSide.BUY)
                 .basePaymentMethodId(deal.getPaymentType().getPayscrowPaymentMethodId())
                 .targetAmount(deal.getAmount())
@@ -162,6 +168,35 @@ public class PayscrowMerchantService {
                 HttpMethod.POST,
                 entity,
                 PayscrowOrderResponse.class
+        );
+        if (Objects.isNull(response.getBody())) {
+            throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
+        }
+        return response.getBody();
+    }
+
+    public PayscrowResponse cancelOrder(Integer orderId, boolean requestedByCustomer) {
+        log.debug("Зарпос на отмену ордера orderId={}", orderId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("X-API-Key", this.apiKey);
+        String body;
+        try {
+            body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(
+                    PayscrowCancelOrderRequest.builder()
+                            .orderId(orderId)
+                            .requestedByCustomer(requestedByCustomer)
+                            .build());
+        } catch (JsonProcessingException e) {
+            throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
+        }
+        headers.add("X-API-Sign", getSign(relativeCancelOrderUrl, body));
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<PayscrowResponse> response = restTemplate.exchange(
+                cancelOrderUrl,
+                HttpMethod.POST,
+                entity,
+                PayscrowResponse.class
         );
         if (Objects.isNull(response.getBody())) {
             throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");

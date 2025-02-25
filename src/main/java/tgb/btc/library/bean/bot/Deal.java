@@ -107,6 +107,8 @@ public class Deal extends BasePersist {
     @Column(name = "HASH")
     private String hash;
 
+    private Integer payscrowOrderId;
+
     // TODO заменить на сеттеры геттеры ломбока
     public Boolean getUsedPromo() {
         return isUsedPromo;
