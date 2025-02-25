@@ -9,12 +9,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.BankCard;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.util.web.JacksonUtil;
-import tgb.btc.library.vo.web.merchant.payscrow.ListPaymentMethodsResponse;
-import tgb.btc.library.vo.web.merchant.payscrow.PaymentMethod;
-import tgb.btc.library.vo.web.merchant.payscrow.PaymentMethodsFilter;
+import tgb.btc.library.vo.web.merchant.payscrow.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -51,12 +53,17 @@ public class PayscrowMerchantService {
     
     private final String relativePaymentMethodsUrl = "/api/v1/Misc/ListPaymentMethods";
 
+    private final String relativeCreateOrderUrl = "/api/v1/Orders/Create";
+
     private final String paymentMethodsUrl;
+
+    private final String createOrderUrl;
 
     public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain) {
         this.restTemplate = restTemplate;
         this.domain = domain;
         paymentMethodsUrl = domain + relativePaymentMethodsUrl;
+        createOrderUrl = domain + relativeCreateOrderUrl;
     }
 
     public String getPaymentMethodName(String methodId) {
@@ -129,4 +136,36 @@ public class PayscrowMerchantService {
         }
     }
 
+    public PayscrowOrderResponse createBuyOrder(Deal deal) {
+        PayscrowOrderRequest request = PayscrowOrderRequest.builder()
+                .externalOrderId(deal.getPid().toString())
+                .orderSide(OrderSide.BUY)
+                .basePaymentMethodId(deal.getPaymentType().getPayscrowPaymentMethodId())
+                .targetAmount(deal.getAmount())
+                .feeType(FeeType.CHARGE_MERCHANT)
+                .currencyType(CurrencyType.FIAT)
+                .currency(deal.getFiatCurrency().name())
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("X-API-Key", this.apiKey);
+        String body;
+        try {
+            body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
+        }
+        headers.add("X-API-Sign", getSign(relativeCreateOrderUrl, body));
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<PayscrowOrderResponse> response = restTemplate.exchange(
+                createOrderUrl,
+                HttpMethod.POST,
+                entity,
+                PayscrowOrderResponse.class
+        );
+        if (Objects.isNull(response.getBody())) {
+            throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
+        }
+        return response.getBody();
+    }
 }
