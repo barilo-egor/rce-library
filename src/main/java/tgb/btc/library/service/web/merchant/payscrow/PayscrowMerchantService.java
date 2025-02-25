@@ -20,11 +20,24 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
 @Slf4j
 public class PayscrowMerchantService {
+
+    private final Map<String, String> PAYMENT_METHODS_IDS = Map.of(
+            "Альфа-Банк", "4f591bcc-29f8-4598-9828-5b109a25b509",
+            "Сбербанк", "af3daf65-b6b6-450b-b28d-54b97436ef4a",
+            "Тинькофф", "cd797fcb-5b5a-47a3-8b54-35f5f7000344",
+            "Любой банк РФ", "b11d98ad-1e09-4e63-8c4a-f1d8a4b9ce3f",
+
+            "СБП Тинькофф", "33c6fe18-641d-41f5-a3fc-db975c63fe6f",
+            "СБП Альфа-Банк", "8880d5b5-2c82-4cef-8f94-b7d5d2cbefe1",
+            "СБП Сбербанк", "a6636989-0bd9-4cf1-8ec3-83c07b08f25f",
+            "СБП", "894387d7-b8b6-4dab-82ee-dd1106f7369e"
+    );
 
     @Value("${payscrow.api.key}")
     private String apiKey;
@@ -44,6 +57,19 @@ public class PayscrowMerchantService {
         this.restTemplate = restTemplate;
         this.domain = domain;
         paymentMethodsUrl = domain + relativePaymentMethodsUrl;
+    }
+
+    public String getPaymentMethodName(String methodId) {
+        for (Map.Entry<String, String> entry : PAYMENT_METHODS_IDS.entrySet()) {
+            if (methodId.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public Map<String, String> getPaymentMethodsIds() {
+        return PAYMENT_METHODS_IDS;
     }
 
     public List<PaymentMethod> getPaymentMethods() {
