@@ -5,6 +5,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.repository.bot.deal.read.*;
 
 import java.util.List;
@@ -31,4 +32,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
     String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType, CryptoCurrency cryptoCurrency);
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
+
+    @Query("from Deal where payscrowOrderStatus not in :orderStatuses")
+    List<Deal> getAllByPayscrowOrderStatuses(List<OrderStatus> orderStatuses);
 }

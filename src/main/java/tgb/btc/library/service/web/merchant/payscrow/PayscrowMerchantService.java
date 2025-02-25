@@ -7,20 +7,23 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.BankCard;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.*;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
+import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.payscrow.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,17 +61,33 @@ public class PayscrowMerchantService {
 
     private final String relativeCancelOrderUrl = "/api/v1/Orders/Cancel";
 
+    private final String relativeListOrderUrl = "/api/v1/Orders/List";
+
     private final String cancelOrderUrl;
 
     private final String paymentMethodsUrl;
 
     private final String createOrderUrl;
 
-    public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain) {
+    private final String listOrderUrl;
+
+
+    private final IReadDealService readDealService;
+
+    private final IModifyDealService modifyDealService;
+
+    private final INotifier notifier;
+
+    public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain,
+                                   IReadDealService readDealService, IModifyDealService modifyDealService, INotifier notifier) {
         this.restTemplate = restTemplate;
-        paymentMethodsUrl = domain + relativePaymentMethodsUrl;
-        createOrderUrl = domain + relativeCreateOrderUrl;
-        cancelOrderUrl = domain + relativeCancelOrderUrl;
+        this.paymentMethodsUrl = domain + relativePaymentMethodsUrl;
+        this.createOrderUrl = domain + relativeCreateOrderUrl;
+        this.cancelOrderUrl = domain + relativeCancelOrderUrl;
+        this.listOrderUrl = domain + relativeListOrderUrl;
+        this.readDealService = readDealService;
+        this.modifyDealService = modifyDealService;
+        this.notifier = notifier;
     }
 
     public String getPaymentMethodName(String methodId) {
@@ -152,9 +171,7 @@ public class PayscrowMerchantService {
                 .currencyType(CurrencyType.FIAT)
                 .currency(deal.getFiatCurrency().name())
                 .build();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("X-API-Key", this.apiKey);
+        HttpHeaders headers = getDefaultHeaders();
         String body;
         try {
             body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(request);
@@ -177,9 +194,7 @@ public class PayscrowMerchantService {
 
     public PayscrowResponse cancelOrder(Integer orderId, boolean requestedByCustomer) {
         log.debug("Зарпос на отмену ордера orderId={}", orderId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("X-API-Key", this.apiKey);
+        HttpHeaders headers = getDefaultHeaders();
         String body;
         try {
             body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(
@@ -202,5 +217,64 @@ public class PayscrowMerchantService {
             throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
         }
         return response.getBody();
+    }
+
+    public ListOrdersResponse getLast30MinutesOrders() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = now.minusMinutes(30);
+        ListOrdersRequest listOrdersRequest = ListOrdersRequest.builder()
+                .orderSide(OrderSide.BUY)
+                .orderStatuses(OrderStatus.STATUSES_TO_SEARCH)
+                .from(from)
+                .build();
+        HttpHeaders headers = getDefaultHeaders();
+        String body;
+        try {
+            body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(listOrdersRequest);
+        } catch (JsonProcessingException e) {
+            throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
+        }
+        headers.add("X-API-Sign", getSign(relativeCancelOrderUrl, body));
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<ListOrdersResponse> response = restTemplate.exchange(
+                cancelOrderUrl,
+                HttpMethod.POST,
+                entity,
+                ListOrdersResponse.class
+        );
+        if (Objects.isNull(response.getBody())) {
+            throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
+        }
+        return response.getBody();
+    }
+
+    private HttpHeaders getDefaultHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("X-API-Key", this.apiKey);
+        return headers;
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalPayscrowStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        ListOrdersResponse listOrdersResponse = getLast30MinutesOrders();
+        if (Objects.isNull(listOrdersResponse.getOrders()) || listOrdersResponse.getOrders().isEmpty()) {
+            return;
+        }
+        for (Order order: listOrdersResponse.getOrders()) {
+            for (Deal deal: deals) {
+                if (order.getOrderId().equals(deal.getPayscrowOrderId()) && !order.getOrderStatus().equals(deal.getPayscrowOrderStatus())) {
+                    deal.setPayscrowOrderStatus(order.getOrderStatus());
+                    modifyDealService.save(deal);
+                    notifier.payscrowUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
+                            + " до \"" + order.getOrderStatus().getDescription() + "\".");
+                }
+            }
+        }
     }
 }
