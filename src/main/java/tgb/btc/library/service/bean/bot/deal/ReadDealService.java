@@ -72,7 +72,7 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public List<Deal> getAllNotFinalPayscrowStatuses() {
-        return readDealRepository.getAllByPayscrowOrderStatuses(OrderStatus.getNotFinal());
+        return readDealRepository.getAllNotNewByPayscrowOrderStatuses(OrderStatus.getNotFinal());
     }
 
     @Override

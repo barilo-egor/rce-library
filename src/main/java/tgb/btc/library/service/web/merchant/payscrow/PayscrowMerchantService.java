@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.*;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.BankCard;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.payscrow.*;
 
@@ -74,19 +77,19 @@ public class PayscrowMerchantService {
 
     private final IReadDealService readDealService;
 
-    private final IModifyDealService modifyDealService;
+    private final ModifyDealRepository modifyDealRepository;
 
     private final INotifier notifier;
 
     public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain,
-                                   IReadDealService readDealService, IModifyDealService modifyDealService, INotifier notifier) {
+                                   IReadDealService readDealService, ModifyDealRepository modifyDealRepository, INotifier notifier) {
         this.restTemplate = restTemplate;
         this.paymentMethodsUrl = domain + relativePaymentMethodsUrl;
         this.createOrderUrl = domain + relativeCreateOrderUrl;
         this.cancelOrderUrl = domain + relativeCancelOrderUrl;
         this.listOrderUrl = domain + relativeListOrderUrl;
         this.readDealService = readDealService;
-        this.modifyDealService = modifyDealService;
+        this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
     }
 
@@ -221,11 +224,12 @@ public class PayscrowMerchantService {
 
     public ListOrdersResponse getLast30MinutesOrders() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime from = now.minusMinutes(30);
+        LocalDateTime from = now.minusMinutes(60);
         ListOrdersRequest listOrdersRequest = ListOrdersRequest.builder()
                 .orderSide(OrderSide.BUY)
-                .orderStatuses(OrderStatus.STATUSES_TO_SEARCH)
+//                .orderStatuses(OrderStatus.STATUSES_TO_SEARCH)
                 .from(from)
+                .to(now)
                 .build();
         HttpHeaders headers = getDefaultHeaders();
         String body;
@@ -234,10 +238,10 @@ public class PayscrowMerchantService {
         } catch (JsonProcessingException e) {
             throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
         }
-        headers.add("X-API-Sign", getSign(relativeCancelOrderUrl, body));
+        headers.add("X-API-Sign", getSign(relativeListOrderUrl, body));
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
         ResponseEntity<ListOrdersResponse> response = restTemplate.exchange(
-                cancelOrderUrl,
+                listOrderUrl,
                 HttpMethod.POST,
                 entity,
                 ListOrdersResponse.class
@@ -270,7 +274,7 @@ public class PayscrowMerchantService {
             for (Deal deal: deals) {
                 if (order.getOrderId().equals(deal.getPayscrowOrderId()) && !order.getOrderStatus().equals(deal.getPayscrowOrderStatus())) {
                     deal.setPayscrowOrderStatus(order.getOrderStatus());
-                    modifyDealService.save(deal);
+//                    modifyDealRepository.save(deal);
                     notifier.payscrowUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
                             + " до \"" + order.getOrderStatus().getDescription() + "\".");
                 }

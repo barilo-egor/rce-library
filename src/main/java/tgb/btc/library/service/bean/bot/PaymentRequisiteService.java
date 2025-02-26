@@ -10,6 +10,7 @@ import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.PaymentMethodType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
@@ -143,6 +144,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
             return getRequisite(deal.getPaymentType());
         }
         deal.setPayscrowOrderId(payscrowOrderResponse.getOrderId());
+        deal.setPayscrowOrderStatus(OrderStatus.UNPAID);
         modifyDealRepository.save(deal);
         return buildRequisiteString(payscrowOrderResponse);
     }

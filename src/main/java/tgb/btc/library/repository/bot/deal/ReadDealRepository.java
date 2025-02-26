@@ -33,6 +33,6 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
 
-    @Query("from Deal where payscrowOrderStatus not in :orderStatuses")
-    List<Deal> getAllByPayscrowOrderStatuses(List<OrderStatus> orderStatuses);
+    @Query("from Deal where payscrowOrderStatus in :orderStatuses and dealStatus != 'NEW'")
+    List<Deal> getAllNotNewByPayscrowOrderStatuses(List<OrderStatus> orderStatuses);
 }

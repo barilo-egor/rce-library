@@ -14,8 +14,10 @@ import java.util.List;
 @Builder
 public class ListOrdersRequest {
 
+    @JsonSerialize(using = OrderSide.Serializer.class)
     private OrderSide orderSide;
 
+    @JsonSerialize(contentUsing = OrderStatus.Serializer.class)
     private List<OrderStatus> orderStatuses;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)

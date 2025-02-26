@@ -110,6 +110,7 @@ public class Deal extends BasePersist {
 
     private Integer payscrowOrderId;
 
+    @Enumerated(value = EnumType.STRING)
     private OrderStatus payscrowOrderStatus;
 
     // TODO заменить на сеттеры геттеры ломбока

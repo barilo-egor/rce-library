@@ -1,9 +1,12 @@
 package tgb.btc.library.constants.enums.web.merchant.payscrow;
 
 import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -28,8 +31,8 @@ public enum OrderStatus {
     QUEUED("Queued", false, "Зарегестрирован без назначения исполнителя");
 
     public static final List<OrderStatus> STATUSES_TO_SEARCH = List.of(
-            FAILED_TO_SERVICE, CANCELED_BY_CUSTOMER, CANCELED_BY_MERCHANT, CANCELED_BY_TRADER, CANCELED_BY_TIMEOUT,
-            CANCELED_BY_ADMIN, COMPLETED, PROCESSING, QUEUED
+            PAID, FAILED_TO_SERVICE, CANCELED_BY_CUSTOMER, CANCELED_BY_MERCHANT, CANCELED_BY_TRADER, CANCELED_BY_TIMEOUT,
+            CANCELED_BY_ADMIN, COMPLETED
     );
 
     final String value;
@@ -55,6 +58,13 @@ public enum OrderStatus {
         @Override
         public OrderStatus deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
             return OrderStatus.fromValue(jsonParser.getValueAsString());
+        }
+    }
+
+    public static class Serializer extends JsonSerializer<OrderStatus> {
+        @Override
+        public void serialize(OrderStatus orderStatus, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeString(orderStatus.getValue());
         }
     }
 }
