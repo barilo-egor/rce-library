@@ -98,4 +98,9 @@ public class NotifierStub implements INotifier {
     public void apiDealDeclined(Long aLong) {
         // stub
     }
+
+    @Override
+    public void payscrowUpdateStatus(Long aLong, String s) {
+        // stub
+    }
 }
