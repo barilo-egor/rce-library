@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.repository.bot.deal.read.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReadDealRepository extends DateDealRepository, DealCountRepository, DealPropertyRepository,
@@ -33,6 +34,6 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
 
-    @Query("from Deal where payscrowOrderStatus in :orderStatuses and dealStatus != 'NEW'")
-    List<Deal> getAllNotNewByPayscrowOrderStatuses(List<OrderStatus> orderStatuses);
+    @Query("from Deal where payscrowOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
+    List<Deal> getAllNotNewByPayscrowOrderStatusesAfterDateTime(List<OrderStatus> orderStatuses, LocalDateTime afterDateTime);
 }

@@ -14,6 +14,7 @@ import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public List<Deal> getAllNotFinalPayscrowStatuses() {
-        return readDealRepository.getAllNotNewByPayscrowOrderStatuses(OrderStatus.getNotFinal());
+        return readDealRepository.getAllNotNewByPayscrowOrderStatusesAfterDateTime(OrderStatus.getNotFinal(), LocalDateTime.now().minusMinutes(30));
     }
 
     @Override

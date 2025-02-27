@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -223,11 +225,10 @@ public class PayscrowMerchantService {
     }
 
     public ListOrdersResponse getLast30MinutesOrders() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime from = now.minusMinutes(60);
+        LocalDateTime now = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime();
+        LocalDateTime from = now.minusMinutes(30);
         ListOrdersRequest listOrdersRequest = ListOrdersRequest.builder()
                 .orderSide(OrderSide.BUY)
-//                .orderStatuses(OrderStatus.STATUSES_TO_SEARCH)
                 .from(from)
                 .to(now)
                 .build();
@@ -274,7 +275,7 @@ public class PayscrowMerchantService {
             for (Deal deal: deals) {
                 if (order.getOrderId().equals(deal.getPayscrowOrderId()) && !order.getOrderStatus().equals(deal.getPayscrowOrderStatus())) {
                     deal.setPayscrowOrderStatus(order.getOrderStatus());
-//                    modifyDealRepository.save(deal);
+                    modifyDealRepository.save(deal);
                     notifier.payscrowUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
                             + " до \"" + order.getOrderStatus().getDescription() + "\".");
                 }
