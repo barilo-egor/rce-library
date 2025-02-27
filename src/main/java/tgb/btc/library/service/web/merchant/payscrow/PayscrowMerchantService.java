@@ -198,7 +198,7 @@ public class PayscrowMerchantService {
     }
 
     public PayscrowResponse cancelOrder(Integer orderId, boolean requestedByCustomer) {
-        log.debug("Зарпос на отмену ордера orderId={}", orderId);
+        log.debug("Запрос на отмену ордера orderId={}", orderId);
         HttpHeaders headers = getDefaultHeaders();
         String body;
         try {
