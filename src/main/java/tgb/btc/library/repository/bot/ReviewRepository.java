@@ -20,4 +20,7 @@ public interface ReviewRepository extends BaseRepository<Review>, PagingAndSorti
 
     @Query("from Review where pid > :pid and isPublished = :isPublished order by pid asc")
     List<Review> findAllByPidOrderByPidAsc(Long pid, boolean isPublished, Pageable pageable);
+
+    @Query("select count(pid) from Review where deal.pid = :dealPid")
+    long countByDealPid(Long dealPid);
 }
