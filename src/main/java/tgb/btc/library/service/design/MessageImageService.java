@@ -115,7 +115,7 @@ public class MessageImageService implements IMessageImageService {
                     .findFirst();
             if (optionalMessageVariable.isPresent()) {
                 FileIdContainer messageVariable = optionalMessageVariable.get();
-                if (StringUtils.isBlank(messageVariable.getFileId())) {
+                if (!StringUtils.isBlank(messageVariable.getFileId())) {
                     fileIds.put(messageImage, messageVariable);
                     log.debug("FileId для {} найден и загружен в кеш.", messageImage.name());
                 }
