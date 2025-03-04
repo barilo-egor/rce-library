@@ -65,4 +65,9 @@ public class ReviewService extends BasePersistService<Review> implements IReview
     public List<Review> findMoreThanPid(Long pid, int limit) {
         return reviewRepository.findAllByPidOrderByPidAsc(pid, false, PageRequest.of(0, limit));
     }
+
+    @Override
+    public long countByDealPid(Long dealPid) {
+        return reviewRepository.countByDealPid(dealPid);
+    }
 }
