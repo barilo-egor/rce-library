@@ -106,6 +106,19 @@ public class RequestService implements IRequestService {
         );
     }
 
+    @Override
+    public <T> ResponseEntity<ApiResponse<T>> get(String url, List<RequestHeader> requestHeaders) {
+        HttpHeaders headers = new HttpHeaders();
+        requestHeaders.forEach(header -> headers.add(header.getName(), header.getValue()));
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
     private String buildUrl(String url, List<RequestParam> params) {
         if (Objects.isNull(params) || params.isEmpty()) {
             return url;

@@ -29,6 +29,7 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
+import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -66,6 +67,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private ILotteryService lotteryService;
 
     private IMessageImageService messageImageService;
+
+    private PayscrowMerchantService payscrowMerchantService;
+
+    @Autowired
+    public void setPayscrowMerchantService(PayscrowMerchantService payscrowMerchantService) {
+        this.payscrowMerchantService = payscrowMerchantService;
+    }
 
     @Autowired
     public void setMessageImageService(IMessageImageService messageImageService) {
@@ -157,6 +165,17 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         modifyUserService.updateCurrentDealByChatId(null, userChatId);
         if (BooleanUtils.isTrue(isBanUser)) banningUserService.ban(userChatId);
         dealDeleteScheduler.deleteDeal(dealPid);
+    }
+
+    @Override
+    public void deleteById(Long dealPid) {
+        Deal deal = findById(dealPid);
+        if (Objects.nonNull(deal.getPayscrowOrderId())) {
+            try {
+                payscrowMerchantService.cancelOrder(deal.getPayscrowOrderId(), false);
+            } catch (Exception ignored) {}
+        }
+        delete(deal);
     }
 
     @Override

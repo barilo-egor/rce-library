@@ -8,11 +8,13 @@ import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +69,11 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     @Override
     public List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency) {
         return readDealRepository.getAllByDealStatusAndCryptoCurrency(dealStatus, cryptoCurrency);
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalPayscrowStatuses() {
+        return readDealRepository.getAllNotNewByPayscrowOrderStatusesAfterDateTime(OrderStatus.getNotFinal(), LocalDateTime.now().minusMinutes(30));
     }
 
     @Override

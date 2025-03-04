@@ -54,4 +54,7 @@ public interface PaymentTypeRepository extends BaseRepository<PaymentType> {
     @Modifying
     @Query("update PaymentType set isDynamicOn=:isDynamicOn where pid=:pid")
     void updateIsDynamicOnByPid(Boolean isDynamicOn, Long pid);
+
+    @Query("select payscrowPaymentMethodId from PaymentType where pid=:paymentTypePid")
+    String getPayscrowPaymentMethodId(Long paymentTypePid);
 }

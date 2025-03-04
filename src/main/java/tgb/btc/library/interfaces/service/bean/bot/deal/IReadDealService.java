@@ -34,4 +34,6 @@ public interface IReadDealService extends IBasePersistService<Deal> {
     List<PaymentReceipt> getPaymentReceipts(Long dealPid);
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
+
+    List<Deal> getAllNotFinalPayscrowStatuses();
 }
