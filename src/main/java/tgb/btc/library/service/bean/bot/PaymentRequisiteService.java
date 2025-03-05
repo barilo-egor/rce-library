@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
@@ -20,6 +21,7 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
+import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.payscrow.PayscrowOrderResponse;
 
 import java.util.HashMap;
@@ -124,29 +126,29 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     }
 
     @Override
-    public String getRequisite(Deal deal) {
+    public RequisiteVO getRequisite(Deal deal) {
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency()) || Objects.isNull(deal.getPaymentType().getPayscrowPaymentMethodId())) {
-            return getRequisite(deal.getPaymentType());
+            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         Long maxAmount = variablePropertiesReader.getLong(VariableType.PAYSCROW_BOUND.getKey(), 5000L);
         if (deal.getAmount().longValue() > maxAmount) {
-            return getRequisite(deal.getPaymentType());
+            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         PayscrowOrderResponse payscrowOrderResponse;
         try {
             payscrowOrderResponse = payscrowMerchantService.createBuyOrder(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание Payscrow ордера.", e);
-            return getRequisite(deal.getPaymentType());
+            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         if (!payscrowOrderResponse.getSuccess()) {
             log.warn("Неуспешный ответ от Payscrow при создании Buy ордера для сделки №{}: {}", deal.getPid(), payscrowOrderResponse);
-            return getRequisite(deal.getPaymentType());
+            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         deal.setPayscrowOrderId(payscrowOrderResponse.getOrderId());
         deal.setPayscrowOrderStatus(OrderStatus.UNPAID);
         modifyDealRepository.save(deal);
-        return buildRequisiteString(payscrowOrderResponse);
+        return RequisiteVO.builder().merchant(Merchant.PAYSCROW).requisite(buildRequisiteString(payscrowOrderResponse)).build();
     }
 
     private static String buildRequisiteString(PayscrowOrderResponse payscrowOrderResponse) {
