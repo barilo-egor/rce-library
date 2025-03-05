@@ -1,6 +1,7 @@
 package tgb.btc.library.bean.bot;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -34,6 +35,7 @@ public class Review extends BasePersist {
     private Integer amount;
 
     @OneToOne
+    @JsonIgnore
     private Deal deal;
 
     public Boolean getPublished() {
