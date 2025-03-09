@@ -8,6 +8,7 @@ import tgb.btc.library.bean.bot.PaymentReceipt;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
@@ -74,6 +75,11 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     @Override
     public List<Deal> getAllNotFinalPayscrowStatuses() {
         return readDealRepository.getAllNotNewByPayscrowOrderStatusesAfterDateTime(OrderStatus.getNotFinal(), LocalDateTime.now().minusMinutes(30));
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalDashPayStatuses() {
+        return readDealRepository.getAllNotNewByDashPayOrderStatusesAfterDateTime(DashPayOrderStatus.FINAL_STATUSES, LocalDateTime.now().minusMinutes(30));
     }
 
     @Override

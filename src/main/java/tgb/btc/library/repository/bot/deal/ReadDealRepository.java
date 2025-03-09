@@ -5,6 +5,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.repository.bot.deal.read.*;
 
@@ -36,4 +37,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     @Query("from Deal where payscrowOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
     List<Deal> getAllNotNewByPayscrowOrderStatusesAfterDateTime(List<OrderStatus> orderStatuses, LocalDateTime afterDateTime);
+
+    @Query("from Deal where dashPayOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
+    List<Deal> getAllNotNewByDashPayOrderStatusesAfterDateTime(List<DashPayOrderStatus> orderStatuses, LocalDateTime afterDateTime);
 }

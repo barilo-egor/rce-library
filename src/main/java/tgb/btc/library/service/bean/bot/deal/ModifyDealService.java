@@ -29,6 +29,7 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
+import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 
 import java.math.BigDecimal;
@@ -69,6 +70,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private IMessageImageService messageImageService;
 
     private PayscrowMerchantService payscrowMerchantService;
+
+    private DashPayMerchantService dashPayMerchantService;
+
+    @Autowired
+    public void setDashPayMerchantService(DashPayMerchantService dashPayMerchantService) {
+        this.dashPayMerchantService = dashPayMerchantService;
+    }
 
     @Autowired
     public void setPayscrowMerchantService(PayscrowMerchantService payscrowMerchantService) {
@@ -173,6 +181,11 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         if (Objects.nonNull(deal.getPayscrowOrderId())) {
             try {
                 payscrowMerchantService.cancelOrder(deal.getPayscrowOrderId(), false);
+            } catch (Exception ignored) {}
+        }
+        if (Objects.nonNull(deal.getDashPayOrderId())) {
+            try {
+                dashPayMerchantService.cancelOrder(deal.getDashPayOrderId());
             } catch (Exception ignored) {}
         }
         delete(deal);

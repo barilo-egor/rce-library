@@ -11,8 +11,6 @@ import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.PaymentMethodType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
@@ -20,9 +18,9 @@ import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
+import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.RequisiteVO;
-import tgb.btc.library.vo.web.merchant.payscrow.PayscrowOrderResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,14 +42,21 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
 
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
 
+    private final Map<Merchant, IMerchantRequisiteService> merchantIMerchantRequisiteServiceMap;
+
     public PaymentRequisiteService(PaymentRequisiteRepository paymentRequisiteRepository,
                                    VariablePropertiesReader variablePropertiesReader,
                                    PayscrowMerchantService payscrowMerchantService,
-                                   ModifyDealRepository modifyDealRepository) {
+                                   ModifyDealRepository modifyDealRepository,
+                                   List<IMerchantRequisiteService> merchantRequisiteServices) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
         this.variablePropertiesReader = variablePropertiesReader;
         this.payscrowMerchantService = payscrowMerchantService;
         this.modifyDealRepository = modifyDealRepository;
+        this.merchantIMerchantRequisiteServiceMap = new HashMap<>();
+        for (IMerchantRequisiteService merchantService : merchantRequisiteServices) {
+            this.merchantIMerchantRequisiteServiceMap.put(merchantService.getMerchant(), merchantService);
+        }
     }
 
     private Integer getOrder(Long paymentTypePid) {
@@ -127,47 +132,26 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (!FiatCurrency.RUB.equals(deal.getFiatCurrency()) || Objects.isNull(deal.getPaymentType().getPayscrowPaymentMethodId())) {
+        if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         Long maxAmount = variablePropertiesReader.getLong(VariableType.PAYSCROW_BOUND.getKey(), 5000L);
         if (deal.getAmount().longValue() > maxAmount) {
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
-        PayscrowOrderResponse payscrowOrderResponse;
-        try {
-            payscrowOrderResponse = payscrowMerchantService.createBuyOrder(deal);
-        } catch (Exception e) {
-            log.error("Ошибка при выполнении запроса на создание Payscrow ордера.", e);
-            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
-        }
-        if (!payscrowOrderResponse.getSuccess()) {
-            log.warn("Неуспешный ответ от Payscrow при создании Buy ордера для сделки №{}: {}", deal.getPid(), payscrowOrderResponse);
-            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
-        }
-        deal.setPayscrowOrderId(payscrowOrderResponse.getOrderId());
-        deal.setPayscrowOrderStatus(OrderStatus.UNPAID);
-        modifyDealRepository.save(deal);
-        return RequisiteVO.builder().merchant(Merchant.PAYSCROW).requisite(buildRequisiteString(payscrowOrderResponse)).build();
-    }
-
-    private static String buildRequisiteString(PayscrowOrderResponse payscrowOrderResponse) {
-        String result;
-        String holderAccount = payscrowOrderResponse.getHolderAccount();
-        if (PaymentMethodType.BANK_CARD.equals(payscrowOrderResponse.getPaymentMethodType())) {
-            StringBuilder card = new StringBuilder();
-            for (int i = 0; i < holderAccount.length(); i++) {
-                card.append(holderAccount.charAt(i));
-
-                if ((i + 1) % 4 == 0 && i != holderAccount.length() - 1) {
-                    card.append(" ");
-                }
+        RequisiteVO requisiteVO = null;
+        for (Map.Entry<Merchant, IMerchantRequisiteService> entry: merchantIMerchantRequisiteServiceMap.entrySet()) {
+            try {
+                requisiteVO = entry.getValue().getRequisite(deal);
+                break;
+            } catch (Exception e) {
+                log.debug("Ошибка получения реквизитов мерчанта {}.", entry.getKey(), e);
             }
-            result = payscrowOrderResponse.getMethodName() + " " + card;
-        } else {
-            result = payscrowOrderResponse.getMethodName() + " " + holderAccount;
         }
-        return result;
+        if (Objects.isNull(requisiteVO)) {
+            requisiteVO =  RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
+        }
+        return requisiteVO;
     }
 
     @Override

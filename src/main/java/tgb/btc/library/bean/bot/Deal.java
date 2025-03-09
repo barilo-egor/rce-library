@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.CreateType;
 import tgb.btc.library.constants.enums.bot.*;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 
 import java.math.BigDecimal;
@@ -112,6 +113,14 @@ public class Deal extends BasePersist {
 
     @Enumerated(value = EnumType.STRING)
     private OrderStatus payscrowOrderStatus;
+
+    private String dashPayOrderId;
+
+    @Column(length = 2000)
+    private String dashPayOrderToken;
+
+    @Enumerated(value = EnumType.STRING)
+    private DashPayOrderStatus dashPayOrderStatus;
 
     // TODO заменить на сеттеры геттеры ломбока
     public Boolean getUsedPromo() {
