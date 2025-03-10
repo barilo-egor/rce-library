@@ -10,7 +10,6 @@ import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
@@ -135,16 +134,16 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
-        Long maxAmount = variablePropertiesReader.getLong(VariableType.PAYSCROW_BOUND.getKey(), 5000L);
-        if (deal.getAmount().longValue() > maxAmount) {
-            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
-        }
         RequisiteVO requisiteVO = null;
         List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
-
         for (String merchantName: merchants) {
             try {
-                requisiteVO = merchantIMerchantRequisiteServiceMap.get(Merchant.valueOf(merchantName)).getRequisite(deal);
+                Merchant merchant = Merchant.valueOf(merchantName);
+                Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
+                if (deal.getAmount().longValue() > maxAmount) {
+                    continue;
+                }
+                requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
                 break;
             } catch (Exception e) {
                 log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);

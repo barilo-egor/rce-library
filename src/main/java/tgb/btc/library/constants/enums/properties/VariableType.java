@@ -26,6 +26,8 @@ public enum VariableType {
     FIX_COMMISSION_VIP("Фикс комиссия для вип", "commission.fix.vip"),
     MAX_SUM("Максимальная сумма обмена", "max.sum"),
     PAYSCROW_BOUND("Максимальная сумма для Payscrow", "payscrow.bound.amount"),
+    DASH_PAY_BOUND("Максимальная сумма для DashPay", "dashpay.bound.amount"),
+    ALFA_TEAM_BOUND("Максимальная сумма для AlfaTeam", "alfateam.bound.amount"),
     MERCHANT_LIST("Список мерчантов", "merchant.list");
 
     final String displayName;
