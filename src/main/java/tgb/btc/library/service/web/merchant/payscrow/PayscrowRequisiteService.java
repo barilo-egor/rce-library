@@ -31,7 +31,6 @@ public class PayscrowRequisiteService implements IMerchantRequisiteService {
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         PayscrowOrderResponse payscrowOrderResponse;
-        if (true) throw new BaseException();
         if (Objects.isNull(deal.getPaymentType().getPayscrowPaymentMethodId())) {
             return null;
         }

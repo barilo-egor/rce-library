@@ -140,12 +140,14 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
         RequisiteVO requisiteVO = null;
-        for (Map.Entry<Merchant, IMerchantRequisiteService> entry: merchantIMerchantRequisiteServiceMap.entrySet()) {
+        List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
+
+        for (String merchantName: merchants) {
             try {
-                requisiteVO = entry.getValue().getRequisite(deal);
+                requisiteVO = merchantIMerchantRequisiteServiceMap.get(Merchant.valueOf(merchantName)).getRequisite(deal);
                 break;
             } catch (Exception e) {
-                log.debug("Ошибка получения реквизитов мерчанта {}.", entry.getKey(), e);
+                log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
             }
         }
         if (Objects.isNull(requisiteVO)) {

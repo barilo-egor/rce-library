@@ -25,7 +25,8 @@ public enum VariableType {
     DEAL_BTC_MAX_ENTERED_SUM("Максимальный введенный BTC", "deal.btc.max.entered.sum"),
     FIX_COMMISSION_VIP("Фикс комиссия для вип", "commission.fix.vip"),
     MAX_SUM("Максимальная сумма обмена", "max.sum"),
-    PAYSCROW_BOUND("Максимальная сумма для Payscrow.", "payscrow.bound.amount");
+    PAYSCROW_BOUND("Максимальная сумма для Payscrow", "payscrow.bound.amount"),
+    MERCHANT_LIST("Список мерчантов", "merchant.list");
 
     final String displayName;
     final String key;
