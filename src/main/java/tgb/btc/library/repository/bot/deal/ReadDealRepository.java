@@ -40,4 +40,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     @Query("from Deal where dashPayOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
     List<Deal> getAllNotNewByDashPayOrderStatusesAfterDateTime(List<DashPayOrderStatus> orderStatuses, LocalDateTime afterDateTime);
+
+    @Query("from Deal where alfaTeamInvoiceId = :alfaTeamInvoiceId")
+    Deal getDealByAlfaTeamInvoiceId(String alfaTeamInvoiceId);
 }

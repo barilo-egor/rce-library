@@ -157,7 +157,7 @@ public class DashPayMerchantService {
                     if (Objects.nonNull(status) && !Objects.equals(status, deal.getDashPayOrderStatus())) {
                         deal.setDashPayOrderStatus(DashPayOrderStatus.fromCode(order.getStatus().getCode()));
                         modifyDealRepository.save(deal);
-                        notifier.payscrowUpdateStatus(deal.getPid(), "DashPay обновил статус по сделке №" + deal.getPid()
+                        notifier.merchantUpdateStatus(deal.getPid(), "DashPay обновил статус по сделке №" + deal.getPid()
                                 + " до \"" + status.getDescription() + "\".");
                     }
                 }

@@ -100,7 +100,7 @@ public class NotifierStub implements INotifier {
     }
 
     @Override
-    public void payscrowUpdateStatus(Long aLong, String s) {
+    public void merchantUpdateStatus(Long aLong, String s) {
         // stub
     }
 }

@@ -276,7 +276,7 @@ public class PayscrowMerchantService {
                 if (order.getOrderId().equals(deal.getPayscrowOrderId()) && !order.getOrderStatus().equals(deal.getPayscrowOrderStatus())) {
                     deal.setPayscrowOrderStatus(order.getOrderStatus());
                     modifyDealRepository.save(deal);
-                    notifier.payscrowUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
+                    notifier.merchantUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
                             + " до \"" + order.getOrderStatus().getDescription() + "\".");
                 }
             }
