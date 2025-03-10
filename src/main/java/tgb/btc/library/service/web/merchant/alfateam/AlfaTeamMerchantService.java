@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.DirectionType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceRequest;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceResponse;
@@ -27,7 +29,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 @Service
-public class AlfaTeamMerchantService {
+public class AlfaTeamMerchantService implements IMerchantService {
 
     private final RestTemplate restTemplate;
 
@@ -107,10 +109,20 @@ public class AlfaTeamMerchantService {
         Deal deal = readDealService.getByAlfaTeamInvoiceId(invoiceNotification.getInvoice().getId());
         if (Objects.isNull(deal)) return;
         AlfaTeamDealStatus status = invoiceNotification.getInvoice().getStatus();
-        deal.setAlfaTeamDealStatus(status);
+        deal.setMerchantOrderStatus(status.name());
         if (!DealStatus.NEW.equals(deal.getDealStatus())) {
             notifier.merchantUpdateStatus(deal.getPid(), "AlfaTeam обновил статус по сделке №" + deal.getPid()
                     + " до \"" + status.getDescription() + "\".");
         }
+    }
+
+    @Override
+    public void cancelOrder(String orderId) {
+        // no impl for this merchant
+    }
+
+    @Override
+    public Merchant getMerchant() {
+        return Merchant.ALFA_TEAM;
     }
 }

@@ -7,18 +7,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
-import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderType;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
+import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.dashpay.CreateOrderRequest;
 import tgb.btc.library.vo.web.merchant.dashpay.OrderResponse;
@@ -26,12 +22,11 @@ import tgb.btc.library.vo.web.merchant.dashpay.OrdersRequest;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Service
 @Slf4j
-public class DashPayMerchantService {
+public class DashPayMerchantService implements IMerchantService {
 
     private final RestTemplate restTemplate;
 
@@ -47,18 +42,10 @@ public class DashPayMerchantService {
 
     private final String ordersUrl;
 
-    private final IReadDealService readDealService;
-
-    private final ModifyDealRepository modifyDealRepository;
-
-    private final INotifier notifier;
-
     public DashPayMerchantService(RestTemplate restTemplate, @Value("${dashpay.api.key:null}") String apiKey,
                                   @Value("${dashpay.api.basic.token:null}") String basicToken,
                                   @Value("${bot.name:null}") String botName, @Value("${dashpay.api.url.client:null}") String clientUrl,
-                                  @Value("${dashpay.api.url.main:null}") String mainUrl,
-                                  IReadDealService readDealService,
-                                  ModifyDealRepository modifyDealRepository, INotifier notifier) {
+                                  @Value("${dashpay.api.url.main:null}") String mainUrl) {
         this.restTemplate = restTemplate;
         this.apiKey = apiKey;
         this.basicToken = basicToken;
@@ -66,9 +53,6 @@ public class DashPayMerchantService {
         this.createOrderUrl = clientUrl + "/payments";
         this.cancelOrderUrl = mainUrl + "/orders/%s/edit";
         this.ordersUrl = mainUrl + "/orders";
-        this.readDealService = readDealService;
-        this.modifyDealRepository = modifyDealRepository;
-        this.notifier = notifier;
     }
 
     public OrderResponse createOrder(Deal deal) {
@@ -139,35 +123,9 @@ public class DashPayMerchantService {
         return response.getBody();
     }
 
-    @Scheduled(cron = "*/5 * * * * *")
-    @Async
-    public void updateStatuses() {
-        List<Deal> deals = readDealService.getAllNotFinalDashPayStatuses();
-        if (Objects.isNull(deals) || deals.isEmpty()) {
-            return;
-        }
-        OrdersResponse ordersResponse = getLast30MinutesOrders();
-        if (Objects.isNull(ordersResponse.getData()) || ordersResponse.getData().getOrders().isEmpty()) {
-            return;
-        }
-        for (OrdersResponse.Data.Order order: ordersResponse.getData().getOrders()) {
-            for (Deal deal: deals) {
-                if (order.getId().equals(deal.getDashPayOrderId())) {
-                    DashPayOrderStatus status = DashPayOrderStatus.fromCode(order.getStatus().getCode());
-                    if (Objects.nonNull(status) && !Objects.equals(status, deal.getDashPayOrderStatus())) {
-                        deal.setDashPayOrderStatus(DashPayOrderStatus.fromCode(order.getStatus().getCode()));
-                        modifyDealRepository.save(deal);
-                        notifier.merchantUpdateStatus(deal.getPid(), "DashPay обновил статус по сделке №" + deal.getPid()
-                                + " до \"" + status.getDescription() + "\".");
-                    }
-                }
-            }
-        }
-    }
 
-    private OrdersResponse getLast30MinutesOrders() {
-        LocalDateTime to = LocalDateTime.now();
-        LocalDateTime from = to.minusMinutes(30);
-        return getOrders(from, to);
+
+    public Merchant getMerchant() {
+        return Merchant.DASH_PAY;
     }
 }

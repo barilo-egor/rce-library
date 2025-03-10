@@ -29,8 +29,7 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
-import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
-import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
+import tgb.btc.library.service.web.merchant.IMerchantService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,7 +39,7 @@ import java.util.Objects;
 @Service
 @Transactional
 public class ModifyDealService extends BasePersistService<Deal> implements IModifyDealService {
-    
+
     private ModifyDealRepository modifyDealRepository;
 
     private IModifyUserService modifyUserService;
@@ -69,18 +68,11 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private IMessageImageService messageImageService;
 
-    private PayscrowMerchantService payscrowMerchantService;
-
-    private DashPayMerchantService dashPayMerchantService;
+    private List<IMerchantService> merchantServices;
 
     @Autowired
-    public void setDashPayMerchantService(DashPayMerchantService dashPayMerchantService) {
-        this.dashPayMerchantService = dashPayMerchantService;
-    }
-
-    @Autowired
-    public void setPayscrowMerchantService(PayscrowMerchantService payscrowMerchantService) {
-        this.payscrowMerchantService = payscrowMerchantService;
+    public void setMerchantServices(List<IMerchantService> merchantServices) {
+        this.merchantServices = merchantServices;
     }
 
     @Autowired
@@ -178,16 +170,10 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     @Override
     public void deleteById(Long dealPid) {
         Deal deal = findById(dealPid);
-        if (Objects.nonNull(deal.getPayscrowOrderId())) {
-            try {
-                payscrowMerchantService.cancelOrder(deal.getPayscrowOrderId(), false);
-            } catch (Exception ignored) {}
-        }
-        if (Objects.nonNull(deal.getDashPayOrderId())) {
-            try {
-                dashPayMerchantService.cancelOrder(deal.getDashPayOrderId());
-            } catch (Exception ignored) {}
-        }
+        merchantServices.stream()
+                .filter(service -> service.getMerchant().equals(deal.getMerchant()))
+                .findFirst()
+                .ifPresent(merchantService -> merchantService.cancelOrder(deal.getMerchantOrderId()));
         delete(deal);
     }
 
@@ -232,10 +218,14 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
                 url = String.format(cryptoCurrency.getAddressUrl(), deal.getWallet());
             }
             switch (cryptoCurrency) {
-                case BITCOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN), url);
-                case LITECOIN -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_LITECOIN), url);
-                case USDT -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_USDT), url);
-                case MONERO -> message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_MONERO), url);
+                case BITCOIN ->
+                        message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_BITCOIN), url);
+                case LITECOIN ->
+                        message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_LITECOIN), url);
+                case USDT ->
+                        message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_USDT), url);
+                case MONERO ->
+                        message = String.format(messageImageService.getMessage(MessageImage.DEAL_CONFIRMED_MONERO), url);
                 default -> throw new BaseException();
             }
         }

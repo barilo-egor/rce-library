@@ -37,8 +37,9 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         try {
             invoiceResponse = alfaTeamMerchantService.createInvoice(deal);
             String alfaTeamInvoiceId = invoiceResponse.getId();
-            deal.setAlfaTeamInvoiceId(alfaTeamInvoiceId);
-            deal.setAlfaTeamDealStatus(AlfaTeamDealStatus.NEW);
+            deal.setMerchant(getMerchant());
+            deal.setMerchantOrderId(alfaTeamInvoiceId);
+            deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
             modifyDealRepository.save(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание DashPay ордера.", e);

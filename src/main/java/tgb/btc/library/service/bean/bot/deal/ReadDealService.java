@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
@@ -57,7 +58,7 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType,
-            CryptoCurrency cryptoCurrency) {
+                                                                              CryptoCurrency cryptoCurrency) {
         return readDealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(chatId, dealType, cryptoCurrency);
     }
 
@@ -74,17 +75,25 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public List<Deal> getAllNotFinalPayscrowStatuses() {
-        return readDealRepository.getAllNotNewByPayscrowOrderStatusesAfterDateTime(OrderStatus.getNotFinal(), LocalDateTime.now().minusMinutes(30));
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.PAYSCROW,
+                OrderStatus.getNotFinal().stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
     }
 
     @Override
     public List<Deal> getAllNotFinalDashPayStatuses() {
-        return readDealRepository.getAllNotNewByDashPayOrderStatusesAfterDateTime(DashPayOrderStatus.FINAL_STATUSES, LocalDateTime.now().minusMinutes(30));
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.DASH_PAY,
+                DashPayOrderStatus.FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
     }
 
     @Override
     public Deal getByAlfaTeamInvoiceId(String alfaTeamInvoiceId) {
-        return readDealRepository.getDealByAlfaTeamInvoiceId(alfaTeamInvoiceId);
+        return readDealRepository.getByMerchantOrderId(alfaTeamInvoiceId);
     }
 
     @Override

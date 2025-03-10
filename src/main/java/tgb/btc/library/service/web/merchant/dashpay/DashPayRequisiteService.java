@@ -37,9 +37,9 @@ public class DashPayRequisiteService implements IMerchantRequisiteService {
         try {
             orderResponse = dashPayMerchantService.createOrder(deal);
             String dashPayOrderId = orderResponse.getData().getOrder().getId();
-            deal.setDashPayOrderId(dashPayOrderId);
-            deal.setDashPayOrderStatus(DashPayOrderStatus.NEW);
-            deal.setDashPayOrderToken(orderResponse.getConfirmation().getToken());
+            deal.setMerchant(getMerchant());
+            deal.setMerchantOrderId(dashPayOrderId);
+            deal.setMerchantOrderStatus(DashPayOrderStatus.NEW.name());
             modifyDealRepository.save(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание DashPay ордера.", e);
