@@ -31,7 +31,7 @@ public class Review extends BasePersist {
     @Column(name = "AMOUNT")
     private Integer amount;
 
-    @Column(name = "IS_ACCEPTED")
+    @Column(name = "IS_ACCEPTED", columnDefinition = "BIT(1) DEFAULT 0")
     private Boolean isAccepted = false;
 
     @OneToOne
