@@ -21,4 +21,6 @@ public interface IReviewService extends IBasePersistService<Review> {
     List<Review> findMoreThanPid(Long pid, int limit);
 
     long countByDealPid(Long dealPid);
+
+    Review findFirstByIsAcceptedOrderByPidAsc(Boolean isAccepted);
 }

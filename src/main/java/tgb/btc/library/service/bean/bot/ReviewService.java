@@ -43,7 +43,7 @@ public class ReviewService extends BasePersistService<Review> implements IReview
 
     @Override
     public List<Review> findAllByIsAccepted(Boolean isAccepted, Integer page, Integer limit, Sort sort) {
-        return reviewRepository.findAll(Example.of(Review.builder().isPublished(isAccepted).build()),
+        return reviewRepository.findAll(Example.of(Review.builder().isAccepted(isAccepted).build()),
                 PageRequest.of(page, limit, sort)).toList();
     }
 
@@ -69,5 +69,10 @@ public class ReviewService extends BasePersistService<Review> implements IReview
     @Override
     public long countByDealPid(Long dealPid) {
         return reviewRepository.countByDealPid(dealPid);
+    }
+
+    @Override
+    public Review findFirstByIsAcceptedOrderByPidAsc(Boolean isAccepted) {
+        return reviewRepository.findFirstByIsAcceptedOrderByPidAsc(isAccepted);
     }
 }

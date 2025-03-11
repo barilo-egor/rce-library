@@ -23,4 +23,7 @@ public interface ReviewRepository extends BaseRepository<Review>, PagingAndSorti
 
     @Query("select count(pid) from Review where deal.pid = :dealPid")
     long countByDealPid(Long dealPid);
+
+    @Query("from Review where isAccepted = :isAccepted order by pid asc limit 1")
+    Review findFirstByIsAcceptedOrderByPidAsc(Boolean isAccepted);
 }
