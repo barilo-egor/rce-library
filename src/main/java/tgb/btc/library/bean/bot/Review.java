@@ -34,6 +34,9 @@ public class Review extends BasePersist {
     @Column(name = "AMOUNT")
     private Integer amount;
 
+    @Column(name = "IS_ACCEPTED")
+    private Boolean isAccepted = false;
+
     @OneToOne
     @JsonIgnore
     private Deal deal;

@@ -10,11 +10,11 @@ public interface IReviewService extends IBasePersistService<Review> {
 
     List<Review> findAll();
 
-    List<Review> findAllByIsPublished(Boolean isPublished);
+    List<Review> findAllByIsAccepted(Boolean isAccepted);
 
-    List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit, Sort sort);
+    List<Review> findAllByIsAccepted(Boolean isAccepted, Integer page, Integer limit, Sort sort);
 
-    List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit);
+    List<Review> findAllByIsAccepted(Boolean isAccepted, Integer page, Integer limit);
 
     List<Review> findAllByPids(List<Long> pids);
 
