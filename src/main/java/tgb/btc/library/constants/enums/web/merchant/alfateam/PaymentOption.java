@@ -16,7 +16,7 @@ import java.io.IOException;
 @AllArgsConstructor
 public enum PaymentOption {
     SBP("SBP", "СБП"),
-    TO_CARD("TO_CARD", "Перевод на карту."),
+    TO_CARD("TO_CARD", "Перевод на карту"),
     CROSS_BORDER("CROSS_BORDER", "Трансграничный перевод");
 
     private final String value;
