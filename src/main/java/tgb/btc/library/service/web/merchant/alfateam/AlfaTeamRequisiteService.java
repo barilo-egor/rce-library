@@ -30,7 +30,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getDashPayOrderMethod())) {
+        if (Objects.isNull(deal.getPaymentType().getAlfaTeamPaymentOption())) {
             return null;
         }
         CreateInvoiceResponse invoiceResponse;
@@ -42,7 +42,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
             deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
             modifyDealRepository.save(deal);
         } catch (Exception e) {
-            log.error("Ошибка при выполнении запроса на создание DashPay ордера.", e);
+            log.error("Ошибка при выполнении запроса на создание AlfaTeam ордера.", e);
             throw new BaseException();
         }
         if (!invoiceResponse.hasRequisites()) {

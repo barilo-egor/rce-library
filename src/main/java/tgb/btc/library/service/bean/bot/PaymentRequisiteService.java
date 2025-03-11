@@ -136,10 +136,12 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         }
         RequisiteVO requisiteVO = null;
         List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
+        log.debug("merchants {}", merchants.toString());
         for (String merchantName: merchants) {
             try {
                 Merchant merchant = Merchant.valueOf(merchantName);
                 Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
+                log.debug("m {} maxAm {}", merchant, maxAmount);
                 if (deal.getAmount().longValue() > maxAmount) {
                     continue;
                 }

@@ -16,6 +16,7 @@ import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.DirectionType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceRequest;
@@ -51,12 +52,14 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     private final INotifier notifier;
 
+    private final ModifyDealRepository modifyDealRepository;
+
     public AlfaTeamMerchantService(RestTemplate restTemplate, @Value("${main.url:null}") String mainUrl,
                                    @Value("${alfateam.api.notification.token:null}") String alfaTeamNotificationToken,
                                    @Value("${bot.name:null}") String botName, @Value ("${alfateam.api.key:null}") String apiKey,
                                    @Value ("${alfateam.api.secret:null}") String apiSecret,
                                    @Value("${alfateam.api.url.main:null}") String apiMainUrl, IReadDealService readDealService,
-                                   INotifier notifier) {
+                                   INotifier notifier, ModifyDealRepository modifyDealRepository) {
         this.mainUrl = mainUrl;
         this.notificationUrl = mainUrl + "/merchant/alfateam";
         this.notificationToken = alfaTeamNotificationToken;
@@ -67,6 +70,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
         this.createInvoiceUrl = apiMainUrl + "/api/merchant/invoices";
         this.readDealService = readDealService;
         this.notifier = notifier;
+        this.modifyDealRepository = modifyDealRepository;
     }
 
 
@@ -110,6 +114,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
         if (Objects.isNull(deal)) return;
         AlfaTeamDealStatus status = invoiceNotification.getInvoice().getStatus();
         deal.setMerchantOrderStatus(status.name());
+        modifyDealRepository.save(deal);
         if (!DealStatus.NEW.equals(deal.getDealStatus())) {
             notifier.merchantUpdateStatus(deal.getPid(), "AlfaTeam обновил статус по сделке №" + deal.getPid()
                     + " до \"" + status.getDescription() + "\".");
