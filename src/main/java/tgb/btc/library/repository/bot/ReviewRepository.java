@@ -13,15 +13,10 @@ import java.util.List;
 @Repository
 @Transactional
 public interface ReviewRepository extends BaseRepository<Review>, PagingAndSortingRepository<Review, Long> {
-    List<Review> findAllByIsPublished(Boolean isPublished);
-
     List<Review> findAllByIsAccepted(Boolean isAccepted);
 
     @Query("from Review where pid in (:pids)")
     List<Review> findAllByPids(List<Long> pids);
-
-    @Query("from Review where pid > :pid and isPublished = :isPublished order by pid asc")
-    List<Review> findAllByPidOrderByPidAsc(Long pid, boolean isPublished, Pageable pageable);
 
     @Query("from Review where pid > :pid and isAccepted = :isAccepted order by pid asc")
     List<Review> findAllByPidAndIsAcceptedOrderByPidAsc(Long pid, boolean isAccepted, Pageable pageable);
