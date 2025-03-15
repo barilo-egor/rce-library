@@ -146,7 +146,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
                     continue;
                 }
                 requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
-                break;
+                if (Objects.nonNull(requisiteVO)) break;
             } catch (Exception e) {
                 log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
             }
