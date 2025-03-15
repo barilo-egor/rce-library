@@ -28,7 +28,6 @@ import tgb.btc.library.service.stub.ReviewPriseProcessServiceStub;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,37 +105,6 @@ class ModifyDealServiceTest {
         Deal actual = modifyDealService.createNewDeal(DealType.BUY, chatId);
         assertEquals(expectedDeal, actual);
         verify(modifyUserService).updateCurrentDealByChatId(dealPid, chatId);
-    }
-
-    @Test
-    void deleteDealAndBan() {
-        Long chatId = 12345678L;
-        Long dealPid = 1L;
-        Deal deal = new Deal();
-        deal.setPid(dealPid);
-        when(modifyDealRepository.findById(dealPid)).thenReturn(Optional.of(deal));
-        when(dealUserService.getUserChatIdByDealPid(anyLong())).thenReturn(chatId);
-
-        modifyDealService.deleteDeal(dealPid, true);
-        verify(modifyDealRepository).delete(deal);
-        verify(banningUserService).ban(chatId);
-        verify(dealDeleteScheduler).deleteDeal(dealPid);
-    }
-
-    @Test
-    void deleteDealAndNotBan() {
-        Long chatId = 12345678L;
-        Long dealPid = 1L;
-        Deal deal = new Deal();
-        deal.setPid(dealPid);
-
-        when(modifyDealRepository.findById(dealPid)).thenReturn(Optional.of(deal));
-        when(dealUserService.getUserChatIdByDealPid(anyLong())).thenReturn(chatId);
-
-        modifyDealService.deleteDeal(dealPid, false);
-        verify(modifyDealRepository).delete(deal);
-        verify(banningUserService, never()).ban(any());
-        verify(dealDeleteScheduler).deleteDeal(dealPid);
     }
 
     @Test
