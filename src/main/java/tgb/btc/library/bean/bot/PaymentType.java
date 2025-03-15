@@ -5,6 +5,8 @@ import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 
 import java.math.BigDecimal;
 
@@ -38,6 +40,12 @@ public class PaymentType extends BasePersist {
     private FiatCurrency fiatCurrency;
 
     private String payscrowPaymentMethodId;
+
+    @Enumerated(value = EnumType.STRING)
+    private OrderMethod dashPayOrderMethod;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamPaymentOption;
 
     public Boolean getOn() {
         return isOn;

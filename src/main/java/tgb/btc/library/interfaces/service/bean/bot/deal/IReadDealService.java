@@ -36,4 +36,8 @@ public interface IReadDealService extends IBasePersistService<Deal> {
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
 
     List<Deal> getAllNotFinalPayscrowStatuses();
+
+    List<Deal> getAllNotFinalDashPayStatuses();
+
+    Deal getByAlfaTeamInvoiceId(String alfaTeamInvoiceId);
 }

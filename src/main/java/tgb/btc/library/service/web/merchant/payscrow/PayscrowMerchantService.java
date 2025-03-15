@@ -7,19 +7,16 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.BankCard;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
 import tgb.btc.library.exception.BaseException;
-import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
+import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.payscrow.*;
 
@@ -35,7 +32,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class PayscrowMerchantService {
+public class PayscrowMerchantService implements IMerchantService {
 
     private final Map<String, String> PAYMENT_METHODS_IDS = Map.of(
             "Альфа-Банк", "4f591bcc-29f8-4598-9828-5b109a25b509",
@@ -76,23 +73,12 @@ public class PayscrowMerchantService {
 
     private final String listOrderUrl;
 
-
-    private final IReadDealService readDealService;
-
-    private final ModifyDealRepository modifyDealRepository;
-
-    private final INotifier notifier;
-
-    public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain,
-                                   IReadDealService readDealService, ModifyDealRepository modifyDealRepository, INotifier notifier) {
+    public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain) {
         this.restTemplate = restTemplate;
         this.paymentMethodsUrl = domain + relativePaymentMethodsUrl;
         this.createOrderUrl = domain + relativeCreateOrderUrl;
         this.cancelOrderUrl = domain + relativeCancelOrderUrl;
         this.listOrderUrl = domain + relativeListOrderUrl;
-        this.readDealService = readDealService;
-        this.modifyDealRepository = modifyDealRepository;
-        this.notifier = notifier;
     }
 
     public String getPaymentMethodName(String methodId) {
@@ -197,31 +183,27 @@ public class PayscrowMerchantService {
         return response.getBody();
     }
 
-    public PayscrowResponse cancelOrder(Integer orderId, boolean requestedByCustomer) {
+    public void cancelOrder(String orderId) {
         log.debug("Запрос на отмену ордера orderId={}", orderId);
         HttpHeaders headers = getDefaultHeaders();
         String body;
         try {
             body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(
                     PayscrowCancelOrderRequest.builder()
-                            .orderId(orderId)
-                            .requestedByCustomer(requestedByCustomer)
+                            .orderId(Integer.parseInt(orderId))
+                            .requestedByCustomer(true)
                             .build());
         } catch (JsonProcessingException e) {
             throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
         }
         headers.add("X-API-Sign", getSign(relativeCancelOrderUrl, body));
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<PayscrowResponse> response = restTemplate.exchange(
+        restTemplate.exchange(
                 cancelOrderUrl,
                 HttpMethod.POST,
                 entity,
                 PayscrowResponse.class
         );
-        if (Objects.isNull(response.getBody())) {
-            throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
-        }
-        return response.getBody();
     }
 
     public ListOrdersResponse getLast30MinutesOrders() {
@@ -260,26 +242,7 @@ public class PayscrowMerchantService {
         return headers;
     }
 
-    @Scheduled(cron = "*/5 * * * * *")
-    @Async
-    public void updateStatuses() {
-        List<Deal> deals = readDealService.getAllNotFinalPayscrowStatuses();
-        if (Objects.isNull(deals) || deals.isEmpty()) {
-            return;
-        }
-        ListOrdersResponse listOrdersResponse = getLast30MinutesOrders();
-        if (Objects.isNull(listOrdersResponse.getOrders()) || listOrdersResponse.getOrders().isEmpty()) {
-            return;
-        }
-        for (Order order: listOrdersResponse.getOrders()) {
-            for (Deal deal: deals) {
-                if (order.getOrderId().equals(deal.getPayscrowOrderId()) && !order.getOrderStatus().equals(deal.getPayscrowOrderStatus())) {
-                    deal.setPayscrowOrderStatus(order.getOrderStatus());
-                    modifyDealRepository.save(deal);
-                    notifier.payscrowUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
-                            + " до \"" + order.getOrderStatus().getDescription() + "\".");
-                }
-            }
-        }
+    public Merchant getMerchant() {
+        return Merchant.PAYSCROW;
     }
 }

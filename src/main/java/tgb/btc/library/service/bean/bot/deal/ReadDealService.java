@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentReceipt;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
@@ -56,7 +58,7 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public String getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(Long chatId, DealType dealType,
-            CryptoCurrency cryptoCurrency) {
+                                                                              CryptoCurrency cryptoCurrency) {
         return readDealRepository.getWalletFromLastPassedByChatIdAndDealTypeAndCryptoCurrency(chatId, dealType, cryptoCurrency);
     }
 
@@ -73,7 +75,25 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
 
     @Override
     public List<Deal> getAllNotFinalPayscrowStatuses() {
-        return readDealRepository.getAllNotNewByPayscrowOrderStatusesAfterDateTime(OrderStatus.getNotFinal(), LocalDateTime.now().minusMinutes(30));
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.PAYSCROW,
+                OrderStatus.getNotFinal().stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalDashPayStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.DASH_PAY,
+                DashPayOrderStatus.FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public Deal getByAlfaTeamInvoiceId(String alfaTeamInvoiceId) {
+        return readDealRepository.getByMerchantOrderId(alfaTeamInvoiceId);
     }
 
     @Override

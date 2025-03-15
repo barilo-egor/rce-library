@@ -2,10 +2,10 @@ package tgb.btc.library.repository.bot.deal;
 
 import org.springframework.data.jpa.repository.Query;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.repository.bot.deal.read.*;
 
 import java.time.LocalDateTime;
@@ -34,6 +34,8 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
 
     List<Deal> getAllByDealStatusAndCryptoCurrency(DealStatus dealStatus, CryptoCurrency cryptoCurrency);
 
-    @Query("from Deal where payscrowOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
-    List<Deal> getAllNotNewByPayscrowOrderStatusesAfterDateTime(List<OrderStatus> orderStatuses, LocalDateTime afterDateTime);
+    @Query("from Deal where merchant = :merchant and merchantOrderStatus in :orderStatuses and dealStatus != 'NEW' and dateTime > :afterDateTime")
+    List<Deal> getAllNotNewByMerchantAndOrderStatusesAfterDateTime(Merchant merchant, List<String> orderStatuses, LocalDateTime afterDateTime);
+
+    Deal getByMerchantOrderId(String merchantOrderId);
 }
