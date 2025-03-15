@@ -36,6 +36,10 @@ public class DashPayRequisiteService implements IMerchantRequisiteService {
         OrderResponse orderResponse;
         try {
             orderResponse = dashPayMerchantService.createOrder(deal);
+            Order.TraderRequisites traderRequisites = orderResponse.getData().getOrder().getTraderRequisites();
+            if (Objects.isNull(traderRequisites) || Objects.isNull(traderRequisites.getValue()) || Objects.isNull(traderRequisites.getBank())) {
+                return null;
+            }
             String dashPayOrderId = orderResponse.getData().getOrder().getId();
             deal.setMerchant(getMerchant());
             deal.setMerchantOrderId(dashPayOrderId);
