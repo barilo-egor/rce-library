@@ -36,11 +36,6 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         CreateInvoiceResponse invoiceResponse;
         try {
             invoiceResponse = alfaTeamMerchantService.createInvoice(deal);
-            String alfaTeamInvoiceId = invoiceResponse.getId();
-            deal.setMerchant(getMerchant());
-            deal.setMerchantOrderId(alfaTeamInvoiceId);
-            deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
-            modifyDealRepository.save(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание AlfaTeam ордера.", e);
             throw new BaseException();
@@ -48,6 +43,11 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         if (!invoiceResponse.hasRequisites()) {
             return null;
         }
+        String alfaTeamInvoiceId = invoiceResponse.getId();
+        deal.setMerchant(getMerchant());
+        deal.setMerchantOrderId(alfaTeamInvoiceId);
+        deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
+        modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
     }
 
