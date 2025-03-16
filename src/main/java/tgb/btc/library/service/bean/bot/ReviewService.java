@@ -37,19 +37,19 @@ public class ReviewService extends BasePersistService<Review> implements IReview
     }
 
     @Override
-    public List<Review> findAllByIsPublished(Boolean isPublished) {
-        return reviewRepository.findAllByIsPublished(isPublished);
+    public List<Review> findAllByIsAccepted(Boolean isAccepted) {
+        return reviewRepository.findAllByIsAccepted(isAccepted);
     }
 
     @Override
-    public List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit, Sort sort) {
-        return reviewRepository.findAll(Example.of(Review.builder().isPublished(isPublished).build()),
+    public List<Review> findAllByIsAccepted(Boolean isAccepted, Integer page, Integer limit, Sort sort) {
+        return reviewRepository.findAll(Example.of(Review.builder().isAccepted(isAccepted).build()),
                 PageRequest.of(page, limit, sort)).toList();
     }
 
     @Override
-    public List<Review> findAllByIsPublished(Boolean isPublished, Integer page, Integer limit) {
-        return reviewRepository.findAll(Example.of(Review.builder().isPublished(isPublished).build()),
+    public List<Review> findAllByIsAccepted(Boolean isAccepted, Integer page, Integer limit) {
+        return reviewRepository.findAll(Example.of(Review.builder().isAccepted(isAccepted).build()),
                 PageRequest.of(page, limit)).toList();
     }
 
@@ -63,11 +63,16 @@ public class ReviewService extends BasePersistService<Review> implements IReview
 
     @Override
     public List<Review> findMoreThanPid(Long pid, int limit) {
-        return reviewRepository.findAllByPidOrderByPidAsc(pid, false, PageRequest.of(0, limit));
+        return reviewRepository.findAllByPidAndIsAcceptedOrderByPidAsc(pid, false, PageRequest.of(0, limit));
     }
 
     @Override
     public long countByDealPid(Long dealPid) {
         return reviewRepository.countByDealPid(dealPid);
+    }
+
+    @Override
+    public Review findFirstByIsAcceptedOrderByPidAsc(Boolean isAccepted) {
+        return reviewRepository.findFirstByIsAcceptedOrderByPidAsc(isAccepted);
     }
 }
