@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
 @AllArgsConstructor
 @Getter
+@Slf4j
 public enum InvoiceStatus {
     NEW("new", "Сделка только что создана."),
     TRANSFER_WAITING("transfer_waiting", "Ожидается перевод средств."),
@@ -35,6 +37,7 @@ public enum InvoiceStatus {
     public static class Deserializer extends JsonDeserializer<InvoiceStatus> {
         @Override
         public InvoiceStatus deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+            log.info("Парсинг InvoiceStatus: {}", jsonParser.getValueAsString());
             return InvoiceStatus.getByValue(jsonParser.getValueAsString());
         }
     }
