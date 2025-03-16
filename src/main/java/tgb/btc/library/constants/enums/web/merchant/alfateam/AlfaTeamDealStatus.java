@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
 @AllArgsConstructor
 @Getter
+@Slf4j
 public enum AlfaTeamDealStatus {
     NEW("new", "Сделка только что создана."),
     TRANSFER_WAITING("transfer_waiting", "Ожидается перевод средств."),
@@ -45,6 +47,7 @@ public enum AlfaTeamDealStatus {
     public static class Deserializer extends JsonDeserializer<AlfaTeamDealStatus> {
         @Override
         public AlfaTeamDealStatus deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+            log.info("Парсинг AlfaTeamDealStatus: {}", jsonParser.getValueAsString());
             return AlfaTeamDealStatus.fromValue(jsonParser.getValueAsString());
         }
     }
