@@ -3,7 +3,7 @@ package tgb.btc.library.constants.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import tgb.btc.library.constants.enums.properties.VariableType;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
+import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 
@@ -23,7 +23,7 @@ public enum Merchant {
         return switch (this) {
             case PAYSCROW -> OrderStatus.valueOf(statusName).getDescription();
             case DASH_PAY -> DashPayOrderStatus.valueOf(statusName).getDescription();
-            case ALFA_TEAM -> AlfaTeamDealStatus.valueOf(statusName).getDescription();
+            case ALFA_TEAM -> InvoiceStatus.valueOf(statusName).getDescription();
             default -> null;
         };
     }
