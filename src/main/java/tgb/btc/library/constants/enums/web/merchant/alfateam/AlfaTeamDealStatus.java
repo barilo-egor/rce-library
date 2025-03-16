@@ -1,6 +1,5 @@
 package tgb.btc.library.constants.enums.web.merchant.alfateam;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -46,8 +45,7 @@ public enum AlfaTeamDealStatus {
 
     public static class Deserializer extends JsonDeserializer<AlfaTeamDealStatus> {
         @Override
-        public AlfaTeamDealStatus deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
-            log.info("Парсинг AlfaTeamDealStatus: {}", jsonParser.getValueAsString());
+        public AlfaTeamDealStatus deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             return AlfaTeamDealStatus.fromValue(jsonParser.getValueAsString());
         }
     }
