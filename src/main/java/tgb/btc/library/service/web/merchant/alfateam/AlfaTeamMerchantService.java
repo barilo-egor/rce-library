@@ -12,8 +12,8 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.DirectionType;
+import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
@@ -112,7 +112,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
     public void updateStatus(InvoiceNotification invoiceNotification) {
         Deal deal = readDealService.getByAlfaTeamInvoiceId(invoiceNotification.getInvoice().getId());
         if (Objects.isNull(deal)) return;
-        AlfaTeamDealStatus status = invoiceNotification.getInvoice().getStatus();
+        InvoiceStatus status = invoiceNotification.getInvoice().getStatus();
         deal.setMerchantOrderStatus(status.name());
         modifyDealRepository.save(deal);
         if (!DealStatus.NEW.equals(deal.getDealStatus())) {

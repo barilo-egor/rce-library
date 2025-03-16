@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
+import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
@@ -36,11 +36,6 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         CreateInvoiceResponse invoiceResponse;
         try {
             invoiceResponse = alfaTeamMerchantService.createInvoice(deal);
-            String alfaTeamInvoiceId = invoiceResponse.getId();
-            deal.setMerchant(getMerchant());
-            deal.setMerchantOrderId(alfaTeamInvoiceId);
-            deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
-            modifyDealRepository.save(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание AlfaTeam ордера.", e);
             throw new BaseException();
@@ -48,6 +43,11 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         if (!invoiceResponse.hasRequisites()) {
             return null;
         }
+        String alfaTeamInvoiceId = invoiceResponse.getId();
+        deal.setMerchant(getMerchant());
+        deal.setMerchantOrderId(alfaTeamInvoiceId);
+        deal.setMerchantOrderStatus(InvoiceStatus.NEW.name());
+        modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
     }
 
