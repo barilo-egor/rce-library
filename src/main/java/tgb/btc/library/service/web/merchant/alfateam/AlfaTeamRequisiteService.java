@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.AlfaTeamDealStatus;
+import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
@@ -46,7 +46,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         String alfaTeamInvoiceId = invoiceResponse.getId();
         deal.setMerchant(getMerchant());
         deal.setMerchantOrderId(alfaTeamInvoiceId);
-        deal.setMerchantOrderStatus(AlfaTeamDealStatus.NEW.name());
+        deal.setMerchantOrderStatus(InvoiceStatus.NEW.name());
         modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
     }
