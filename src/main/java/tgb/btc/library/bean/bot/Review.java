@@ -28,22 +28,14 @@ public class Review extends BasePersist {
     @Column(name = "USERNAME")
     private String username;
 
-    @Column(name = "IS_PUBLISHED")
-    private Boolean isPublished;
-
     @Column(name = "AMOUNT")
     private Integer amount;
+
+    @Column(name = "IS_ACCEPTED", columnDefinition = "BIT(1) DEFAULT 0")
+    private Boolean isAccepted = false;
 
     @OneToOne
     @JsonIgnore
     private Deal deal;
-
-    public Boolean getPublished() {
-        return isPublished;
-    }
-
-    public void setPublished(Boolean published) {
-        isPublished = published;
-    }
 
 }

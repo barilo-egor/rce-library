@@ -28,7 +28,8 @@ public enum VariableType {
     PAYSCROW_BOUND("Максимальная сумма для Payscrow", "payscrow.bound.amount"),
     DASH_PAY_BOUND("Максимальная сумма для DashPay", "dashpay.bound.amount"),
     ALFA_TEAM_BOUND("Максимальная сумма для AlfaTeam", "alfateam.bound.amount"),
-    MERCHANT_LIST("Список мерчантов", "merchant.list");
+    MERCHANT_LIST("Список мерчантов", "merchant.list"),
+    REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),;
 
     final String displayName;
     final String key;
