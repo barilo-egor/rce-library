@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
-import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
@@ -60,7 +59,7 @@ public class DashPayMerchantService implements IMerchantService {
         CreateOrderRequest request = CreateOrderRequest.builder()
                 .id(botName + deal.getPid())
                 .type(OrderType.DEPOSIT)
-                .method(OrderMethod.CARD_NUMBER)
+                .method(deal.getPaymentType().getDashPayOrderMethod())
                 .sum(deal.getAmount().doubleValue())
                 .customer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build())
                 .build();
