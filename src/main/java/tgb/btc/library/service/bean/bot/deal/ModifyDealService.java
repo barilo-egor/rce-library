@@ -170,10 +170,13 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     @Override
     public void deleteById(Long dealPid) {
         Deal deal = findById(dealPid);
-        merchantServices.stream()
-                .filter(service -> service.getMerchant().equals(deal.getMerchant()))
-                .findFirst()
-                .ifPresent(merchantService -> merchantService.cancelOrder(deal.getMerchantOrderId()));
+        try {
+            merchantServices.stream()
+                    .filter(service -> service.getMerchant().equals(deal.getMerchant()))
+                    .findFirst()
+                    .ifPresent(merchantService -> merchantService.cancelOrder(deal.getMerchantOrderId()));
+        } catch (Exception ignored) {
+        }
         delete(deal);
     }
 
