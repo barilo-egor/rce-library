@@ -25,4 +25,9 @@ public class PaymentTypeDiscountService implements IPaymentTypeDiscountService {
     public PaymentTypeDiscount save(PaymentTypeDiscount paymentTypeDiscount) {
         return repository.save(paymentTypeDiscount);
     }
+
+    @Override
+    public void deleteByPid(Long paymentTypeDiscountPid) {
+        repository.deleteById(paymentTypeDiscountPid);
+    }
 }

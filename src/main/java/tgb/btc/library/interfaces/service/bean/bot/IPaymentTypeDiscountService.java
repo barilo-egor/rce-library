@@ -8,4 +8,6 @@ public interface IPaymentTypeDiscountService {
     List<PaymentTypeDiscount> getByPaymentTypePid(Long paymentTypePid);
 
     PaymentTypeDiscount save(PaymentTypeDiscount paymentTypeDiscount);
+
+    void deleteByPid(Long paymentTypeDiscountPid);
 }
