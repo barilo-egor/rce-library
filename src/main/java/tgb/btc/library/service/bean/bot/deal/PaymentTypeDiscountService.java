@@ -20,4 +20,9 @@ public class PaymentTypeDiscountService implements IPaymentTypeDiscountService {
     public List<PaymentTypeDiscount> getByPaymentTypePid(Long paymentTypePid) {
         return repository.getAllByPaymentTypePidOrderByMaxAmount(paymentTypePid);
     }
+
+    @Override
+    public PaymentTypeDiscount save(PaymentTypeDiscount paymentTypeDiscount) {
+        return repository.save(paymentTypeDiscount);
+    }
 }

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IPaymentTypeDiscountService {
     List<PaymentTypeDiscount> getByPaymentTypePid(Long paymentTypePid);
+
+    PaymentTypeDiscount save(PaymentTypeDiscount paymentTypeDiscount);
 }
