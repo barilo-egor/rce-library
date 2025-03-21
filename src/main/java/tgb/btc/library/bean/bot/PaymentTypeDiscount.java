@@ -9,15 +9,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.bean.BasePersist;
 
+/**
+ * Скидка, применяемая к сделкам совершенным по определенному типу оплаты.
+ */
 @Entity
 @Table(name = "PAYMENT_TYPE_DISCOUNT")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-/**
- * Скидка, применяемая к сделкам совершенным по определенному типу оплаты.
- */
 public class PaymentTypeDiscount extends BasePersist {
 
     /**
