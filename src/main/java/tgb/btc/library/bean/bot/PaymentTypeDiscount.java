@@ -3,10 +3,7 @@ package tgb.btc.library.bean.bot;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 
 /**
@@ -18,6 +15,7 @@ import tgb.btc.library.bean.BasePersist;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
 public class PaymentTypeDiscount extends BasePersist {
 
     /**

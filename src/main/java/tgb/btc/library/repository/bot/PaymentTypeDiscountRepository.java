@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface PaymentTypeDiscountRepository extends BaseRepository<PaymentTypeDiscount> {
 
-    List<PaymentTypeDiscount> getAllByPaymentTypePid(Long paymentTypePid);
+    List<PaymentTypeDiscount> getAllByPaymentTypePidOrderByMaxAmount(Long paymentTypePid);
 }
