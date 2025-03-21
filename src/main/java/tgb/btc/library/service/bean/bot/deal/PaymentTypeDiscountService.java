@@ -2,6 +2,7 @@ package tgb.btc.library.service.bean.bot.deal;
 
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.PaymentTypeDiscount;
+import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentTypeDiscountService;
 import tgb.btc.library.repository.bot.PaymentTypeDiscountRepository;
 
@@ -22,6 +23,11 @@ public class PaymentTypeDiscountService implements IPaymentTypeDiscountService {
     }
 
     @Override
+    public PaymentTypeDiscount getByPid(Long pid) {
+        return repository.findById(pid).orElseThrow(() -> new BaseException("Запись не найдена."));
+    }
+
+    @Override
     public PaymentTypeDiscount save(PaymentTypeDiscount paymentTypeDiscount) {
         return repository.save(paymentTypeDiscount);
     }
@@ -29,5 +35,10 @@ public class PaymentTypeDiscountService implements IPaymentTypeDiscountService {
     @Override
     public void deleteByPid(Long paymentTypeDiscountPid) {
         repository.deleteById(paymentTypeDiscountPid);
+    }
+
+    @Override
+    public void delete(PaymentTypeDiscount paymentTypeDiscount) {
+        repository.delete(paymentTypeDiscount);
     }
 }
