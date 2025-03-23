@@ -13,7 +13,9 @@ public enum Merchant {
     NONE(null, "none"),
     PAYSCROW(VariableType.PAYSCROW_BOUND, "Payscrow"),
     DASH_PAY(VariableType.DASH_PAY_BOUND, "DashPay"),
-    ALFA_TEAM(VariableType.ALFA_TEAM_BOUND, "AlfaTeam");
+    ALFA_TEAM(VariableType.ALFA_TEAM_BOUND, "AlfaTeam"),
+    ALFA_TEAM_TJS(VariableType.ALFA_TEAM_TJS_BOUND, "AlfaTeam TJS")
+    ;
 
     private final VariableType maxAmount;
 

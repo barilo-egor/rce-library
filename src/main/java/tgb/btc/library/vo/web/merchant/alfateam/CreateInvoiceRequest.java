@@ -33,4 +33,6 @@ public class CreateInvoiceRequest {
     private PaymentOption paymentOption;
 
     private Boolean startDeal;
+
+    private String crossBorderCurrency;
 }

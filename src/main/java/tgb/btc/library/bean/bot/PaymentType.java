@@ -47,6 +47,9 @@ public class PaymentType extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private PaymentOption alfaTeamPaymentOption;
 
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamTJSPaymentOption;
+
     public Boolean getOn() {
         return isOn;
     }
