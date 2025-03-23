@@ -30,7 +30,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getAlfaTeamPaymentOption())) {
+        if (hasBinding(deal)) {
             return null;
         }
         CreateInvoiceResponse invoiceResponse;
@@ -49,6 +49,10 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         deal.setMerchantOrderStatus(InvoiceStatus.NEW.name());
         modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
+    }
+
+    protected boolean hasBinding(Deal deal) {
+        return Objects.isNull(deal.getPaymentType().getAlfaTeamPaymentOption());
     }
 
     protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
