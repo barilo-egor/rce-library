@@ -19,7 +19,7 @@ public class AlfaTeamTJSMRequisiteService extends AlfaTeamRequisiteService imple
 
     @Override
     protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
-        return alfaTeamMerchantService.createTJSInvoice(deal);
+        return alfaTeamMerchantService.createTJSInvoice(deal, Merchant.ALFA_TEAM_TJS);
     }
 
     @Override

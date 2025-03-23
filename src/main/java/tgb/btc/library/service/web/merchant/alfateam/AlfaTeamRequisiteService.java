@@ -56,7 +56,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
     }
 
     protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
-        return alfaTeamMerchantService.createInvoice(deal);
+        return alfaTeamMerchantService.createInvoice(deal, Merchant.ALFA_TEAM);
     }
 
     private String buildRequisite(CreateInvoiceResponse invoiceResponse) {

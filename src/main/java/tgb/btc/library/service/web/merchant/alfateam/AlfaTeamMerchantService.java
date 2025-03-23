@@ -79,7 +79,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
         this.modifyDealRepository = modifyDealRepository;
     }
 
-    public CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
+    public CreateInvoiceResponse createInvoice(Deal deal, Merchant merchant) throws Exception {
         CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
                 .type(DirectionType.IN)
                 .amount(deal.getAmount().toString())
@@ -94,7 +94,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
         return createInvoice(createInvoiceRequest, deal.getMerchant());
     }
 
-    public CreateInvoiceResponse createTJSInvoice(Deal deal) throws Exception {
+    public CreateInvoiceResponse createTJSInvoice(Deal deal, Merchant merchant) throws Exception {
         CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
                 .type(DirectionType.IN)
                 .amount(deal.getAmount().toString())
@@ -107,7 +107,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
                 .startDeal(true)
                 .crossBorderCurrency("TJS")
                 .build();
-        return createInvoice(createInvoiceRequest, deal.getMerchant());
+        return createInvoice(createInvoiceRequest, merchant);
     }
 
     public CreateInvoiceResponse createInvoice(CreateInvoiceRequest createInvoiceRequest, Merchant merchant) throws Exception {
