@@ -18,7 +18,7 @@ import java.util.Objects;
 @Slf4j
 public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
 
-    private final AlfaTeamMerchantService alfaTeamMerchantService;
+    protected final AlfaTeamMerchantService alfaTeamMerchantService;
 
     private final ModifyDealRepository modifyDealRepository;
 
@@ -35,7 +35,7 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         }
         CreateInvoiceResponse invoiceResponse;
         try {
-            invoiceResponse = alfaTeamMerchantService.createInvoice(deal);
+            invoiceResponse = createInvoice(deal);
         } catch (Exception e) {
             log.error("Ошибка при выполнении запроса на создание AlfaTeam ордера.", e);
             throw new BaseException();
@@ -49,6 +49,10 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         deal.setMerchantOrderStatus(InvoiceStatus.NEW.name());
         modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
+    }
+
+    protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
+        return alfaTeamMerchantService.createInvoice(deal);
     }
 
     private String buildRequisite(CreateInvoiceResponse invoiceResponse) {
