@@ -1,6 +1,7 @@
 package tgb.btc.library.service.web.merchant.alfateam;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
@@ -59,9 +60,12 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         return alfaTeamMerchantService.createInvoice(deal, Merchant.ALFA_TEAM);
     }
 
-    private String buildRequisite(CreateInvoiceResponse invoiceResponse) {
+    protected String buildRequisite(CreateInvoiceResponse invoiceResponse) {
         DealDTO dealDTO = invoiceResponse.getDeals().get(0);
-        return dealDTO.getPaymentMethod().getDisplayName() + " " + dealDTO.getRequisites().getRequisites();
+        if (StringUtils.isNotBlank(dealDTO.getPaymentMethod().getDisplayName())) {
+            return dealDTO.getPaymentMethod().getDisplayName() + " " + dealDTO.getRequisites().getRequisites();
+        }
+        return dealDTO.getRequisites().getRequisites();
     }
 
     @Override
