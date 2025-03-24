@@ -91,7 +91,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
                 .paymentOption(deal.getPaymentType().getAlfaTeamPaymentOption())
                 .startDeal(true)
                 .build();
-        return createInvoice(createInvoiceRequest, deal.getMerchant());
+        return createInvoice(createInvoiceRequest, merchant);
     }
 
     public CreateInvoiceResponse createTJSInvoice(Deal deal, Merchant merchant) throws Exception {
