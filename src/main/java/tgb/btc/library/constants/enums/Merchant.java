@@ -28,7 +28,7 @@ public enum Merchant {
         return switch (this) {
             case PAYSCROW -> OrderStatus.valueOf(statusName).getDescription();
             case DASH_PAY -> DashPayOrderStatus.valueOf(statusName).getDescription();
-            case ALFA_TEAM, ALFA_TEAM_TJS -> InvoiceStatus.valueOf(statusName).getDescription();
+            case ALFA_TEAM, ALFA_TEAM_TJS, ALFA_TEAM_VTB, ALFA_TEAM_ALFA, ALFA_TEAM_SBER -> InvoiceStatus.valueOf(statusName).getDescription();
             default -> null;
         };
     }

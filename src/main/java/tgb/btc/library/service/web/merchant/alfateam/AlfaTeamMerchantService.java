@@ -28,6 +28,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -43,10 +45,6 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     private final String botName;
 
-    private final String apiKey;
-
-    private final String tjsApiKey;
-
     private final String apiSecret;
 
     private final String createInvoiceUrl;
@@ -57,11 +55,16 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     private final ModifyDealRepository modifyDealRepository;
 
+    private final Map<Merchant, String> apiKeys;
+
     public AlfaTeamMerchantService(RestTemplate restTemplate, @Value("${main.url:null}") String mainUrl,
                                    @Value("${alfateam.api.notification.token:null}") String alfaTeamNotificationToken,
                                    @Value("${bot.name:null}") String botName,
                                    @Value ("${alfateam.api.key:null}") String apiKey,
                                    @Value ("${alfateam.tjs.api.key:null}") String tjsApiKey,
+                                   @Value ("${alfateam.vtb.api.key:null}") String vtbApiKey,
+                                   @Value ("${alfateam.alfa.api.key:null}") String alfaApiKey,
+                                   @Value ("${alfateam.sber.api.key:null}") String sberApiKey,
                                    @Value ("${alfateam.api.secret:null}") String apiSecret,
                                    @Value("${alfateam.api.url.main:null}") String apiMainUrl, IReadDealService readDealService,
                                    INotifier notifier, ModifyDealRepository modifyDealRepository) {
@@ -69,8 +72,12 @@ public class AlfaTeamMerchantService implements IMerchantService {
         this.notificationUrl = mainUrl + "/merchant/alfateam";
         this.notificationToken = alfaTeamNotificationToken;
         this.botName = botName;
-        this.apiKey = apiKey;
-        this.tjsApiKey = tjsApiKey;
+        this.apiKeys = new HashMap<>();
+        apiKeys.put(Merchant.ALFA_TEAM, apiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_TJS, tjsApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_VTB, tjsApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_ALFA, tjsApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_SBER, tjsApiKey);
         this.apiSecret = apiSecret;
         this.restTemplate = restTemplate;
         this.createInvoiceUrl = apiMainUrl + "/api/merchant/invoices";
@@ -110,14 +117,26 @@ public class AlfaTeamMerchantService implements IMerchantService {
         return createInvoice(createInvoiceRequest, merchant);
     }
 
+    public CreateInvoiceResponse createInvoice(Deal deal, Merchant merchant, PaymentOption paymentOption) throws Exception {
+        CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
+                .type(DirectionType.IN)
+                .amount(deal.getAmount().toString())
+                .currency(FiatCurrency.RUB.name())
+                .notificationUrl(notificationUrl)
+                .notificationToken(notificationToken)
+                .internalId(botName + deal.getPid())
+                .userId(deal.getUser().getChatId().toString())
+                .paymentOption(paymentOption)
+                .startDeal(true)
+                .build();
+        return createInvoice(createInvoiceRequest, merchant);
+    }
+
     public CreateInvoiceResponse createInvoice(CreateInvoiceRequest createInvoiceRequest, Merchant merchant) throws Exception {
         String body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(createInvoiceRequest);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        switch (merchant) {
-            case ALFA_TEAM -> headers.add("X-Identity", apiKey);
-            case ALFA_TEAM_TJS -> headers.add("X-Identity", tjsApiKey);
-        }
+        headers.add("X-Identity", apiKeys.get(merchant));
         headers.add("X-Signature", generateXSignature("POST", createInvoiceUrl, body));
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
         ResponseEntity<CreateInvoiceResponse> response = restTemplate.exchange(createInvoiceUrl, HttpMethod.POST, entity, CreateInvoiceResponse.class);

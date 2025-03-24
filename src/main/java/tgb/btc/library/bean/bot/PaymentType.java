@@ -50,6 +50,15 @@ public class PaymentType extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private PaymentOption alfaTeamTJSPaymentOption;
 
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamVTBPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamAlfaPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamSberPaymentOption;
+
     public Boolean getOn() {
         return isOn;
     }
