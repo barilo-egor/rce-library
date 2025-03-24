@@ -14,7 +14,10 @@ public enum Merchant {
     PAYSCROW(VariableType.PAYSCROW_BOUND, "Payscrow"),
     DASH_PAY(VariableType.DASH_PAY_BOUND, "DashPay"),
     ALFA_TEAM(VariableType.ALFA_TEAM_BOUND, "AlfaTeam"),
-    ALFA_TEAM_TJS(VariableType.ALFA_TEAM_TJS_BOUND, "AlfaTeam TJS")
+    ALFA_TEAM_TJS(VariableType.ALFA_TEAM_TJS_BOUND, "AlfaTeam TJS"),
+    ALFA_TEAM_VTB(VariableType.ALFA_TEAM_VTB_BOUND, "AlfaTeam VTB"),
+    ALFA_TEAM_ALFA(VariableType.ALFA_TEAM_ALFA_BOUND, "AlfaTeam ALFA"),
+    ALFA_TEAM_SBER(VariableType.ALFA_TEAM_SBER_BOUND, "AlfaTeam SBER"),
     ;
 
     private final VariableType maxAmount;
@@ -25,7 +28,7 @@ public enum Merchant {
         return switch (this) {
             case PAYSCROW -> OrderStatus.valueOf(statusName).getDescription();
             case DASH_PAY -> DashPayOrderStatus.valueOf(statusName).getDescription();
-            case ALFA_TEAM -> InvoiceStatus.valueOf(statusName).getDescription();
+            case ALFA_TEAM, ALFA_TEAM_TJS -> InvoiceStatus.valueOf(statusName).getDescription();
             default -> null;
         };
     }
