@@ -228,7 +228,17 @@ public enum PaymentMethod {
     CIBITBANK("cibitbank", "КИБИТ-БАНК"),
     UNIBANK("unibank", "Универсал-банк"),
     APRA("apra", "АПРА"),
-    AMOBILE("amobile", "А-мобайл кошелек");
+    AMOBILE("amobile", "А-мобайл кошелек"),
+    ALIF("alif", "Алиф Банк"),
+    IBT("ibt", "Международный банк Таджикистана"),
+    ESKHATA("eskhata", "Эсхата"),
+    SPITAMENBANK("spitamenbank", "Спитамен Банк"),
+    AMONATBONK("amonatbonk", "Амонат мобайл"),
+    MATIN("matin", "Matin"),
+    ORIYONBONK("oriyonbonk", "Oriyonbonk"),
+    IMON("imon", "Imon"),
+    HUMOTJ("humotj", "Humo"),
+    VASL("vasl", "Vasl");
 
     private final String value;
 
