@@ -3,7 +3,6 @@ package tgb.btc.library.service.web.merchant.alfateam;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceResponse;
@@ -19,7 +18,7 @@ public class AlfaTeamVTBRequisiteService extends AlfaTeamRequisiteService implem
 
     @Override
     protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {
-        return alfaTeamMerchantService.createInvoice(deal, Merchant.ALFA_TEAM_VTB, PaymentOption.SBP);
+        return alfaTeamMerchantService.createInvoice(deal, Merchant.ALFA_TEAM_VTB);
     }
 
     @Override

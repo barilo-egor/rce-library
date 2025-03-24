@@ -75,9 +75,9 @@ public class AlfaTeamMerchantService implements IMerchantService {
         this.apiKeys = new HashMap<>();
         apiKeys.put(Merchant.ALFA_TEAM, apiKey);
         apiKeys.put(Merchant.ALFA_TEAM_TJS, tjsApiKey);
-        apiKeys.put(Merchant.ALFA_TEAM_VTB, tjsApiKey);
-        apiKeys.put(Merchant.ALFA_TEAM_ALFA, tjsApiKey);
-        apiKeys.put(Merchant.ALFA_TEAM_SBER, tjsApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_VTB, vtbApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_ALFA, alfaApiKey);
+        apiKeys.put(Merchant.ALFA_TEAM_SBER, sberApiKey);
         this.apiSecret = apiSecret;
         this.restTemplate = restTemplate;
         this.createInvoiceUrl = apiMainUrl + "/api/merchant/invoices";
@@ -113,21 +113,6 @@ public class AlfaTeamMerchantService implements IMerchantService {
                 .paymentOption(PaymentOption.CROSS_BORDER)
                 .startDeal(true)
                 .crossBorderCurrency("TJS")
-                .build();
-        return createInvoice(createInvoiceRequest, merchant);
-    }
-
-    public CreateInvoiceResponse createInvoice(Deal deal, Merchant merchant, PaymentOption paymentOption) throws Exception {
-        CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
-                .type(DirectionType.IN)
-                .amount(deal.getAmount().toString())
-                .currency(FiatCurrency.RUB.name())
-                .notificationUrl(notificationUrl)
-                .notificationToken(notificationToken)
-                .internalId(botName + deal.getPid())
-                .userId(deal.getUser().getChatId().toString())
-                .paymentOption(paymentOption)
-                .startDeal(true)
                 .build();
         return createInvoice(createInvoiceRequest, merchant);
     }
