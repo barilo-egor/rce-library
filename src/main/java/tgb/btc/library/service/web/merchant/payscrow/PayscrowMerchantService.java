@@ -83,7 +83,6 @@ public class PayscrowMerchantService implements IMerchantService {
         PAYMENT_METHODS_IDS.put("ВТБ-ВТБ Карта", "cae62b5b-4146-4674-acbc-c5f9b67e6aa1");
         PAYMENT_METHODS_IDS.put("ВТБ-ВТБ СБП", "9a92ec2d-92cd-40a8-aeb6-8c75bcd3c0cd");
         PAYMENT_METHODS_IDS.put("Сбербанк-Сбербанк Карта", "af3daf65-b6b6-450b-b28d-54b97436ef4a");
-        PAYMENT_METHODS_IDS.put("Трансграничный Карта", "f57dc094-9378-488f-80bf-c1f44fe26f6f");
         PAYMENT_METHODS_IDS.put("Трансграничный СБП", "b46146af-e597-4409-b24c-43a53b16f026");
     }
 
