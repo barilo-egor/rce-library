@@ -26,7 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -70,7 +70,7 @@ public class PayscrowMerchantService implements IMerchantService {
         this.createOrderUrl = domain + relativeCreateOrderUrl;
         this.cancelOrderUrl = domain + relativeCancelOrderUrl;
         this.listOrderUrl = domain + relativeListOrderUrl;
-        this.PAYMENT_METHODS_IDS = new HashMap<>();
+        this.PAYMENT_METHODS_IDS = new LinkedHashMap<>();
         PAYMENT_METHODS_IDS.put("Альфа-Банк", "4f591bcc-29f8-4598-9828-5b109a25b509");
         PAYMENT_METHODS_IDS.put("Сбербанк", "af3daf65-b6b6-450b-b28d-54b97436ef4a");
         PAYMENT_METHODS_IDS.put("Тинькофф", "cd797fcb-5b5a-47a3-8b54-35f5f7000344");
