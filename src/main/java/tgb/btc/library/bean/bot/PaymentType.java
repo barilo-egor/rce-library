@@ -39,6 +39,9 @@ public class PaymentType extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
+    @Column(length = 500)
+    private String requisiteAdditionalText;
+
     private String payscrowPaymentMethodId;
 
     @Enumerated(value = EnumType.STRING)
