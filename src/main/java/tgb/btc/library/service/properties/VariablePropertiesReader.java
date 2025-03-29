@@ -139,6 +139,14 @@ public class VariablePropertiesReader extends PropertiesReader {
         }
     }
 
+    public Integer getInt(VariableType variableType, Integer defaultValue) {
+        try {
+            return Integer.parseInt(getVariable(variableType));
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
     public BigDecimal getTransactionCommission(CryptoCurrency cryptoCurrency) {
         return getBigDecimal(VariableType.TRANSACTION_COMMISSION.getKey(cryptoCurrency));
     }
