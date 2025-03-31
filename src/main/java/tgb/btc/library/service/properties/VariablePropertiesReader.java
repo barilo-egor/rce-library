@@ -142,7 +142,7 @@ public class VariablePropertiesReader extends PropertiesReader {
     public Integer getInt(VariableType variableType, Integer defaultValue) {
         try {
             return Integer.parseInt(getVariable(variableType));
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return defaultValue;
         }
     }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
@@ -19,9 +20,8 @@ import tgb.btc.library.vo.web.merchant.paypoints.SbpTransactionResponse;
 import java.util.Objects;
 
 
+@Service
 public class PayPointsMerchantService implements IMerchantService {
-
-    private final String baseUrl;
 
     private final String cardUrl;
 
@@ -39,9 +39,8 @@ public class PayPointsMerchantService implements IMerchantService {
 
     public PayPointsMerchantService(@Value("${paypoints.api.baseUrl:null}") String baseUrl,
                                     @Value("${paypoints.api.token:null}") String token, RestTemplate restTemplate,
-                                    String botName,
+                                    @Value("${bot.name}") String botName,
                                     IBigDecimalService bigDecimalService) {
-        this.baseUrl = baseUrl;
         this.cardUrl = baseUrl + "/transactions/card";
         this.sbpUrl = baseUrl + "/transactions/sbp";
         this.transgranSbp = baseUrl + "/transactions/transgran-sbp";
