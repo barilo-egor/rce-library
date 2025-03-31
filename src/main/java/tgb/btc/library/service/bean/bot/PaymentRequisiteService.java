@@ -15,11 +15,9 @@ import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
-import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.RequisiteVO;
 
 import java.util.HashMap;
@@ -36,23 +34,15 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
 
     private final VariablePropertiesReader variablePropertiesReader;
 
-    private final PayscrowMerchantService payscrowMerchantService;
-
-    private final ModifyDealRepository modifyDealRepository;
-
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
 
     private final Map<Merchant, IMerchantRequisiteService> merchantIMerchantRequisiteServiceMap;
 
     public PaymentRequisiteService(PaymentRequisiteRepository paymentRequisiteRepository,
                                    VariablePropertiesReader variablePropertiesReader,
-                                   PayscrowMerchantService payscrowMerchantService,
-                                   ModifyDealRepository modifyDealRepository,
                                    List<IMerchantRequisiteService> merchantRequisiteServices) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
         this.variablePropertiesReader = variablePropertiesReader;
-        this.payscrowMerchantService = payscrowMerchantService;
-        this.modifyDealRepository = modifyDealRepository;
         this.merchantIMerchantRequisiteServiceMap = new HashMap<>();
         for (IMerchantRequisiteService merchantService : merchantRequisiteServices) {
             this.merchantIMerchantRequisiteServiceMap.put(merchantService.getMerchant(), merchantService);

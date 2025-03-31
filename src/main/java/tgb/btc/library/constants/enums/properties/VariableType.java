@@ -32,6 +32,7 @@ public enum VariableType {
     ALFA_TEAM_VTB_BOUND("Максимальная сумма для AlfaTeam VTB", "alfateam.vtb.bound.amount"),
     ALFA_TEAM_ALFA_BOUND("Максимальная сумма для AlfaTeam ALFA", "alfateam.alfa.bound.amount"),
     ALFA_TEAM_SBER_BOUND("Максимальная сумма для AlfaTeam SBER", "alfateam.sber.bound.amount"),
+    PAY_POINTS_BOUND("Максимальная сумма для Paypoints", "paypoints.bound.amount"),
     MERCHANT_LIST("Список мерчантов", "merchant.list"),
     REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),
     NUMBER_OF_MERCHANT_ATTEMPTS("Количество попыток получения реквизитов мерчанта", "merchant.attempts.number"),
