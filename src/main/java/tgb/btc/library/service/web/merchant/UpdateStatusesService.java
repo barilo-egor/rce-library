@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
+import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.ListOrdersResponse;
@@ -31,14 +33,17 @@ public class UpdateStatusesService {
 
     private final PayscrowMerchantService payscrowMerchantService;
 
+    private final PayPointsMerchantService payPointsMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
-                                 PayscrowMerchantService payscrowMerchantService) {
+                                 PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
         this.dashPayMerchantService = dashPayMerchantService;
         this.payscrowMerchantService = payscrowMerchantService;
+        this.payPointsMerchantService = payPointsMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -95,5 +100,27 @@ public class UpdateStatusesService {
         LocalDateTime to = LocalDateTime.now();
         LocalDateTime from = to.minusMinutes(30);
         return dashPayMerchantService.getOrders(from, to);
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updatePayPointsStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalPayPointsStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            PayPointsStatus payPointsStatus = payPointsMerchantService.getStatus(Long.valueOf(deal.getMerchantOrderId()));
+            if (!PayPointsStatus.valueOf(deal.getMerchantOrderStatus()).equals(payPointsStatus)) {
+                deal.setMerchantOrderStatus(payPointsStatus.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "PayPoints обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + payPointsStatus.getDisplayName() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 }

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsMethod;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
+import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.paypoints.CardTransactionResponse;
@@ -18,8 +21,11 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
 
     private final PayPointsMerchantService payPointsMerchantService;
 
-    public PayPointsRequisiteService(PayPointsMerchantService payPointsMerchantService) {
+    private final ModifyDealRepository modifyDealRepository;
+
+    public PayPointsRequisiteService(PayPointsMerchantService payPointsMerchantService, ModifyDealRepository modifyDealRepository) {
         this.payPointsMerchantService = payPointsMerchantService;
+        this.modifyDealRepository = modifyDealRepository;
     }
 
     @Override
@@ -29,6 +35,8 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
             return null;
         }
         try {
+            Long id;
+            RequisiteVO requisiteVO;
             switch (payPointsMethod) {
                 case SBP: {
                     SbpTransactionResponse response = payPointsMerchantService.createSbpTransaction(deal);
@@ -36,10 +44,11 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
                         log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
                         return null;
                     }
-                    RequisiteVO requisiteVO = new RequisiteVO();
+                    requisiteVO = new RequisiteVO();
                     requisiteVO.setMerchant(Merchant.PAY_POINTS);
                     requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
-                    return requisiteVO;
+                    id = response.getId();
+                    break;
                 }
                 case CARD: {
                     CardTransactionResponse response = payPointsMerchantService.createCardTransaction(deal);
@@ -47,10 +56,11 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
                         log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
                         return null;
                     }
-                    RequisiteVO requisiteVO = new RequisiteVO();
+                    requisiteVO = new RequisiteVO();
                     requisiteVO.setMerchant(Merchant.PAY_POINTS);
                     requisiteVO.setRequisite(response.getBankName() + " " + response.getCardNumber());
-                    return requisiteVO;
+                    id = response.getId();
+                    break;
                 }
                 case TRANSGRAN_SBP:
                     SbpTransactionResponse response = payPointsMerchantService.createTransgranSbpTransaction(deal);
@@ -58,11 +68,18 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
                         log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
                         return null;
                     }
-                    RequisiteVO requisiteVO = new RequisiteVO();
+                    requisiteVO = new RequisiteVO();
                     requisiteVO.setMerchant(Merchant.PAY_POINTS);
                     requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
-                    return requisiteVO;
-            };
+                    id = response.getId();
+                    break;
+                default: throw new BaseException("Не определен метод");
+            }
+            deal.setMerchant(getMerchant());
+            deal.setMerchantOrderId(id.toString());
+            deal.setMerchantOrderStatus(PayPointsStatus.PROCESS.name());
+            modifyDealRepository.save(deal);
+            return requisiteVO;
         } catch (Exception e) {
             log.debug("Ошибка при попытке создать транзакцию PayPoints: ", e);
         }

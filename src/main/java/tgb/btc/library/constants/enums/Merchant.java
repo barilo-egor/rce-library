@@ -5,6 +5,7 @@ import lombok.Getter;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 
 @AllArgsConstructor
@@ -32,6 +33,7 @@ public enum Merchant {
             case PAYSCROW -> OrderStatus.valueOf(statusName).getDescription();
             case DASH_PAY -> DashPayOrderStatus.valueOf(statusName).getDescription();
             case ALFA_TEAM, ALFA_TEAM_TJS, ALFA_TEAM_VTB, ALFA_TEAM_ALFA, ALFA_TEAM_SBER -> InvoiceStatus.valueOf(statusName).getDescription();
+            case PAY_POINTS -> PayPointsStatus.valueOf(statusName).getDisplayName();
             default -> null;
         };
     }

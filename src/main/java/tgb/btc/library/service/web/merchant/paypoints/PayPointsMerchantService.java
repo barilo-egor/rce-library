@@ -10,18 +10,22 @@ import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.util.IBigDecimalService;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.vo.web.merchant.paypoints.CardTransactionResponse;
 import tgb.btc.library.vo.web.merchant.paypoints.RequestBody;
 import tgb.btc.library.vo.web.merchant.paypoints.SbpTransactionResponse;
+import tgb.btc.library.vo.web.merchant.paypoints.TransactionResponse;
 
 import java.util.Objects;
 
 
 @Service
 public class PayPointsMerchantService implements IMerchantService {
+
+    private final String baseUrl;
 
     private final String cardUrl;
 
@@ -41,6 +45,7 @@ public class PayPointsMerchantService implements IMerchantService {
                                     @Value("${paypoints.api.token:null}") String token, RestTemplate restTemplate,
                                     @Value("${bot.name}") String botName,
                                     IBigDecimalService bigDecimalService) {
+        this.baseUrl = baseUrl;
         this.cardUrl = baseUrl + "/transactions/card";
         this.sbpUrl = baseUrl + "/transactions/sbp";
         this.transgranSbp = baseUrl + "/transactions/transgran-sbp";
@@ -83,8 +88,19 @@ public class PayPointsMerchantService implements IMerchantService {
         RequestBody requestBody = new RequestBody();
         requestBody.setAmount(Integer.parseInt(bigDecimalService.roundToPlainString(deal.getAmount(), 0)));
         requestBody.setCurrency(FiatCurrency.RUB);
-        requestBody.setMerchantTransactionId(botName);
+        requestBody.setMerchantTransactionId(botName + deal.getPid());
         return new HttpEntity<>(requestBody, httpHeaders);
+    }
+
+    public PayPointsStatus getStatus(Long id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + token);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(httpHeaders);
+        ResponseEntity<TransactionResponse> response = restTemplate.exchange(baseUrl + "/transactions/" + id, HttpMethod.GET, httpEntity, TransactionResponse.class);
+        if (Objects.isNull(response.getBody())) {
+            throw new BaseException("Тело ответа при создании получении статуса транзакции пустое.");
+        }
+        return response.getBody().getStatus();
     }
 
     @Override
