@@ -61,7 +61,7 @@ public enum MessageImage {
           
             Ваш ранг: %s, скидка %s %%
             
-            <b>\uD83D\uDCB5Сумма к оплате</b>: <code>%s %s</code>
+            <b>\uD83D\uDCB5Сумма к оплате</b>: <s>%s</s> <code>%s %s</code>
             <b>Реквизиты для оплаты:</b>
             
             <code>%s</code>
