@@ -28,9 +28,16 @@ public enum VariableType {
     PAYSCROW_BOUND("Максимальная сумма для Payscrow", "payscrow.bound.amount"),
     DASH_PAY_BOUND("Максимальная сумма для DashPay", "dashpay.bound.amount"),
     ALFA_TEAM_BOUND("Максимальная сумма для AlfaTeam", "alfateam.bound.amount"),
-    ALFA_TEAM_TJS_BOUND("Максимальная сумма для AlfaTeam", "alfateam.tjs.bound.amount"),
+    ALFA_TEAM_TJS_BOUND("Максимальная сумма для AlfaTeam TJS", "alfateam.tjs.bound.amount"),
+    ALFA_TEAM_VTB_BOUND("Максимальная сумма для AlfaTeam VTB", "alfateam.vtb.bound.amount"),
+    ALFA_TEAM_ALFA_BOUND("Максимальная сумма для AlfaTeam ALFA", "alfateam.alfa.bound.amount"),
+    ALFA_TEAM_SBER_BOUND("Максимальная сумма для AlfaTeam SBER", "alfateam.sber.bound.amount"),
+    PAY_POINTS_BOUND("Максимальная сумма для Paypoints", "paypoints.bound.amount"),
+    ONLY_PAYS_BOUND("Максимальная сумма для OnlyPays", "onlypays.bound.amount"),
     MERCHANT_LIST("Список мерчантов", "merchant.list"),
-    REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),;
+    REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),
+    NUMBER_OF_MERCHANT_ATTEMPTS("Количество попыток получения реквизитов мерчанта", "merchant.attempts.number"),
+    DELAY_MERCHANT_ATTEMPTS("Пауза между попытками", "merchant.attempts.delay");
 
     final String displayName;
     final String key;

@@ -7,6 +7,8 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
+import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysPaymentType;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsMethod;
 
 import java.math.BigDecimal;
 
@@ -39,6 +41,9 @@ public class PaymentType extends BasePersist {
     @Enumerated(value = EnumType.STRING)
     private FiatCurrency fiatCurrency;
 
+    @Column(length = 500)
+    private String requisiteAdditionalText;
+
     private String payscrowPaymentMethodId;
 
     @Enumerated(value = EnumType.STRING)
@@ -49,6 +54,21 @@ public class PaymentType extends BasePersist {
 
     @Enumerated(value = EnumType.STRING)
     private PaymentOption alfaTeamTJSPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamVTBPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamAlfaPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PaymentOption alfaTeamSberPaymentOption;
+
+    @Enumerated(value = EnumType.STRING)
+    private PayPointsMethod payPointsMethod;
+
+    @Enumerated(value = EnumType.STRING)
+    private OnlyPaysPaymentType onlyPaysPaymentType;
 
     public Boolean getOn() {
         return isOn;

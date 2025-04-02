@@ -10,15 +10,14 @@ import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
+import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
-import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.properties.VariablePropertiesReader;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
-import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.RequisiteVO;
 
 import java.util.HashMap;
@@ -35,23 +34,15 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
 
     private final VariablePropertiesReader variablePropertiesReader;
 
-    private final PayscrowMerchantService payscrowMerchantService;
-
-    private final ModifyDealRepository modifyDealRepository;
-
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
 
     private final Map<Merchant, IMerchantRequisiteService> merchantIMerchantRequisiteServiceMap;
 
     public PaymentRequisiteService(PaymentRequisiteRepository paymentRequisiteRepository,
                                    VariablePropertiesReader variablePropertiesReader,
-                                   PayscrowMerchantService payscrowMerchantService,
-                                   ModifyDealRepository modifyDealRepository,
                                    List<IMerchantRequisiteService> merchantRequisiteServices) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
         this.variablePropertiesReader = variablePropertiesReader;
-        this.payscrowMerchantService = payscrowMerchantService;
-        this.modifyDealRepository = modifyDealRepository;
         this.merchantIMerchantRequisiteServiceMap = new HashMap<>();
         for (IMerchantRequisiteService merchantService : merchantRequisiteServices) {
             this.merchantIMerchantRequisiteServiceMap.put(merchantService.getMerchant(), merchantService);
@@ -136,17 +127,26 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         }
         RequisiteVO requisiteVO = null;
         List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
-        for (String merchantName: merchants) {
-            try {
-                Merchant merchant = Merchant.valueOf(merchantName);
-                Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
-                if (deal.getAmount().longValue() > maxAmount) {
-                    continue;
+        int attemptsCount = variablePropertiesReader.getInt(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS, 1);
+        int attemptsDelay = variablePropertiesReader.getInt(VariableType.DELAY_MERCHANT_ATTEMPTS, 3);
+        for (int i = 0; i < attemptsCount; i++) {
+            for (String merchantName : merchants) {
+                try {
+                    Merchant merchant = Merchant.valueOf(merchantName);
+                    Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
+                    if (deal.getAmount().longValue() > maxAmount) {
+                        continue;
+                    }
+                    requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
+                    if (Objects.nonNull(requisiteVO)) break;
+                } catch (Exception e) {
+                    log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
                 }
-                requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
-                if (Objects.nonNull(requisiteVO)) break;
-            } catch (Exception e) {
-                log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
+            }
+            if (Objects.nonNull(requisiteVO)) break;
+            try {
+                Thread.sleep(attemptsDelay * 1000L);
+            } catch (InterruptedException ignored) {
             }
         }
         if (Objects.isNull(requisiteVO)) {

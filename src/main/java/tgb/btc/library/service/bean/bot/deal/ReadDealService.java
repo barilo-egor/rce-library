@@ -10,6 +10,8 @@ import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
@@ -87,6 +89,24 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
         return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
                 Merchant.DASH_PAY,
                 DashPayOrderStatus.FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalPayPointsStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.PAY_POINTS,
+                PayPointsStatus.FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalOnlyPaysStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.ONLY_PAYS,
+                List.of(OnlyPaysStatus.WAITING.name()),
                 LocalDateTime.now().minusMinutes(30)
         );
     }

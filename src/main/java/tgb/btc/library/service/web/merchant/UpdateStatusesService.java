@@ -1,16 +1,22 @@
 package tgb.btc.library.service.web.merchant;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
+import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
+import tgb.btc.library.service.web.merchant.onlypays.OnlyPaysMerchantService;
+import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
+import tgb.btc.library.vo.web.merchant.onlypays.GetStatusResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.ListOrdersResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.Order;
 
@@ -19,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class UpdateStatusesService {
 
     private final IReadDealService readDealService;
@@ -31,14 +38,21 @@ public class UpdateStatusesService {
 
     private final PayscrowMerchantService payscrowMerchantService;
 
+    private final PayPointsMerchantService payPointsMerchantService;
+
+    private final OnlyPaysMerchantService onlyPaysMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
-                                 PayscrowMerchantService payscrowMerchantService) {
+                                 PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
+                                 OnlyPaysMerchantService onlyPaysMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
         this.dashPayMerchantService = dashPayMerchantService;
         this.payscrowMerchantService = payscrowMerchantService;
+        this.payPointsMerchantService = payPointsMerchantService;
+        this.onlyPaysMerchantService = onlyPaysMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -95,5 +109,54 @@ public class UpdateStatusesService {
         LocalDateTime to = LocalDateTime.now();
         LocalDateTime from = to.minusMinutes(30);
         return dashPayMerchantService.getOrders(from, to);
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updatePayPointsStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalPayPointsStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            PayPointsStatus payPointsStatus = payPointsMerchantService.getStatus(Long.valueOf(deal.getMerchantOrderId()));
+            if (!PayPointsStatus.valueOf(deal.getMerchantOrderStatus()).equals(payPointsStatus)) {
+                deal.setMerchantOrderStatus(payPointsStatus.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "PayPoints обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + payPointsStatus.getDisplayName() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateOnlyPaysStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalOnlyPaysStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            GetStatusResponse getStatusResponse = onlyPaysMerchantService.statusRequest(deal.getMerchantOrderId());
+            if (!getStatusResponse.isSuccess()) {
+                log.warn("Не удалось получить статус для сделки {}, ответ неуспешен: {}", deal.getPid(), getStatusResponse);
+                continue;
+            }
+            OnlyPaysStatus onlyPaysStatus = getStatusResponse.getData().getStatus();
+            if (!OnlyPaysStatus.valueOf(deal.getMerchantOrderStatus()).equals(onlyPaysStatus)) {
+                deal.setMerchantOrderStatus(onlyPaysStatus.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "OnlyPays обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + onlyPaysStatus.getDescription() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 }
