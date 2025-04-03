@@ -151,8 +151,13 @@ public class CalculateService {
     }
 
     private boolean isEnteredInCrypto(CryptoCurrency cryptoCurrency, BigDecimal enteredAmount) {
-        return !CryptoCurrency.BITCOIN.equals(cryptoCurrency)
-                || enteredAmount.compareTo(variablePropertiesReader.getBigDecimal(VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey())) < 0;
+        String key = switch (cryptoCurrency) {
+            case BITCOIN -> VariableType.DEAL_BTC_MAX_ENTERED_SUM.getKey();
+            case LITECOIN -> VariableType.DEAL_LTC_MAX_ENTERED_SUM.getKey();
+            case USDT -> VariableType.DEAL_USDT_MAX_ENTERED_SUM.getKey();
+            case MONERO -> VariableType.DEAL_XMR_MAX_ENTERED_SUM.getKey();
+        };
+        return enteredAmount.compareTo(variablePropertiesReader.getBigDecimal(key)) < 0;
     }
 
     private void calculateCryptoAmount(DealAmount dealAmount, CalculateData calculateData, FiatCurrency fiatCurrency, CryptoCurrency cryptoCurrency, boolean withCredited) {
