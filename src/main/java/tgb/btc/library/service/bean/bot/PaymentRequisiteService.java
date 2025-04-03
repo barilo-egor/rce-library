@@ -145,7 +145,9 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
             }
             if (Objects.nonNull(requisiteVO)) break;
             try {
-                Thread.sleep(attemptsDelay * 1000L);
+                if (i < attemptsCount - 1) {
+                    Thread.sleep(attemptsDelay * 1000L);
+                }
             } catch (InterruptedException ignored) {
             }
         }
