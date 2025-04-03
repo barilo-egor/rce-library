@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -125,34 +127,52 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
-        RequisiteVO requisiteVO = null;
+
         List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
         int attemptsCount = variablePropertiesReader.getInt(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS, 1);
         int attemptsDelay = variablePropertiesReader.getInt(VariableType.DELAY_MERCHANT_ATTEMPTS, 3);
-        for (int i = 0; i < attemptsCount; i++) {
-            for (String merchantName : merchants) {
-                try {
-                    Merchant merchant = Merchant.valueOf(merchantName);
-                    Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
-                    if (deal.getAmount().longValue() > maxAmount) {
-                        continue;
+
+        try (ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()) {
+            CompletableFuture<RequisiteVO> future = new CompletableFuture<>();
+            AtomicInteger attempt = new AtomicInteger(0);
+
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    if (attempt.incrementAndGet() > attemptsCount) {
+                        future.complete(RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build());
+                        return;
                     }
-                    requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
-                    if (Objects.nonNull(requisiteVO)) break;
-                } catch (Exception e) {
-                    log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
+
+                    for (String merchantName : merchants) {
+                        try {
+                            Merchant merchant = Merchant.valueOf(merchantName);
+                            Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
+                            if (deal.getAmount().longValue() > maxAmount) {
+                                continue;
+                            }
+                            RequisiteVO requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
+                            if (Objects.nonNull(requisiteVO)) {
+                                future.complete(requisiteVO);
+                                return;
+                            }
+                        } catch (Exception e) {
+                            log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
+                        }
+                    }
+                    scheduler.schedule(this, attemptsDelay, TimeUnit.SECONDS);
                 }
-            }
-            if (Objects.nonNull(requisiteVO)) break;
+            };
+
+            scheduler.schedule(task, 0, TimeUnit.SECONDS);
             try {
-                Thread.sleep(attemptsDelay * 1000L);
-            } catch (InterruptedException ignored) {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Ошибка при выполнении попыток получения реквизитов", e);
+                Thread.currentThread().interrupt();
+                return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
             }
         }
-        if (Objects.isNull(requisiteVO)) {
-            requisiteVO =  RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
-        }
-        return requisiteVO;
     }
 
     @Override
