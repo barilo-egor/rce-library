@@ -5,6 +5,7 @@ import lombok.Getter;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
@@ -21,7 +22,8 @@ public enum Merchant {
     ALFA_TEAM_ALFA(VariableType.ALFA_TEAM_ALFA_BOUND, "AlfaTeam ALFA", true),
     ALFA_TEAM_SBER(VariableType.ALFA_TEAM_SBER_BOUND, "AlfaTeam SBER", true),
     PAY_POINTS(VariableType.PAY_POINTS_BOUND, "Paypoints", false),
-    ONLY_PAYS(VariableType.ONLY_PAYS_BOUND, "OnlyPays", false)
+    ONLY_PAYS(VariableType.ONLY_PAYS_BOUND, "OnlyPays", false),
+    EVO_PAY(VariableType)
     ;
 
     private final VariableType maxAmount;
@@ -37,6 +39,7 @@ public enum Merchant {
             case ALFA_TEAM, ALFA_TEAM_TJS, ALFA_TEAM_VTB, ALFA_TEAM_ALFA, ALFA_TEAM_SBER -> InvoiceStatus.valueOf(statusName).getDescription();
             case PAY_POINTS -> PayPointsStatus.valueOf(statusName).getDisplayName();
             case ONLY_PAYS -> OnlyPaysStatus.valueOf(statusName).getDescription();
+            case EVO_PAY -> EvoPayStatus.valueOf(statusName).getDescription();
             default -> null;
         };
     }
