@@ -125,68 +125,53 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
-            return RequisiteVO.builder()
-                    .merchant(Merchant.NONE)
-                    .requisite(getRequisite(deal.getPaymentType()))
-                    .build();
+            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
 
         List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
         int attemptsCount = variablePropertiesReader.getInt(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS, 1);
         int attemptsDelay = variablePropertiesReader.getInt(VariableType.DELAY_MERCHANT_ATTEMPTS, 3);
 
-        CompletableFuture<RequisiteVO> future = new CompletableFuture<>();
-        AtomicInteger attempt = new AtomicInteger(0);
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        try (ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()) {
+            CompletableFuture<RequisiteVO> future = new CompletableFuture<>();
+            AtomicInteger attempt = new AtomicInteger(0);
 
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                if (attempt.incrementAndGet() > attemptsCount) {
-                    future.complete(RequisiteVO.builder()
-                            .merchant(Merchant.NONE)
-                            .requisite(getRequisite(deal.getPaymentType()))
-                            .build());
-                    scheduler.shutdown();
-                    return;
-                }
-
-                for (String merchantName : merchants) {
-                    try {
-                        Merchant merchant = Merchant.valueOf(merchantName);
-                        Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
-                        if (deal.getAmount().longValue() > maxAmount) {
-                            continue;
-                        }
-                        RequisiteVO requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
-                        if (Objects.nonNull(requisiteVO)) {
-                            future.complete(requisiteVO);
-                            scheduler.shutdown();
-                            return;
-                        }
-                    } catch (Exception e) {
-                        log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    if (attempt.incrementAndGet() > attemptsCount) {
+                        future.complete(RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build());
+                        return;
                     }
-                }
 
-                if (!future.isDone()) {
+                    for (String merchantName : merchants) {
+                        try {
+                            Merchant merchant = Merchant.valueOf(merchantName);
+                            Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
+                            if (deal.getAmount().longValue() > maxAmount) {
+                                continue;
+                            }
+                            RequisiteVO requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
+                            if (Objects.nonNull(requisiteVO)) {
+                                future.complete(requisiteVO);
+                                return;
+                            }
+                        } catch (Exception e) {
+                            log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
+                        }
+                    }
                     scheduler.schedule(this, attemptsDelay, TimeUnit.SECONDS);
                 }
+            };
+
+            scheduler.schedule(task, 0, TimeUnit.SECONDS);
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Ошибка при выполнении попыток получения реквизитов", e);
+                Thread.currentThread().interrupt();
+                return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
             }
-        };
-
-        scheduler.schedule(task, 0, TimeUnit.SECONDS);
-
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Ошибка при выполнении попыток получения реквизитов", e);
-            Thread.currentThread().interrupt();
-            scheduler.shutdown();
-            return RequisiteVO.builder()
-                    .merchant(Merchant.NONE)
-                    .requisite(getRequisite(deal.getPaymentType()))
-                    .build();
         }
     }
 
