@@ -7,6 +7,7 @@ import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
+import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayPaymentMethod;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysPaymentType;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsMethod;
 
@@ -69,6 +70,9 @@ public class PaymentType extends BasePersist {
 
     @Enumerated(value = EnumType.STRING)
     private OnlyPaysPaymentType onlyPaysPaymentType;
+
+    @Enumerated(value = EnumType.STRING)
+    private EvoPayPaymentMethod evoPayPaymentMethod;
 
     public Boolean getOn() {
         return isOn;
