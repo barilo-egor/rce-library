@@ -8,6 +8,7 @@ import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
+import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
@@ -20,6 +21,7 @@ import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
 import tgb.btc.library.vo.web.merchant.evopay.OrderResponse;
+import tgb.btc.library.vo.web.merchant.nicepay.GetOrderResponse;
 import tgb.btc.library.vo.web.merchant.onlypays.GetStatusResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.ListOrdersResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.Order;
@@ -202,17 +204,17 @@ public class UpdateStatusesService {
             return;
         }
         for (Deal deal: deals) {
-            GetStatusResponse getStatusResponse = onlyPaysMerchantService.statusRequest(deal.getMerchantOrderId());
-            if (!getStatusResponse.isSuccess()) {
-                log.warn("Не удалось получить статус для сделки {}, ответ неуспешен: {}", deal.getPid(), getStatusResponse);
+            GetOrderResponse getOrderResponse = nicePayMerchantService.getOrder(deal.getMerchantOrderId());
+            if (!"success".equals(getOrderResponse.getStatus())) {
+                log.warn("Не удалось получить статус для сделки {}, ответ неуспешен: {}", deal.getPid(), getOrderResponse);
                 continue;
             }
-            OnlyPaysStatus onlyPaysStatus = getStatusResponse.getData().getStatus();
-            if (!OnlyPaysStatus.valueOf(deal.getMerchantOrderStatus()).equals(onlyPaysStatus)) {
-                deal.setMerchantOrderStatus(onlyPaysStatus.name());
+            NicePayStatus nicePayStatus = getOrderResponse.getData().getStatus();
+            if (!NicePayStatus.valueOf(deal.getMerchantOrderStatus()).equals(nicePayStatus)) {
+                deal.setMerchantOrderStatus(nicePayStatus.name());
                 modifyDealRepository.save(deal);
-                notifier.merchantUpdateStatus(deal.getPid(), "OnlyPays обновил статус по сделке №" + deal.getPid()
-                        + " до \"" + onlyPaysStatus.getDescription() + "\".");
+                notifier.merchantUpdateStatus(deal.getPid(), "NicePay обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + nicePayStatus.getDescription() + "\".");
             }
             try {
                 Thread.sleep(200);

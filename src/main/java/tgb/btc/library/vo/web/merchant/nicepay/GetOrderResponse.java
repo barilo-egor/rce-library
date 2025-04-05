@@ -9,6 +9,8 @@ public class GetOrderResponse {
 
     private String status;
 
+    private Data data;
+
     @lombok.Data
     public static class Data {
 
