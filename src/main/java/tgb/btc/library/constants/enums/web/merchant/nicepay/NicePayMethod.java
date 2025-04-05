@@ -11,7 +11,8 @@ import java.io.IOException;
 @AllArgsConstructor
 @Getter
 public enum NicePayMethod {
-    SBP("sbp_rub", "СБП");
+    SBP("sbp_rub", "СБП"),
+    CARD("any_bank_card", "Карта");
 
     private final String value;
 
