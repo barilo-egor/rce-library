@@ -7,15 +7,18 @@ import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
+import tgb.btc.library.service.web.merchant.evopay.EvoPayMerchantService;
 import tgb.btc.library.service.web.merchant.onlypays.OnlyPaysMerchantService;
 import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
+import tgb.btc.library.vo.web.merchant.evopay.OrderResponse;
 import tgb.btc.library.vo.web.merchant.onlypays.GetStatusResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.ListOrdersResponse;
 import tgb.btc.library.vo.web.merchant.payscrow.Order;
@@ -42,10 +45,12 @@ public class UpdateStatusesService {
 
     private final OnlyPaysMerchantService onlyPaysMerchantService;
 
+    private final EvoPayMerchantService evoPayMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
                                  PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
-                                 OnlyPaysMerchantService onlyPaysMerchantService) {
+                                 OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
@@ -53,6 +58,7 @@ public class UpdateStatusesService {
         this.payscrowMerchantService = payscrowMerchantService;
         this.payPointsMerchantService = payPointsMerchantService;
         this.onlyPaysMerchantService = onlyPaysMerchantService;
+        this.evoPayMerchantService = evoPayMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -156,6 +162,29 @@ public class UpdateStatusesService {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateEvoPayStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalOnlyPaysStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        List<OrderResponse> orderResponses = evoPayMerchantService.getOrders(EvoPayStatus.NOT_FINAL_STATUSES);
+        for (OrderResponse orderResponse : orderResponses) {
+            for (Deal deal: deals) {
+                if (orderResponse.getId().equals(deal.getMerchantOrderId())) {
+                    EvoPayStatus status = orderResponse.getOrderStatus();
+                    if (Objects.nonNull(status) && !Objects.equals(status, EvoPayStatus.valueOf(deal.getMerchantOrderStatus()))) {
+                        deal.setMerchantOrderStatus(status.name());
+                        modifyDealRepository.save(deal);
+                        notifier.merchantUpdateStatus(deal.getPid(), "EvoPay обновил статус по сделке №" + deal.getPid()
+                                + " до \"" + status.getDescription() + "\".");
+                    }
+                }
             }
         }
     }

@@ -43,5 +43,7 @@ public interface IReadDealService extends IBasePersistService<Deal> {
 
     List<Deal> getAllNotFinalOnlyPaysStatuses();
 
+    List<Deal> getAllNotFinalEvoPayStatuses();
+
     Deal getByAlfaTeamInvoiceId(String alfaTeamInvoiceId);
 }
