@@ -11,6 +11,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
+import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
@@ -117,6 +118,15 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
         return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
                 Merchant.EVO_PAY,
                 EvoPayStatus.NOT_FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalNicePayStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.NICE_PAY,
+                NicePayStatus.NOT_FINAL_STATUSES.stream().map(Enum::name).toList(),
                 LocalDateTime.now().minusMinutes(30)
         );
     }

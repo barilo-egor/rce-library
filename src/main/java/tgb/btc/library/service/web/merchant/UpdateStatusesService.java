@@ -14,6 +14,7 @@ import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
 import tgb.btc.library.service.web.merchant.evopay.EvoPayMerchantService;
+import tgb.btc.library.service.web.merchant.nicepay.NicePayMerchantService;
 import tgb.btc.library.service.web.merchant.onlypays.OnlyPaysMerchantService;
 import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
@@ -47,10 +48,13 @@ public class UpdateStatusesService {
 
     private final EvoPayMerchantService evoPayMerchantService;
 
+    private final NicePayMerchantService nicePayMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
                                  PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
-                                 OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService) {
+                                 OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService,
+                                 NicePayMerchantService nicePayMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
@@ -59,6 +63,7 @@ public class UpdateStatusesService {
         this.payPointsMerchantService = payPointsMerchantService;
         this.onlyPaysMerchantService = onlyPaysMerchantService;
         this.evoPayMerchantService = evoPayMerchantService;
+        this.nicePayMerchantService = nicePayMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -189,5 +194,30 @@ public class UpdateStatusesService {
         }
     }
 
-
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateNicePayStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalNicePayStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            GetStatusResponse getStatusResponse = onlyPaysMerchantService.statusRequest(deal.getMerchantOrderId());
+            if (!getStatusResponse.isSuccess()) {
+                log.warn("Не удалось получить статус для сделки {}, ответ неуспешен: {}", deal.getPid(), getStatusResponse);
+                continue;
+            }
+            OnlyPaysStatus onlyPaysStatus = getStatusResponse.getData().getStatus();
+            if (!OnlyPaysStatus.valueOf(deal.getMerchantOrderStatus()).equals(onlyPaysStatus)) {
+                deal.setMerchantOrderStatus(onlyPaysStatus.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "OnlyPays обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + onlyPaysStatus.getDescription() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
 }
