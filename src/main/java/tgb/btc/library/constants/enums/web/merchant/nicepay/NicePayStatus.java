@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -28,6 +29,11 @@ public enum NicePayStatus {
     private final int status;
 
     private final String description;
+
+    public static List<NicePayStatus> NOT_FINAL_STATUSES = List.of(
+            CREATED, SEARCHING_DETAILS_1, SEARCHING_DETAILS_2, AWAITING_PAYMENT, AWAITING_CONFIRMATION, UNDER_MODERATION,
+            AWAITING_PROOF
+    );
 
     public static NicePayStatus fromStatus(int status) {
         for (NicePayStatus nicePayStatus: NicePayStatus.values()) {
