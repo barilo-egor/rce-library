@@ -44,7 +44,7 @@ public enum Merchant {
             case ONLY_PAYS -> OnlyPaysStatus.valueOf(statusName).getDescription();
             case EVO_PAY -> EvoPayStatus.valueOf(statusName).getDescription();
             case NICE_PAY -> NicePayStatus.valueOf(statusName).getDescription();
-            case HONEY_MONEY ->
+            case HONEY_MONEY -> null; // TODO
             default -> null;
         };
     }
