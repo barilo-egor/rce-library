@@ -23,7 +23,7 @@ public enum Merchant {
     ALFA_TEAM_SBER(VariableType.ALFA_TEAM_SBER_BOUND, "AlfaTeam SBER", true),
     PAY_POINTS(VariableType.PAY_POINTS_BOUND, "Paypoints", false),
     ONLY_PAYS(VariableType.ONLY_PAYS_BOUND, "OnlyPays", false),
-    EVO_PAY(VariableType)
+    EVO_PAY(VariableType.EVO_PAY_BOUND, "EvoPay", false)
     ;
 
     private final VariableType maxAmount;
