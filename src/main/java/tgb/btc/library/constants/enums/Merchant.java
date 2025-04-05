@@ -25,7 +25,8 @@ public enum Merchant {
     PAY_POINTS(VariableType.PAY_POINTS_BOUND, "Paypoints", false),
     ONLY_PAYS(VariableType.ONLY_PAYS_BOUND, "OnlyPays", false),
     EVO_PAY(VariableType.EVO_PAY_BOUND, "EvoPay", false),
-    NICE_PAY(VariableType.NICE_PAY_BOUND, "NicePay", false)
+    NICE_PAY(VariableType.NICE_PAY_BOUND, "NicePay", false),
+    HONEY_MONEY(VariableType.HONEY_MONEY_BOUND, "HoneyMoney", false)
     ;
 
     private final VariableType maxAmount;
@@ -43,6 +44,7 @@ public enum Merchant {
             case ONLY_PAYS -> OnlyPaysStatus.valueOf(statusName).getDescription();
             case EVO_PAY -> EvoPayStatus.valueOf(statusName).getDescription();
             case NICE_PAY -> NicePayStatus.valueOf(statusName).getDescription();
+            case HONEY_MONEY ->
             default -> null;
         };
     }
