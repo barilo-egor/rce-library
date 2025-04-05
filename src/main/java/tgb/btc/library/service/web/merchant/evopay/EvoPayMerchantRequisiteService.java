@@ -28,7 +28,7 @@ public class EvoPayMerchantRequisiteService implements IMerchantRequisiteService
         }
         OrderResponse orderResponse = evoPayMerchantService.createOrder(deal);
         try {
-            Thread.sleep(4000);
+            Thread.sleep(5000);
         } catch (InterruptedException ignored) {
         }
         orderResponse = evoPayMerchantService.getOrder(orderResponse.getId());
