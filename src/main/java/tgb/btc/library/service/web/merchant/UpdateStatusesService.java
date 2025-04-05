@@ -169,7 +169,7 @@ public class UpdateStatusesService {
     @Scheduled(cron = "*/5 * * * * *")
     @Async
     public void updateEvoPayStatuses() {
-        List<Deal> deals = readDealService.getAllNotFinalOnlyPaysStatuses();
+        List<Deal> deals = readDealService.getAllNotFinalEvoPayStatuses();
         if (Objects.isNull(deals) || deals.isEmpty()) {
             return;
         }
@@ -188,4 +188,6 @@ public class UpdateStatusesService {
             }
         }
     }
+
+
 }
