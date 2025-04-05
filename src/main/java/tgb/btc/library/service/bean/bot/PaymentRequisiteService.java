@@ -137,6 +137,10 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
                     if (deal.getAmount().longValue() > maxAmount) {
                         continue;
                     }
+                    int merchantAttemptsCount = variablePropertiesReader.getInteger(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS.getKey() + "." + merchant.name(), attemptsCount);
+                    if (merchantAttemptsCount < i + 1) {
+                        continue;
+                    }
                     requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
                     if (Objects.nonNull(requisiteVO)) break;
                 } catch (Exception e) {
