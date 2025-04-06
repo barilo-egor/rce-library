@@ -30,12 +30,12 @@ public class NicePayMerchantRequisiteService implements IMerchantRequisiteServic
         if (Objects.isNull(createOrderResponse.getData().getSubMethod()) || Objects.isNull(createOrderResponse.getData().getDetails())) {
             return null;
         }
-        deal.setMerchantOrderStatus(createOrderResponse.getStatus().name());
-        deal.setMerchantOrderId(createOrderResponse.getData().getPaymentId());
-        deal.setMerchant(Merchant.NICE_PAY);
         RequisiteVO requisiteVO = new RequisiteVO();
         requisiteVO.setRequisite(createOrderResponse.getData().getSubMethod().getNames().getRu() + " " + createOrderResponse.getData().getDetails().getWallet());
         requisiteVO.setMerchant(Merchant.NICE_PAY);
+        deal.setMerchantOrderStatus(createOrderResponse. getData().getStatus().name());
+        deal.setMerchantOrderId(createOrderResponse.getData().getPaymentId());
+        deal.setMerchant(Merchant.NICE_PAY);
         return requisiteVO;
     }
 
