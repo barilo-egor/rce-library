@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
+import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayMethod;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.vo.web.merchant.nicepay.CreateOrderRequest;
@@ -54,7 +55,12 @@ public class NicePayMerchantService implements IMerchantService {
         createOrderRequest.setOrderId(botName + deal.getPid());
         createOrderRequest.setAmount(deal.getAmount().multiply(new BigDecimal(100)).intValue());
         createOrderRequest.setCustomer(deal.getUser().getChatId().toString());
-        createOrderRequest.setMethod(deal.getPaymentType().getNicePayMethod());
+        NicePayMethod nicePayMethod = deal.getPaymentType().getNicePayMethod();
+        createOrderRequest.setMethod(nicePayMethod);
+        switch (nicePayMethod) {
+            case SBP_RU -> createOrderRequest.setMethodSBP("onlyRU");
+            case SBP_TRANSGRAN -> createOrderRequest.setMethodSBP("onlyINT");
+        }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
         HttpEntity<CreateOrderRequest> httpEntity = new HttpEntity<>(createOrderRequest, httpHeaders);
