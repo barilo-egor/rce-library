@@ -25,4 +25,6 @@ public class CreateOrderRequest {
 
     @JsonSerialize(using = NicePayMethod.Serializer.class)
     private NicePayMethod method;
+
+    private String methodSBP;
 }

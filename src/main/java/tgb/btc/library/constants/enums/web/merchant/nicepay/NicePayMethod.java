@@ -12,7 +12,10 @@ import java.io.IOException;
 @Getter
 public enum NicePayMethod {
     SBP("sbp_rub", "СБП"),
-    CARD("any_bank_card", "Карта");
+    CARD("any_bank_card", "Карта"),
+    SBP_RU("sbp_rub", "СБП РФ"),
+    SBP_TRANSGRAN("sbp_rub", "СБП Трансгран")
+    ;
 
     private final String value;
 
