@@ -33,7 +33,7 @@ public class NicePayMerchantRequisiteService implements IMerchantRequisiteServic
         RequisiteVO requisiteVO = new RequisiteVO();
         requisiteVO.setRequisite(createOrderResponse.getData().getSubMethod().getNames().getRu() + " " + createOrderResponse.getData().getDetails().getWallet());
         requisiteVO.setMerchant(Merchant.NICE_PAY);
-        deal.setMerchantOrderStatus(createOrderResponse.getStatus().name());
+        deal.setMerchantOrderStatus(createOrderResponse. getData().getStatus().name());
         deal.setMerchantOrderId(createOrderResponse.getData().getPaymentId());
         deal.setMerchant(Merchant.NICE_PAY);
         return requisiteVO;
