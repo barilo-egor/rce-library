@@ -132,8 +132,8 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     }
 
     @Override
-    public Deal getByAlfaTeamInvoiceId(String alfaTeamInvoiceId) {
-        return readDealRepository.getByMerchantOrderId(alfaTeamInvoiceId);
+    public Deal getByMerchantOrderId(String merchantOrderId) {
+        return readDealRepository.getByMerchantOrderId(merchantOrderId);
     }
 
     @Override
