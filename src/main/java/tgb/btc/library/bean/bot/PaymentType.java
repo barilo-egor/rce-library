@@ -10,6 +10,7 @@ import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayPaymentMethod;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayMethod;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysPaymentType;
+import tgb.btc.library.constants.enums.web.merchant.payfinity.PayFinityOrderType;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsMethod;
 
 import java.math.BigDecimal;
@@ -77,6 +78,9 @@ public class PaymentType extends BasePersist {
 
     @Enumerated(value = EnumType.STRING)
     private NicePayMethod nicePayMethod;
+
+    @Enumerated(value = EnumType.STRING)
+    private PayFinityOrderType payFinityOrderType;
 
     public Boolean getOn() {
         return isOn;

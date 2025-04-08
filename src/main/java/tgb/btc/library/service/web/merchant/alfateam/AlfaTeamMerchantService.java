@@ -142,7 +142,7 @@ public class AlfaTeamMerchantService implements IMerchantService {
     }
 
     public void updateStatus(InvoiceNotification invoiceNotification) {
-        Deal deal = readDealService.getByAlfaTeamInvoiceId(invoiceNotification.getInvoice().getId());
+        Deal deal = readDealService.getByMerchantOrderId(invoiceNotification.getInvoice().getId());
         if (Objects.isNull(deal)) return;
         InvoiceStatus status = invoiceNotification.getInvoice().getStatus();
         deal.setMerchantOrderStatus(status.name());

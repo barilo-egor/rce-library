@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
+import tgb.btc.library.constants.enums.web.merchant.payfinity.PayFinityStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
 
@@ -26,7 +27,8 @@ public enum Merchant {
     ONLY_PAYS(VariableType.ONLY_PAYS_BOUND, "OnlyPays", false),
     EVO_PAY(VariableType.EVO_PAY_BOUND, "EvoPay", false),
     NICE_PAY(VariableType.NICE_PAY_BOUND, "NicePay", false),
-    HONEY_MONEY(VariableType.HONEY_MONEY_BOUND, "HoneyMoney", false)
+    HONEY_MONEY(VariableType.HONEY_MONEY_BOUND, "HoneyMoney", false),
+    PAY_FINITY(VariableType.PAY_FINITY_BOUND, "PayFinity", false)
     ;
 
     private final VariableType maxAmount;
@@ -45,6 +47,7 @@ public enum Merchant {
             case EVO_PAY -> EvoPayStatus.valueOf(statusName).getDescription();
             case NICE_PAY -> NicePayStatus.valueOf(statusName).getDescription();
             case HONEY_MONEY -> null; // TODO
+            case PAY_FINITY -> PayFinityStatus.valueOf(statusName).getDescription();
             default -> null;
         };
     }

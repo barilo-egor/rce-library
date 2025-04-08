@@ -40,6 +40,7 @@ public enum VariableType {
     EVO_PAY_BOUND("Максимальная сумма для EvoPay", "evopay.bound.amount"),
     NICE_PAY_BOUND("Максимальная сумма для NicePay", "nicepay.bound.amount"),
     HONEY_MONEY_BOUND("Максимальная сумма для HoneyMoney", "honeymoney.bound.amount"),
+    PAY_FINITY_BOUND("Максимальная сумма для PayFinity", "payfinity.bound.amount"),
     MERCHANT_LIST("Список мерчантов", "merchant.list"),
     REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),
     NUMBER_OF_MERCHANT_ATTEMPTS("Количество попыток получения реквизитов мерчанта", "merchant.attempts.number"),
