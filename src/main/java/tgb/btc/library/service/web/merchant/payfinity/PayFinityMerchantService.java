@@ -38,7 +38,11 @@ public class PayFinityMerchantService implements IMerchantService {
 
     private final String getTransactionUrl;
 
+    private final String getTransactionEndUrl;
+
     private final String createTransactionUrl;
+
+    private final String createTransactionEndUrl;
 
     private final RestTemplate restTemplate;
 
@@ -61,8 +65,10 @@ public class PayFinityMerchantService implements IMerchantService {
                                     ModifyDealRepository modifyDealRepository, INotifier notifier) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
-        this.createTransactionUrl = url + "/payment";
-        this.getTransactionUrl = url + "/account/transaction";
+        this.createTransactionEndUrl = "/api/v1/payment";
+        this.createTransactionUrl = url + createTransactionEndUrl;
+        this.getTransactionEndUrl = "/api/v1/account/transaction";
+        this.getTransactionUrl = url + getTransactionEndUrl;
         this.restTemplate = restTemplate;
         this.botName = botName;
         this.callbackUrl = mainUrl + "/merchant/payfinity";
@@ -115,9 +121,10 @@ public class PayFinityMerchantService implements IMerchantService {
         createOrderRequest.setClientId(botName + deal.getPid());
         createOrderRequest.setCurrency("RUB");
         createOrderRequest.setCallbackUrl(callbackUrl);
+        createOrderRequest.setAmount(deal.getAmount().toPlainString());
         String body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(createOrderRequest);
         long expires = System.currentTimeMillis() + 300000L;
-        HttpEntity<String> httpEntity = new HttpEntity<>(body, getHeaders(expires, "POST", createTransactionUrl, null, body));
+        HttpEntity<String> httpEntity = new HttpEntity<>(body, getHeaders(expires, "POST", createTransactionEndUrl, null, body));
         ResponseEntity<CreateOrderResponse> response = restTemplate.exchange(createTransactionUrl, HttpMethod.POST, httpEntity, CreateOrderResponse.class);
         if (Objects.isNull(response.getBody())) {
             throw new BaseException("Тело ответа при создании транзакции пустое.");
@@ -128,7 +135,7 @@ public class PayFinityMerchantService implements IMerchantService {
     public PayFinityStatus getStatus(String trackerId) throws Exception {
         String params = "trackerId=" + trackerId;
         long expires = System.currentTimeMillis() + 300000L;
-        HttpHeaders httpHeaders = getHeaders(expires, "GET", getTransactionUrl, params, null);
+        HttpHeaders httpHeaders = getHeaders(expires, "GET", getTransactionEndUrl, params, null);
         HttpEntity<Object> httpEntity = new HttpEntity<>(httpHeaders);
         ResponseEntity<GetTransactionResponse> response =
                 restTemplate.exchange(getTransactionUrl + "?" + params, HttpMethod.GET, httpEntity, GetTransactionResponse.class);
@@ -144,7 +151,7 @@ public class PayFinityMerchantService implements IMerchantService {
         httpHeaders.add("Public-Key", publicKey);
         String exp = String.valueOf(expires);
         httpHeaders.add("Expires", exp);
-        httpHeaders.add("Signature", getSign(method, url, params, body, exp));
+        httpHeaders.add("Signature", getSign(method, params, url, body, exp));
         return httpHeaders;
     }
 

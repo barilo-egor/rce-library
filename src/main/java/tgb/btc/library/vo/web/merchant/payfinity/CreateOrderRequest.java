@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class CreateOrderRequest {
 
+    private String amount;
+
     private String bank;
 
     private String callbackUrl;
