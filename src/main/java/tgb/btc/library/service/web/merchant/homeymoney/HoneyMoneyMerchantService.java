@@ -9,6 +9,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
+import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.vo.web.merchant.honeymoney.CreateCardOrderRequest;
@@ -60,13 +61,25 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         }
     }
 
-    public CreateCardOrderResponse createRequest(Deal deal, String bank) {
+    public void createOrder(Deal deal) {
+        HoneyMoneyMethod honeyMoneyMethod = deal.getPaymentType().getHoneyMoneyMethod();
+        switch (honeyMoneyMethod) {
+            case CARD -> createRequest(
+                    botName + deal.getPid(),
+                    deal.getAmount().intValue(),
+                    deal.getUser().getChatId().toString(),
+                    honeyMoneyMethod.getBank()
+            );
+        }
+    }
+
+    public CreateCardOrderResponse createRequest(String extId, Integer amount, String clientId, String bank) {
         CreateCardOrderRequest createCardOrderRequest = new CreateCardOrderRequest();
-        createCardOrderRequest.setAmount(deal.getAmount().intValue());
+        createCardOrderRequest.setAmount(amount);
         CreateCardOrderRequest.ClientDetails clientDetails = new CreateCardOrderRequest.ClientDetails();
-        clientDetails.setClientId(deal.getUser().getChatId().toString());
+        clientDetails.setClientId(clientId);
         createCardOrderRequest.setClientDetails(clientDetails);
-        createCardOrderRequest.setExtId(botName + deal.getPid());
+        createCardOrderRequest.setExtId(extId);
         createCardOrderRequest.setBank(bank);
         return null;
     }
