@@ -3,13 +3,15 @@ package tgb.btc.library.vo.web.merchant.honeymoney;
 import lombok.Data;
 
 @Data
-public class CreateCardOrderRequest {
+public class CreateOrderRequest {
 
     private String extId;
 
     private final String currency = "RUB";
 
     private Integer amount;
+
+    private String callbackUrl;
 
     private String bank;
 

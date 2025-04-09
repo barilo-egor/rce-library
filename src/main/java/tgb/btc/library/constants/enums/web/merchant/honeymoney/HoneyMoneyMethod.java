@@ -6,8 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum HoneyMoneyMethod {
-    CARD("Карта", "bank"),
-    SBP("СБП", "bank"),
+    CARD("Карта", null),
+    SBP("СБП", null),
+    CROSS_BORDER("Трансгран", null),
     SBER_ACCOUNT("Сбер номер счета", "bank");
 
     private final String description;
