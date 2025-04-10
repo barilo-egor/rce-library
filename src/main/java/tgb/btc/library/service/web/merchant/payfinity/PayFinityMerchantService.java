@@ -71,8 +71,8 @@ public class PayFinityMerchantService implements IMerchantService {
         this.getTransactionEndUrl = "/api/v1/account/transaction";
         this.getTransactionUrl = url + getTransactionEndUrl;
         SimpleClientHttpRequestFactory simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-        simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(4));
-        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(6));
+        simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(2));
+        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(3));
         this.restTemplate = new RestTemplate(simpleClientHttpRequestFactory);
         this.botName = botName;
         this.callbackUrl = mainUrl + "/merchant/payfinity";
