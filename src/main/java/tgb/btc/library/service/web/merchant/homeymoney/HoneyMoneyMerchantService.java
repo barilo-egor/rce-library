@@ -61,8 +61,8 @@ public class HoneyMoneyMerchantService implements IMerchantService {
                                      @Value("${honeymoney.api.token.request.url:null}") String tokenRequestUrl,
                                      @Value("${honeymoney.api.clientid:null}") String clientId,
                                      @Value("${bot.name}") String botName,
-                                     @Value("${honeymoney.api.signKey}") String signKey,
-                                     @Value("${honeymoney.api.token}") String apiToken) {
+                                     @Value("${honeymoney.api.signKey:null}") String signKey,
+                                     @Value("${honeymoney.api.token:null}") String apiToken) {
         this.restTemplate = restTemplate;
         this.tokenRequestUrl = tokenRequestUrl;
         TokenRequest tokenRequest = new TokenRequest();
