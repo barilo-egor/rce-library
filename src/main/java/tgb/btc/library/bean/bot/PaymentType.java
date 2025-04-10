@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayPaymentMethod;
+import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayMethod;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysPaymentType;
 import tgb.btc.library.constants.enums.web.merchant.payfinity.PayFinityOrderType;
@@ -81,6 +82,9 @@ public class PaymentType extends BasePersist {
 
     @Enumerated(value = EnumType.STRING)
     private PayFinityOrderType payFinityOrderType;
+
+    @Enumerated(value = EnumType.STRING)
+    private HoneyMoneyMethod honeyMoneyMethod;
 
     public Boolean getOn() {
         return isOn;
