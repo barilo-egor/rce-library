@@ -5,6 +5,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.api.web.INotifier;
@@ -27,6 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Objects;
 
 @Service
@@ -60,8 +62,7 @@ public class PayFinityMerchantService implements IMerchantService {
                                     @Value("${payfinity.api.key.public:null}") String publicKey,
                                     @Value("${payfinity.api.key.private:null}") String privateKey,
                                     @Value("${bot.name}") String botName,
-                                    @Value("${main.url:null}") String mainUrl,
-                                    RestTemplate restTemplate, IReadDealService readDealService,
+                                    @Value("${main.url:null}") String mainUrl,IReadDealService readDealService,
                                     ModifyDealRepository modifyDealRepository, INotifier notifier) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
@@ -69,7 +70,10 @@ public class PayFinityMerchantService implements IMerchantService {
         this.createTransactionUrl = url + createTransactionEndUrl;
         this.getTransactionEndUrl = "/api/v1/account/transaction";
         this.getTransactionUrl = url + getTransactionEndUrl;
-        this.restTemplate = restTemplate;
+        SimpleClientHttpRequestFactory simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+        simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(4));
+        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(6));
+        this.restTemplate = new RestTemplate(simpleClientHttpRequestFactory);
         this.botName = botName;
         this.callbackUrl = mainUrl + "/merchant/payfinity";
         this.readDealService = readDealService;
