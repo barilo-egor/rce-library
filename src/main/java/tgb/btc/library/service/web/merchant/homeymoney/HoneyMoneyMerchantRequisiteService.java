@@ -1,7 +1,6 @@
 package tgb.btc.library.service.web.merchant.homeymoney;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
@@ -23,7 +22,6 @@ public class HoneyMoneyMerchantRequisiteService implements IMerchantRequisiteSer
     }
 
     @Override
-    @Transactional
     public RequisiteVO getRequisite(Deal deal) {
         if (Objects.isNull(deal.getPaymentType().getHoneyMoneyMethod())) {
             return null;
