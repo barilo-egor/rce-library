@@ -61,6 +61,7 @@ public class PayFinityMerchantService implements IMerchantService {
     public PayFinityMerchantService(@Value("${payfinity.api.url:null}") String url,
                                     @Value("${payfinity.api.key.public:null}") String publicKey,
                                     @Value("${payfinity.api.key.private:null}") String privateKey,
+                                    @Value("${payfinity.api.request.timeout:15}") Integer timeout,
                                     @Value("${bot.name}") String botName,
                                     @Value("${main.url:null}") String mainUrl,IReadDealService readDealService,
                                     ModifyDealRepository modifyDealRepository, INotifier notifier) {
@@ -72,7 +73,7 @@ public class PayFinityMerchantService implements IMerchantService {
         this.getTransactionUrl = url + getTransactionEndUrl;
         SimpleClientHttpRequestFactory simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
         simpleClientHttpRequestFactory.setConnectTimeout(Duration.ofSeconds(2));
-        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(3));
+        simpleClientHttpRequestFactory.setReadTimeout(Duration.ofSeconds(timeout));
         this.restTemplate = new RestTemplate(simpleClientHttpRequestFactory);
         this.botName = botName;
         this.callbackUrl = mainUrl + "/merchant/payfinity";
