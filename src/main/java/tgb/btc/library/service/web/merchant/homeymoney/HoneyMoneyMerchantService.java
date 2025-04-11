@@ -123,6 +123,7 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         }
         httpHeaders.add("Authorization", tokenResponse.getTokenType() + " " + tokenResponse.getAccessToken());
         httpHeaders.add("X-Signature", signature);
+        httpHeaders.add("Content-Type", "application/json");
         HttpEntity<String> httpEntity = new HttpEntity<>(body, httpHeaders);
         ResponseEntity<CreateOrderResponse> response;
         try {
