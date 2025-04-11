@@ -1,6 +1,9 @@
 package tgb.btc.library.service.web.merchant.homeymoney;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,12 +24,9 @@ import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.honeymoney.*;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -103,7 +103,7 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         }
     }
 
-    public CreateOrderResponse createRequest(Deal deal) throws JsonProcessingException {
+    public CreateOrderResponse createRequest(Deal deal) throws JsonProcessingException, URISyntaxException {
         HoneyMoneyMethod honeyMoneyMethod = deal.getPaymentType().getHoneyMoneyMethod();
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         createOrderRequest.setAmount(deal.getAmount().intValue());
@@ -115,7 +115,7 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         createOrderRequest.setCallbackUrl(callbackUrl);
         String body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(createOrderRequest);
         String requestPath = requestsPaths.get(honeyMoneyMethod);
-        String signature = generateSignature(body, requestPath);
+        String signature = generateSignature(body, new URI(baseUrl + requestPath));
         HttpHeaders httpHeaders = new HttpHeaders();
 
         if (Objects.isNull(tokenResponse)) {
@@ -138,19 +138,13 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         return response.getBody();
     }
 
-    public String generateSignature(String requestBody, String requestPath) {
-        try {
-            String dataToSign = requestBody + requestPath;
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKey = new SecretKeySpec(signKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            mac.init(secretKey);
-            byte[] hmacBytes = mac.doFinal(dataToSign.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hmacBytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("HMAC SHA-256 algorithm not available", e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException("Invalid key for HMAC SHA-256", e);
-        }
+    public String generateSignature(String requestJson, URI url) {
+        String signatureString = requestJson + url.getPath() +
+                (url.getQuery() != null ? url.getQuery() : "");
+
+        HmacUtils hmacUtils = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, signKey.getBytes(StandardCharsets.UTF_8));
+        byte[] hmacSha256 = hmacUtils.hmac(signatureString.getBytes(StandardCharsets.UTF_8));
+        return Hex.encodeHexString(hmacSha256);
     }
 
     public void updateStatus(TransactionCallback transactionCallback) {
