@@ -10,16 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
+import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
-import tgb.btc.library.vo.web.merchant.honeymoney.CreateOrderRequest;
-import tgb.btc.library.vo.web.merchant.honeymoney.CreateOrderResponse;
-import tgb.btc.library.vo.web.merchant.honeymoney.TokenRequest;
-import tgb.btc.library.vo.web.merchant.honeymoney.TokenResponse;
+import tgb.btc.library.vo.web.merchant.honeymoney.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -54,6 +54,12 @@ public class HoneyMoneyMerchantService implements IMerchantService {
 
     private final String callbackUrl;
 
+    private final IReadDealService readDealService;
+
+    private final ModifyDealRepository modifyDealRepository;
+
+    private final INotifier notifier;
+
     public HoneyMoneyMerchantService(RestTemplate restTemplate,
                                      @Value("${main.url:null}") String mainUrl,
                                      @Value("${honeymoney.api.base.url:null}") String baseUrl,
@@ -62,9 +68,14 @@ public class HoneyMoneyMerchantService implements IMerchantService {
                                      @Value("${honeymoney.api.clientid:null}") String clientId,
                                      @Value("${bot.name}") String botName,
                                      @Value("${honeymoney.api.signKey:null}") String signKey,
-                                     @Value("${honeymoney.api.token:null}") String apiToken) {
+                                     @Value("${honeymoney.api.token:null}") String apiToken,
+                                     IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
+                                     INotifier notifier) {
         this.restTemplate = restTemplate;
         this.tokenRequestUrl = tokenRequestUrl;
+        this.readDealService = readDealService;
+        this.modifyDealRepository = modifyDealRepository;
+        this.notifier = notifier;
         TokenRequest tokenRequest = new TokenRequest();
         tokenRequest.setClientId(clientId);
         tokenRequest.setClientSecret(secret);
@@ -138,6 +149,16 @@ public class HoneyMoneyMerchantService implements IMerchantService {
             throw new RuntimeException("HMAC SHA-256 algorithm not available", e);
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Invalid key for HMAC SHA-256", e);
+        }
+    }
+
+    public void updateStatus(TransactionCallback transactionCallback) {
+        Deal deal = readDealService.getByMerchantOrderId(transactionCallback.getOrderId());
+        if (Objects.nonNull(deal)) {
+            deal.setMerchantOrderStatus(transactionCallback.getStatus().name());
+            modifyDealRepository.save(deal);
+            notifier.merchantUpdateStatus(deal.getPid(), "HoneyMoney обновил статус по сделке №" + deal.getPid()
+                    + " до \"" + transactionCallback.getStatus().getDescription() + "\".");
         }
     }
 
