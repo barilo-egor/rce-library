@@ -1,11 +1,11 @@
 package tgb.btc.library.service.web.merchant.nicepay;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
@@ -17,6 +17,7 @@ import tgb.btc.library.vo.web.merchant.nicepay.CreateOrderResponse;
 import tgb.btc.library.vo.web.merchant.nicepay.GetOrderRequest;
 import tgb.btc.library.vo.web.merchant.nicepay.GetOrderResponse;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -35,6 +36,8 @@ public class NicePayMerchantService implements IMerchantService {
 
     private final String getUrl;
 
+    private final String proofUrl;
+
     public NicePayMerchantService(@Value("${nicepay.api.merchantid:null}") String merchantId,
                                   @Value("${nicepay.api.secret:null}") String secret,
                                   @Value("${bot.name}") String botName,
@@ -46,6 +49,7 @@ public class NicePayMerchantService implements IMerchantService {
         this.restTemplate = restTemplate;
         this.createUrl = baseUrl + "/h2hOneRequestPayment";
         this.getUrl = baseUrl + "/h2hPaymentInfo";
+        this.proofUrl = baseUrl + "/h2hUploadProof";
     }
 
     public CreateOrderResponse createOrder(Deal deal) {
@@ -84,6 +88,19 @@ public class NicePayMerchantService implements IMerchantService {
             throw new BaseException("Тело ответа при получении реквизитов пустое.");
         }
         return response.getBody();
+    }
+
+    public void uploadCheck(File file, String paymentId) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("merchant_id", merchantId);
+        body.add("secret", secret);
+        body.add("payment", paymentId);
+        body.add("proof", new FileSystemResource(file));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        restTemplate.postForObject(proofUrl, requestEntity, String.class);
     }
 
     @Override
