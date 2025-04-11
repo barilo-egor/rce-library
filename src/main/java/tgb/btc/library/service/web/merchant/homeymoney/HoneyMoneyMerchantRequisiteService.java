@@ -6,6 +6,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
 import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyStatus;
+import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.honeymoney.CreateOrderResponse;
@@ -42,7 +43,7 @@ public class HoneyMoneyMerchantRequisiteService implements IMerchantRequisiteSer
             deal.setMerchantOrderStatus(HoneyMoneyStatus.PENDING.name());
             return requisiteVO;
         } catch (Exception e) {
-            return null;
+            throw new BaseException(e);
         }
     }
 
