@@ -50,8 +50,6 @@ public class HoneyMoneyMerchantService implements IMerchantService {
 
     private final String signKey;
 
-    private final String apiToken;
-
     private final String callbackUrl;
 
     private final IReadDealService readDealService;
@@ -62,13 +60,12 @@ public class HoneyMoneyMerchantService implements IMerchantService {
 
     public HoneyMoneyMerchantService(RestTemplate restTemplate,
                                      @Value("${main.url:null}") String mainUrl,
-                                     @Value("${honeymoney.api.base.url:null}") String baseUrl,
-                                     @Value("${honeymoney.api.secret:null}") String secret,
-                                     @Value("${honeymoney.api.token.request.url:null}") String tokenRequestUrl,
-                                     @Value("${honeymoney.api.clientid:null}") String clientId,
+                                     @Value("${honeyMoney.api.url.main:null}") String baseUrl,
+                                     @Value("${honeyMoney.api.url.token:null}") String tokenRequestUrl,
+                                     @Value("${honeyMoney.api.secret:null}") String secret,
+                                     @Value("${honeyMoney.api.clientId:null}") String clientId,
+                                     @Value("${honeyMoney.api.signKey:null}") String signKey,
                                      @Value("${bot.name}") String botName,
-                                     @Value("${honeymoney.api.signKey:null}") String signKey,
-                                     @Value("${honeymoney.api.token:null}") String apiToken,
                                      IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                      INotifier notifier) {
         this.restTemplate = restTemplate;
@@ -88,7 +85,6 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         requestsPaths.put(HoneyMoneyMethod.CROSS_BORDER, "/v2/merchant/transactions/cross-border");
         this.botName = botName;
         this.signKey = signKey;
-        this.apiToken = apiToken;
         this.baseUrl = baseUrl;
         this.callbackUrl = mainUrl + "/merchant/honeymoney";
     }
