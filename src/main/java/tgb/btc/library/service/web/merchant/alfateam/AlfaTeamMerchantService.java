@@ -58,15 +58,15 @@ public class AlfaTeamMerchantService implements IMerchantService {
     private final Map<Merchant, String> apiKeys;
 
     public AlfaTeamMerchantService(RestTemplate restTemplate, @Value("${main.url:null}") String mainUrl,
-                                   @Value("${alfateam.api.notification.token:null}") String alfaTeamNotificationToken,
+                                   @Value("${alfaTeam.api.notification.token:null}") String alfaTeamNotificationToken,
+                                   @Value("${alfaTeam.api.key.base:null}") String apiKey,
+                                   @Value("${alfaTeam.api.key.tjs:null}") String tjsApiKey,
+                                   @Value("${alfaTeam.api.key.vtb:null}") String vtbApiKey,
+                                   @Value("${alfaTeam.api.key.alfa:null}") String alfaApiKey,
+                                   @Value("${alfaTeam.api.key.sber:null}") String sberApiKey,
+                                   @Value("${alfaTeam.api.secret:null}") String apiSecret,
+                                   @Value("${alfaTeam.api.url.main:null}") String apiMainUrl, IReadDealService readDealService,
                                    @Value("${bot.name:null}") String botName,
-                                   @Value ("${alfateam.api.key.base:null}") String apiKey,
-                                   @Value ("${alfateam.api.key.tjs:null}") String tjsApiKey,
-                                   @Value ("${alfateam.api.key.vtb:null}") String vtbApiKey,
-                                   @Value ("${alfateam.api.key.alfa:null}") String alfaApiKey,
-                                   @Value ("${alfateam.api.key.sber:null}") String sberApiKey,
-                                   @Value ("${alfateam.api.secret:null}") String apiSecret,
-                                   @Value("${alfateam.api.url.main:null}") String apiMainUrl, IReadDealService readDealService,
                                    INotifier notifier, ModifyDealRepository modifyDealRepository) {
         this.mainUrl = mainUrl;
         this.notificationUrl = mainUrl + "/merchant/alfateam";
