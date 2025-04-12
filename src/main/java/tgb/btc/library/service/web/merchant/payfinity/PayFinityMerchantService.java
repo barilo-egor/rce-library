@@ -58,10 +58,10 @@ public class PayFinityMerchantService implements IMerchantService {
 
     private final INotifier notifier;
 
-    public PayFinityMerchantService(@Value("${payfinity.api.url:null}") String url,
-                                    @Value("${payfinity.api.key.public:null}") String publicKey,
-                                    @Value("${payfinity.api.key.private:null}") String privateKey,
-                                    @Value("${payfinity.api.request.timeout:15}") Integer timeout,
+    public PayFinityMerchantService(@Value("${payFinity.api.url:null}") String url,
+                                    @Value("${payFinity.api.key.public:null}") String publicKey,
+                                    @Value("${payFinity.api.key.private:null}") String privateKey,
+                                    @Value("${payFinity.api.timeout:15}") Integer timeout,
                                     @Value("${bot.name}") String botName,
                                     @Value("${main.url:null}") String mainUrl,IReadDealService readDealService,
                                     ModifyDealRepository modifyDealRepository, INotifier notifier) {
