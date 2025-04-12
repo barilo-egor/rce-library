@@ -37,13 +37,10 @@ public class PayscrowMerchantService implements IMerchantService {
 
     private final Map<String, String> PAYMENT_METHODS_IDS;
 
-    @Value("${payscrow.api.key}")
     private String apiKey;
 
-    @Value("${payscrow.api.secret}")
     private String apiSecret;
 
-    @Value("${bot.name}")
     private String botName;
 
     private final RestTemplate restTemplate;
@@ -64,7 +61,14 @@ public class PayscrowMerchantService implements IMerchantService {
 
     private final String listOrderUrl;
 
-    public PayscrowMerchantService(RestTemplate restTemplate, @Value("${payscrow.api.domain}") String domain) {
+    public PayscrowMerchantService(RestTemplate restTemplate,
+                                   @Value("${payscrow.api.domain}") String domain,
+                                   @Value("${payscrow.api.key}") String apiKey,
+                                   @Value("${payscrow.api.secret}") String apiSecret,
+                                   @Value("${bot.name}") String botName) {
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.botName = botName;
         this.restTemplate = restTemplate;
         this.paymentMethodsUrl = domain + relativePaymentMethodsUrl;
         this.createOrderUrl = domain + relativeCreateOrderUrl;
