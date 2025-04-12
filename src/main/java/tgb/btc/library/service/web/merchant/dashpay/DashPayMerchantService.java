@@ -42,8 +42,9 @@ public class DashPayMerchantService implements IMerchantService {
     private final String ordersUrl;
 
     public DashPayMerchantService(RestTemplate restTemplate, @Value("${dashpay.api.key:null}") String apiKey,
-                                  @Value("${dashpay.api.basic.token:null}") String basicToken,
-                                  @Value("${bot.name:null}") String botName, @Value("${dashpay.api.url.client:null}") String clientUrl,
+                                  @Value("${dashpay.api.basicToken:null}") String basicToken,
+                                  @Value("${bot.name:null}") String botName,
+                                  @Value("${dashpay.api.url.client:null}") String clientUrl,
                                   @Value("${dashpay.api.url.main:null}") String mainUrl) {
         this.restTemplate = restTemplate;
         this.apiKey = apiKey;
