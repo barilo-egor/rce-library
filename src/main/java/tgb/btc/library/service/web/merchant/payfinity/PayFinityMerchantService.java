@@ -123,7 +123,7 @@ public class PayFinityMerchantService implements IMerchantService {
         PayFinityOrderType payFinityOrderType = deal.getPaymentType().getPayFinityOrderType();
         createOrderRequest.setBank(payFinityOrderType.getBank());
         createOrderRequest.setType(payFinityOrderType.getType());
-        createOrderRequest.setClientId(botName + deal.getPid());
+        createOrderRequest.setClientId(botName + deal.getPid() + "_" + System.currentTimeMillis());
         createOrderRequest.setCurrency("RUB");
         createOrderRequest.setCallbackUrl(callbackUrl);
         createOrderRequest.setAmount(deal.getAmount().toPlainString());
