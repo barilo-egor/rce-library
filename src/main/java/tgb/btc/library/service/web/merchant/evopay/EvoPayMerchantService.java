@@ -33,8 +33,8 @@ public class EvoPayMerchantService implements IMerchantService {
 
     private final HttpHeaders httpHeaders;
 
-    public EvoPayMerchantService(@Value("${evopay.api.key:null}") String apiKey,
-                                 @Value("${evopay.api.url:null}") String baseUrl,
+    public EvoPayMerchantService(@Value("${evoPay.api.key:null}") String apiKey,
+                                 @Value("${evoPay.api.url:null}") String baseUrl,
                                  @Value("${bot.name}") String botName, RestTemplate restTemplate) {
         this.botName = botName;
         this.restTemplate = restTemplate;
