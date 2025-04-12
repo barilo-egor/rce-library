@@ -28,7 +28,8 @@ public enum Merchant {
     EVO_PAY(VariableType.EVO_PAY_BOUND, "EvoPay", false),
     NICE_PAY(VariableType.NICE_PAY_BOUND, "NicePay", false),
     HONEY_MONEY(VariableType.HONEY_MONEY_BOUND, "HoneyMoney", false),
-    PAY_FINITY(VariableType.PAY_FINITY_BOUND, "PayFinity", false)
+    PAY_FINITY(VariableType.PAY_FINITY_BOUND, "PayFinity", false),
+    WELL_BIT(VariableType.WELL_BIT_BOUND, "WellBit", false)
     ;
 
     private final VariableType maxAmount;
