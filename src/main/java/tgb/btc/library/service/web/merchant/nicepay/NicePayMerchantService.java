@@ -38,10 +38,10 @@ public class NicePayMerchantService implements IMerchantService {
 
     private final String proofUrl;
 
-    public NicePayMerchantService(@Value("${nicepay.api.merchantid:null}") String merchantId,
-                                  @Value("${nicepay.api.secret:null}") String secret,
+    public NicePayMerchantService(@Value("${nicePay.api.merchantId:null}") String merchantId,
+                                  @Value("${nicePay.api.secret:null}") String secret,
+                                  @Value("${nicePay.api.url:null}") String baseUrl,
                                   @Value("${bot.name}") String botName,
-                                  @Value("${nicepay.api.url:null}") String baseUrl,
                                   RestTemplate restTemplate) {
         this.merchantId = merchantId;
         this.secret = secret;
