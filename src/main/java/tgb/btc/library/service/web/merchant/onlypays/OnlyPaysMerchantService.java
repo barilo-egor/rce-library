@@ -36,8 +36,9 @@ public class OnlyPaysMerchantService implements IMerchantService {
 
     private final IBigDecimalService bigDecimalService;
 
-    public OnlyPaysMerchantService(@Value("${onlypays.api.url:null}") String baseUrl,
-                                   @Value("${onlypays.secret.key}") String apiSecret, @Value("${onlypays.api.id}") String apiId,
+    public OnlyPaysMerchantService(@Value("${onlyPays.api.url:null}") String baseUrl,
+                                   @Value("${onlyPays.api.secret:null}") String apiSecret,
+                                   @Value("${onlyPays.api.id:null}") String apiId,
                                    @Value("${bot.name}") String botName,
                                    RestTemplate restTemplate, IBigDecimalService bigDecimalService) {
         this.getRequisiteUrl = baseUrl + "/get_requisite";
