@@ -41,7 +41,8 @@ public class BackupService {
             tempBackupFile = File.createTempFile(backupFileName, ".sql");
 
             // Команда для создания бэкапа базы данных
-            String backupCommand = String.format("mysqldump -h mysql -u%s -p%s %s --result-file=%s",
+            String hostArgument = "rce".equals(databaseName) ? "" : " -h mysql";
+            String backupCommand = String.format("mysqldump" + hostArgument + " -u%s -p%s %s --result-file=%s",
                     userDB, passwordDB, databaseName, tempBackupFile.getAbsolutePath());
 
             // Запускаем команду mysqldump
