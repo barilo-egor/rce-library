@@ -26,7 +26,7 @@ public class BackupService {
     @Value("${spring.datasource.password}")
     private String passwordDB;
 
-    @Value("{database.name")
+    @Value("${database.name}")
     private String databaseName;
 
     @Async
