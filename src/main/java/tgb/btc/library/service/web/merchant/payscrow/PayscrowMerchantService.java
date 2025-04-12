@@ -37,11 +37,11 @@ public class PayscrowMerchantService implements IMerchantService {
 
     private final Map<String, String> PAYMENT_METHODS_IDS;
 
-    private String apiKey;
+    private final String apiKey;
 
-    private String apiSecret;
+    private final String apiSecret;
 
-    private String botName;
+    private final String botName;
 
     private final RestTemplate restTemplate;
 
