@@ -26,10 +26,12 @@ public class BackupService {
     @Value("${spring.datasource.password}")
     private String passwordDB;
 
+    @Value("{database.name")
+    private String databaseName;
+
     @Async
     public void backup(Consumer<File> consumer) {
         log.info("Запуск процесса резервного копирования");
-        final String database = "rce";
         File tempBackupFile = null;
         File splitDirectory = null;
 
@@ -39,8 +41,8 @@ public class BackupService {
             tempBackupFile = File.createTempFile(backupFileName, ".sql");
 
             // Команда для создания бэкапа базы данных
-            String backupCommand = String.format("mysqldump -u%s -p%s %s --result-file=%s",
-                    userDB, passwordDB, database, tempBackupFile.getAbsolutePath());
+            String backupCommand = String.format("mysqldump -h mysql -u%s -p%s %s --result-file=%s",
+                    userDB, passwordDB, databaseName, tempBackupFile.getAbsolutePath());
 
             // Запускаем команду mysqldump
             Process backupProcess = Runtime.getRuntime().exec(backupCommand);
@@ -48,6 +50,7 @@ public class BackupService {
 
             // Проверка на успешное завершение бэкапа
             if (backupProcess.exitValue() != 0) {
+                log.error("Ошибка бэкапа: exitValue={}", backupProcess.exitValue());
                 throw new BackupException("Ошибка выполнения mysqldump");
             }
 
