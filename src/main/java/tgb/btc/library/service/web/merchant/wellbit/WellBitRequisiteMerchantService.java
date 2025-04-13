@@ -36,7 +36,7 @@ public class WellBitRequisiteMerchantService implements IMerchantRequisiteServic
         deal.setMerchant(getMerchant());
         deal.setMerchantOrderStatus(WellBitStatus.NEW.name());
         deal.setMerchantOrderId(order.getPayment().getId().toString());
-        return null;
+        return requisiteVO;
     }
 
     @Override
