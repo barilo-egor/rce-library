@@ -11,10 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.BankCard;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.CurrencyType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.FeeType;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderSide;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
@@ -27,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -101,34 +96,6 @@ public class PayscrowMerchantService implements IMerchantService {
         return PAYMENT_METHODS_IDS;
     }
 
-    public List<PaymentMethod> getPaymentMethods() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("X-API-Key", this.apiKey);
-        PaymentMethodsFilter paymentMethodsFilter = new PaymentMethodsFilter();
-        paymentMethodsFilter.setAvailableOnly(true);
-        paymentMethodsFilter.setType(BankCard.BANK_CARD);
-        paymentMethodsFilter.setFiatName("RUB");
-        String body;
-        try {
-            body = JacksonUtil.DEFAULT_OBJECT_MAPPER.writeValueAsString(paymentMethodsFilter);
-        } catch (JsonProcessingException e) {
-            throw new BaseException("Ошибка при парсинге значений фильтра в тело.");
-        }
-        headers.add("X-API-Sign", getSign(relativePaymentMethodsUrl, body));
-        HttpEntity<String> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<ListPaymentMethodsResponse> response = restTemplate.exchange(
-                paymentMethodsUrl,
-                HttpMethod.POST,
-                entity,
-                ListPaymentMethodsResponse.class
-        );
-        if (Objects.isNull(response.getBody())) {
-            throw new BaseException("Тело ответа при получении списка методов оплаты пустое.");
-        }
-        return response.getBody().getPaymentMethods();
-    }
-
     public String getSign(String url, String body) {
         try {
             // Создаем экземпляр MessageDigest для SHA-256
@@ -162,11 +129,8 @@ public class PayscrowMerchantService implements IMerchantService {
         log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
         PayscrowOrderRequest request = PayscrowOrderRequest.builder()
                 .externalOrderId(botName + deal.getPid().toString())
-                .orderSide(OrderSide.BUY)
                 .basePaymentMethodId(deal.getPaymentType().getPayscrowPaymentMethodId())
                 .targetAmount(deal.getAmount())
-                .feeType(FeeType.CHARGE_MERCHANT)
-                .currencyType(CurrencyType.FIAT)
                 .currency(deal.getFiatCurrency().name())
                 .build();
         HttpHeaders headers = getDefaultHeaders();
@@ -217,7 +181,6 @@ public class PayscrowMerchantService implements IMerchantService {
         LocalDateTime now = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime();
         LocalDateTime from = now.minusMinutes(30);
         ListOrdersRequest listOrdersRequest = ListOrdersRequest.builder()
-                .orderSide(OrderSide.BUY)
                 .from(from)
                 .to(now)
                 .build();

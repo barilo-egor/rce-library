@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
-import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderType;
 
 @Data
 @AllArgsConstructor
@@ -16,8 +15,7 @@ public class CreateOrderRequest {
 
     private String id;
 
-    @JsonSerialize(using = OrderType.Serializer.class)
-    private OrderType type;
+    private String type = "deposit";
 
     @JsonSerialize(using = OrderMethod.Serializer.class)
     private OrderMethod method;
