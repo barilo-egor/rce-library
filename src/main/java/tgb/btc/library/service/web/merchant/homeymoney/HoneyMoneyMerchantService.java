@@ -83,6 +83,7 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         requestsPaths.put(HoneyMoneyMethod.CARD, "/v2/merchant/transactions");
         requestsPaths.put(HoneyMoneyMethod.SBP, "/v2/merchant/transactions/sbp");
         requestsPaths.put(HoneyMoneyMethod.CROSS_BORDER, "/v2/merchant/transactions/cross-border");
+        requestsPaths.put(HoneyMoneyMethod.SBER_ACCOUNT, "/v2/merchant/transactions/account");
         this.botName = botName;
         this.signKey = signKey;
         this.baseUrl = baseUrl;
