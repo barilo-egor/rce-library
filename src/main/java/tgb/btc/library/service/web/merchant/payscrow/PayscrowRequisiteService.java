@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
-import tgb.btc.library.constants.enums.web.merchant.payscrow.PaymentMethodType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
@@ -54,7 +53,7 @@ public class PayscrowRequisiteService implements IMerchantRequisiteService {
     private static String buildRequisiteString(PayscrowOrderResponse payscrowOrderResponse) {
         String result;
         String holderAccount = payscrowOrderResponse.getHolderAccount();
-        if (PaymentMethodType.BANK_CARD.equals(payscrowOrderResponse.getPaymentMethodType())) {
+        if ("BankCard".equals(payscrowOrderResponse.getPaymentMethodType())) {
             StringBuilder card = new StringBuilder();
             for (int i = 0; i < holderAccount.length(); i++) {
                 card.append(holderAccount.charAt(i));

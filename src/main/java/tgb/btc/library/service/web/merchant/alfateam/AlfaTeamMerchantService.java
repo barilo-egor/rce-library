@@ -12,7 +12,6 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.DirectionType;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.exception.BaseException;
@@ -88,7 +87,6 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     public CreateInvoiceResponse createInvoice(Deal deal, Merchant merchant) throws Exception {
         CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
-                .type(DirectionType.IN)
                 .amount(deal.getAmount().toString())
                 .currency(FiatCurrency.RUB.name())
                 .notificationUrl(notificationUrl)
@@ -103,7 +101,6 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     public CreateInvoiceResponse createTJSInvoice(Deal deal, Merchant merchant) throws Exception {
         CreateInvoiceRequest createInvoiceRequest = CreateInvoiceRequest.builder()
-                .type(DirectionType.IN)
                 .amount(deal.getAmount().toString())
                 .currency(FiatCurrency.RUB.name())
                 .notificationUrl(notificationUrl)

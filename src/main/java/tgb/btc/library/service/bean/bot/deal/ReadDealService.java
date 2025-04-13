@@ -15,6 +15,7 @@ import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.payscrow.OrderStatus;
+import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.deal.ReadDealRepository;
@@ -127,6 +128,15 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
         return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
                 Merchant.NICE_PAY,
                 NicePayStatus.NOT_FINAL_STATUSES.stream().map(Enum::name).toList(),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalWellBitStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.WELL_BIT,
+                List.of(WellBitStatus.NEW.name()),
                 LocalDateTime.now().minusMinutes(30)
         );
     }

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tgb.btc.library.constants.enums.web.merchant.alfateam.DirectionType;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 
 @Data
@@ -14,8 +13,7 @@ import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 @Builder
 public class CreateInvoiceRequest {
 
-    @JsonSerialize(using = DirectionType.Serializer.class)
-    private DirectionType type;
+    private String type = "in";
 
     private String amount;
 

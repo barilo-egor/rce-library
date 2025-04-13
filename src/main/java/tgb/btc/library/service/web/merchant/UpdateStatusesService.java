@@ -11,6 +11,7 @@ import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
+import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
@@ -19,6 +20,7 @@ import tgb.btc.library.service.web.merchant.nicepay.NicePayMerchantService;
 import tgb.btc.library.service.web.merchant.onlypays.OnlyPaysMerchantService;
 import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
+import tgb.btc.library.service.web.merchant.wellbit.WellBitMerchantService;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
 import tgb.btc.library.vo.web.merchant.evopay.OrderResponse;
 import tgb.btc.library.vo.web.merchant.nicepay.GetOrderResponse;
@@ -52,11 +54,13 @@ public class UpdateStatusesService {
 
     private final NicePayMerchantService nicePayMerchantService;
 
+    private final WellBitMerchantService wellBitMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
                                  PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
                                  OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService,
-                                 NicePayMerchantService nicePayMerchantService) {
+                                 NicePayMerchantService nicePayMerchantService, WellBitMerchantService wellBitMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
@@ -66,6 +70,7 @@ public class UpdateStatusesService {
         this.onlyPaysMerchantService = onlyPaysMerchantService;
         this.evoPayMerchantService = evoPayMerchantService;
         this.nicePayMerchantService = nicePayMerchantService;
+        this.wellBitMerchantService = wellBitMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -215,6 +220,32 @@ public class UpdateStatusesService {
                 modifyDealRepository.save(deal);
                 notifier.merchantUpdateStatus(deal.getPid(), "NicePay обновил статус по сделке №" + deal.getPid()
                         + " до \"" + nicePayStatus.getDescription() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateWellBitStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalWellBitStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            WellBitStatus wellBitStatus = wellBitMerchantService.getStatus(deal.getMerchantOrderId());
+            if (Objects.isNull(wellBitStatus)) {
+                log.warn("Не удалось получить статус для сделки {}", deal.getPid());
+                continue;
+            }
+            if (!WellBitStatus.valueOf(deal.getMerchantOrderStatus()).equals(wellBitStatus)) {
+                deal.setMerchantOrderStatus(wellBitStatus.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "WellBit обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + wellBitStatus.getDescription() + "\".");
             }
             try {
                 Thread.sleep(200);
