@@ -22,15 +22,11 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
 @Slf4j
 public class PayscrowMerchantService implements IMerchantService {
-
-    private final Map<String, String> PAYMENT_METHODS_IDS;
 
     private final String apiKey;
 
@@ -40,8 +36,6 @@ public class PayscrowMerchantService implements IMerchantService {
 
     private final RestTemplate restTemplate;
 
-    private final String relativePaymentMethodsUrl = "/api/v1/Misc/ListPaymentMethods";
-
     private final String relativeCreateOrderUrl = "/api/v1/Orders/Create";
 
     private final String relativeCancelOrderUrl = "/api/v1/Orders/Cancel";
@@ -49,8 +43,6 @@ public class PayscrowMerchantService implements IMerchantService {
     private final String relativeListOrderUrl = "/api/v1/Orders/List";
 
     private final String cancelOrderUrl;
-
-    private final String paymentMethodsUrl;
 
     private final String createOrderUrl;
 
@@ -65,35 +57,9 @@ public class PayscrowMerchantService implements IMerchantService {
         this.apiSecret = apiSecret;
         this.botName = botName;
         this.restTemplate = restTemplate;
-        this.paymentMethodsUrl = domain + relativePaymentMethodsUrl;
         this.createOrderUrl = domain + relativeCreateOrderUrl;
         this.cancelOrderUrl = domain + relativeCancelOrderUrl;
         this.listOrderUrl = domain + relativeListOrderUrl;
-        this.PAYMENT_METHODS_IDS = new LinkedHashMap<>();
-        PAYMENT_METHODS_IDS.put("Альфа-Банк", "4f591bcc-29f8-4598-9828-5b109a25b509");
-        PAYMENT_METHODS_IDS.put("Сбербанк", "af3daf65-b6b6-450b-b28d-54b97436ef4a");
-        PAYMENT_METHODS_IDS.put("Тинькофф", "cd797fcb-5b5a-47a3-8b54-35f5f7000344");
-        PAYMENT_METHODS_IDS.put("Любой банк РФ", "b11d98ad-1e09-4e63-8c4a-f1d8a4b9ce3f");
-        PAYMENT_METHODS_IDS.put("СБП Тинькофф", "33c6fe18-641d-41f5-a3fc-db975c63fe6f");
-        PAYMENT_METHODS_IDS.put("СБП Альфа-Банк", "8880d5b5-2c82-4cef-8f94-b7d5d2cbefe1");
-        PAYMENT_METHODS_IDS.put("СБП Сбербанк", "a6636989-0bd9-4cf1-8ec3-83c07b08f25f");
-        PAYMENT_METHODS_IDS.put("СБП", "894387d7-b8b6-4dab-82ee-dd1106f7369e");
-        PAYMENT_METHODS_IDS.put("ВТБ-ВТБ Карта", "cae62b5b-4146-4674-acbc-c5f9b67e6aa1");
-        PAYMENT_METHODS_IDS.put("ВТБ-ВТБ СБП", "9a92ec2d-92cd-40a8-aeb6-8c75bcd3c0cd");
-        PAYMENT_METHODS_IDS.put("Трансграничный СБП", "b46146af-e597-4409-b24c-43a53b16f026");
-    }
-
-    public String getPaymentMethodName(String methodId) {
-        for (Map.Entry<String, String> entry : PAYMENT_METHODS_IDS.entrySet()) {
-            if (methodId.equals(entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
-    public Map<String, String> getPaymentMethodsIds() {
-        return PAYMENT_METHODS_IDS;
     }
 
     public String getSign(String url, String body) {
