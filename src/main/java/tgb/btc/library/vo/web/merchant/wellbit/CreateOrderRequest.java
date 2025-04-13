@@ -23,8 +23,14 @@ public class CreateOrderRequest {
     private String customNumber;
 
     @JsonProperty("client_ip")
-    private String clientIp;
+    private final String clientIp = "-";
 
     @JsonProperty("client_email")
-    private String email;
+    private final String clientEmail = "-";
+
+    @JsonProperty("card_from_number")
+    private final String cardFromNumber = "-";
+
+    @JsonProperty("card_from_fio")
+    private final String cardFromFio = "-";
 }
