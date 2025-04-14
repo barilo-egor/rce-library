@@ -1,10 +1,12 @@
 package tgb.btc.library.service.web.merchant.wellbit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitMethod;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
+import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.wellbit.Order;
@@ -26,7 +28,12 @@ public class WellBitRequisiteMerchantService implements IMerchantRequisiteServic
         if (Objects.isNull(wellBitMethod)) {
             return null;
         }
-        Order order = wellBitMerchantService.createOrder(deal);
+        Order order;
+        try {
+            order = wellBitMerchantService.createOrder(deal);
+        } catch (JsonProcessingException e) {
+            throw new BaseException(e);
+        }
         if (Objects.isNull(order)) {
             return null;
         }
