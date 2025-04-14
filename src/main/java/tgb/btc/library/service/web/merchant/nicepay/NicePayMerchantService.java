@@ -12,10 +12,7 @@ import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayMethod;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
-import tgb.btc.library.vo.web.merchant.nicepay.CreateOrderRequest;
-import tgb.btc.library.vo.web.merchant.nicepay.CreateOrderResponse;
-import tgb.btc.library.vo.web.merchant.nicepay.GetOrderRequest;
-import tgb.btc.library.vo.web.merchant.nicepay.GetOrderResponse;
+import tgb.btc.library.vo.web.merchant.nicepay.*;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -36,6 +33,8 @@ public class NicePayMerchantService implements IMerchantService {
 
     private final String getUrl;
 
+    private final String paidUrl;
+
     private final String proofUrl;
 
     public NicePayMerchantService(@Value("${nicePay.api.merchantId:null}") String merchantId,
@@ -50,6 +49,7 @@ public class NicePayMerchantService implements IMerchantService {
         this.createUrl = baseUrl + "/h2hOneRequestPayment";
         this.getUrl = baseUrl + "/h2hPaymentInfo";
         this.proofUrl = baseUrl + "/h2hUploadProof";
+        this.paidUrl = baseUrl + "/h2hConfirmPaid";
     }
 
     public CreateOrderResponse createOrder(Deal deal) {
@@ -88,6 +88,17 @@ public class NicePayMerchantService implements IMerchantService {
             throw new BaseException("Тело ответа при получении реквизитов пустое.");
         }
         return response.getBody();
+    }
+
+    public void paid(String id) {
+        PaidRequest paidRequest = new PaidRequest();
+        paidRequest.setSecret(secret);
+        paidRequest.setSecret(merchantId);
+        paidRequest.setPayment(id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        HttpEntity<PaidRequest> httpEntity = new HttpEntity<>(paidRequest, httpHeaders);
+        restTemplate.exchange(getUrl, HttpMethod.POST, httpEntity, String.class);
     }
 
     public void uploadCheck(File file, String paymentId) {
