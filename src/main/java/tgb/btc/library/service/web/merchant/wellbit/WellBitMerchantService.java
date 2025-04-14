@@ -1,5 +1,6 @@
 package tgb.btc.library.service.web.merchant.wellbit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,6 +16,7 @@ import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitMethod;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
+import tgb.btc.library.util.web.JacksonUtil;
 import tgb.btc.library.vo.web.merchant.wellbit.CreateOrderRequest;
 import tgb.btc.library.vo.web.merchant.wellbit.Order;
 
@@ -65,9 +67,10 @@ public class WellBitMerchantService implements IMerchantService {
         this.setPayUrl = url + "/api/payment/setpay";
     }
 
-    public Order createOrder(Deal deal) {
+    public Order createOrder(Deal deal) throws JsonProcessingException {
         WellBitMethod wellBitMethod = deal.getPaymentType().getWellBitMethod();
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
+        createOrderRequest.setCredentialRequire("yes");
         createOrderRequest.setAmount(deal.getAmount().intValue());
         createOrderRequest.setCredentialType(wellBitMethod.getValue());
         createOrderRequest.setCustomNumber(botName + deal.getPid() + "_" + System.currentTimeMillis());
@@ -75,20 +78,18 @@ public class WellBitMerchantService implements IMerchantService {
         httpHeaders.add("token", token);
         httpHeaders.add("secret", secret);
         HttpEntity<CreateOrderRequest> httpEntity = new HttpEntity<>(createOrderRequest, httpHeaders);
-        ParameterizedTypeReference<List<Order>> responseType = new ParameterizedTypeReference<>() {};
-        ResponseEntity<List<Order>> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 createOrderUrl,
                 HttpMethod.POST,
                 httpEntity,
-                responseType
+                String.class
         );
         if (Objects.isNull(response.getBody())) {
             throw new BaseException("Тело ответа при создании транзакции пустое.");
         }
-        if (response.getBody().isEmpty()) {
-            return null;
-        }
-        return response.getBody().get(0);
+        List<Order> orders = JacksonUtil.DEFAULT_OBJECT_MAPPER.readValue(response.getBody(),
+                JacksonUtil.DEFAULT_OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, Order.class));
+        return orders.get(0);
     }
 
     public WellBitStatus getStatus(String id) {
