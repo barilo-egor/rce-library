@@ -9,7 +9,7 @@ public enum HoneyMoneyMethod {
     CARD("Карта", null),
     SBP("СБП", null),
     CROSS_BORDER("Трансгран", null),
-    SBER_ACCOUNT("Сбер номер счета", "Сбер");
+    SBER_ACCOUNT("Сбер номер счета", "СберБанк");
 
     private final String description;
 
