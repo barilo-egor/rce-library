@@ -93,7 +93,7 @@ public class NicePayMerchantService implements IMerchantService {
     public void paid(String id) {
         PaidRequest paidRequest = new PaidRequest();
         paidRequest.setSecret(secret);
-        paidRequest.setSecret(merchantId);
+        paidRequest.setMerchantId(merchantId);
         paidRequest.setPayment(id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
