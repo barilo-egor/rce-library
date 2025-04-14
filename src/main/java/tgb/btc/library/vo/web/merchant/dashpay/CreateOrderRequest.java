@@ -15,7 +15,7 @@ public class CreateOrderRequest {
 
     private String id;
 
-    private String type = "deposit";
+    private final String type = "deposit";
 
     @JsonSerialize(using = OrderMethod.Serializer.class)
     private OrderMethod method;

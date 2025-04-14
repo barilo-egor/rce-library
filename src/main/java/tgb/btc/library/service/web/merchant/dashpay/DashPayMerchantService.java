@@ -57,12 +57,11 @@ public class DashPayMerchantService implements IMerchantService {
 
     public OrderResponse createOrder(Deal deal) {
         log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
-        CreateOrderRequest request = CreateOrderRequest.builder()
-                .id(botName + deal.getPid())
-                .method(deal.getPaymentType().getDashPayOrderMethod())
-                .sum(deal.getAmount().doubleValue())
-                .customer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build())
-                .build();
+        CreateOrderRequest request = new CreateOrderRequest();
+        request.setId(botName + deal.getPid());
+        request.setMethod(deal.getPaymentType().getDashPayOrderMethod());
+        request.setSum(deal.getAmount().doubleValue());
+        request.setCustomer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build());
 
         HttpHeaders headers = getHeaders(false);
         ObjectNode body = JacksonUtil.DEFAULT_OBJECT_MAPPER.createObjectNode();
