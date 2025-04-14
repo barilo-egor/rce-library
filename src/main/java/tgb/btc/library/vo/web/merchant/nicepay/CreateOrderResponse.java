@@ -40,6 +40,8 @@ public class CreateOrderResponse {
 
             private String wallet;
 
+            private String comment;
+
             @AllArgsConstructor
             @Getter
             public enum Type {

@@ -30,7 +30,7 @@ public enum NicePayStatus {
 
     private final String description;
 
-    public static List<NicePayStatus> NOT_FINAL_STATUSES = List.of(
+    public static final List<NicePayStatus> NOT_FINAL_STATUSES = List.of(
             CREATED, SEARCHING_DETAILS_1, SEARCHING_DETAILS_2, AWAITING_PAYMENT, AWAITING_CONFIRMATION, UNDER_MODERATION,
             AWAITING_PROOF
     );
