@@ -15,7 +15,7 @@ public class CreateOrderRequest {
 
     private String id;
 
-    private final String type = "deposit";
+    private String type;
 
     @JsonSerialize(using = OrderMethod.Serializer.class)
     private OrderMethod method;
@@ -23,6 +23,16 @@ public class CreateOrderRequest {
     private Double sum;
 
     private Customer customer;
+
+    private Bank bank;
+
+    @Data
+    public static class Bank {
+
+        private final String bank = "Empty";
+
+        private String requisites;
+    }
 
     @Builder
     @Data

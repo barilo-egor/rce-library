@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
+import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
@@ -61,7 +62,13 @@ public class DashPayMerchantService implements IMerchantService {
         request.setId(botName + deal.getPid());
         request.setMethod(deal.getPaymentType().getDashPayOrderMethod());
         request.setSum(deal.getAmount().doubleValue());
+        request.setType(DealType.isBuy(deal.getDealType()) ? "deposit" : "cash_out");
         request.setCustomer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build());
+        if (!DealType.isBuy(deal.getDealType())) {
+            CreateOrderRequest.Bank bank = new CreateOrderRequest.Bank();
+            bank.setRequisites(deal.getWallet());
+            request.setBank(bank);
+        }
 
         HttpHeaders headers = getHeaders(false);
         ObjectNode body = JacksonUtil.DEFAULT_OBJECT_MAPPER.createObjectNode();
