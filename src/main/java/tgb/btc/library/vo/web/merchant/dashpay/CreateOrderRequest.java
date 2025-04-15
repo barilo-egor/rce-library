@@ -29,7 +29,7 @@ public class CreateOrderRequest {
     @Data
     public static class Bank {
 
-        private final String bank = "Empty";
+        private final String name = "Empty";
 
         private String requisites;
     }
