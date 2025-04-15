@@ -70,7 +70,7 @@ public class DashPayMerchantService implements IMerchantService {
                 request.setMethod(OrderMethod.PHONE_NUMBER);
             }
         }
-        request.setSum(deal.getAmount().doubleValue());
+        request.setSum(Integer.valueOf(deal.getAmount().intValue()).doubleValue());
         request.setType(DealType.isBuy(deal.getDealType()) ? "deposit" : "cash_out");
         request.setCustomer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build());
         if (!DealType.isBuy(deal.getDealType())) {
