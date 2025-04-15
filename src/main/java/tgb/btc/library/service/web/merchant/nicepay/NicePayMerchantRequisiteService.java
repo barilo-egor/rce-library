@@ -27,11 +27,17 @@ public class NicePayMerchantRequisiteService implements IMerchantRequisiteServic
         if (!CreateOrderResponse.Status.DETAILS_FOUND.equals(createOrderResponse.getStatus())) {
             return null;
         }
-        if (Objects.isNull(createOrderResponse.getData().getSubMethod()) || Objects.isNull(createOrderResponse.getData().getDetails())) {
+        String req = null;
+        if (Objects.nonNull(createOrderResponse.getData().getSubMethod()) && Objects.nonNull(createOrderResponse.getData().getSubMethod().getNames())) {
+            req = createOrderResponse.getData().getSubMethod().getNames().getRu() + " " + createOrderResponse.getData().getDetails().getWallet();
+        } else if (Objects.nonNull(createOrderResponse.getData().getDetails()) && Objects.nonNull(createOrderResponse.getData().getDetails().getComment())) {
+            req = createOrderResponse.getData().getDetails().getComment() + " " + createOrderResponse.getData().getDetails().getWallet();
+        }
+        if (Objects.isNull(req)) {
             return null;
         }
         RequisiteVO requisiteVO = new RequisiteVO();
-        requisiteVO.setRequisite(createOrderResponse.getData().getSubMethod().getNames().getRu() + " " + createOrderResponse.getData().getDetails().getWallet());
+        requisiteVO.setRequisite(req);
         requisiteVO.setMerchant(Merchant.NICE_PAY);
         deal.setMerchantOrderStatus(createOrderResponse. getData().getStatus().name());
         deal.setMerchantOrderId(createOrderResponse.getData().getPaymentId());

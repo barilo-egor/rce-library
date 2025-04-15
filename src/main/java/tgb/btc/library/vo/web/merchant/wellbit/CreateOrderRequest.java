@@ -17,7 +17,7 @@ public class CreateOrderRequest {
     private String bankCode;
 
     @JsonProperty("credential_require")
-    private final String credentialRequire = "yes";
+    private String credentialRequire;
 
     @JsonProperty("custom_number")
     private String customNumber;
