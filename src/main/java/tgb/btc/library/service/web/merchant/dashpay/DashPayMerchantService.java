@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.service.web.merchant.IMerchantService;
 import tgb.btc.library.util.web.JacksonUtil;
@@ -60,7 +61,15 @@ public class DashPayMerchantService implements IMerchantService {
         log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
         CreateOrderRequest request = new CreateOrderRequest();
         request.setId(botName + deal.getPid());
-        request.setMethod(deal.getPaymentType().getDashPayOrderMethod());
+        if (DealType.isBuy(deal.getDealType())) {
+            request.setMethod(deal.getPaymentType().getDashPayOrderMethod());
+        } else {
+            if (hasEqualOrMoreThan16Digits(deal.getWallet())) {
+                request.setMethod(OrderMethod.CARD_NUMBER);
+            } else {
+                request.setMethod(OrderMethod.PHONE_NUMBER);
+            }
+        }
         request.setSum(deal.getAmount().doubleValue());
         request.setType(DealType.isBuy(deal.getDealType()) ? "deposit" : "cash_out");
         request.setCustomer(CreateOrderRequest.Customer.builder().id(deal.getUser().getChatId().toString()).build());
@@ -84,6 +93,11 @@ public class DashPayMerchantService implements IMerchantService {
             throw new BaseException("Тело ответа при создании ордера пустое.");
         }
         return response.getBody();
+    }
+
+    public boolean hasEqualOrMoreThan16Digits(String str) {
+        String digitsOnly = str.replaceAll("[^0-9]", "");
+        return digitsOnly.length() >= 16;
     }
 
     public void cancelOrder(String dashPayOrderId) {
