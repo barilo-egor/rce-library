@@ -26,6 +26,8 @@ public class CreateOrderRequest {
 
     private Bank bank;
 
+    private final String currency = "RUB";
+
     @Data
     public static class Bank {
 
