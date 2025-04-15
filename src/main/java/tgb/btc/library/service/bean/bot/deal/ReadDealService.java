@@ -9,6 +9,7 @@ import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
+import tgb.btc.library.constants.enums.web.merchant.crocopay.CrocoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
@@ -137,6 +138,15 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
         return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
                 Merchant.WELL_BIT,
                 List.of(WellBitStatus.NEW.name()),
+                LocalDateTime.now().minusMinutes(30)
+        );
+    }
+
+    @Override
+    public List<Deal> getAllNotFinalCrocoPayStatuses() {
+        return readDealRepository.getAllNotNewByMerchantAndOrderStatusesAfterDateTime(
+                Merchant.CROCO_PAY,
+                List.of(CrocoPayStatus.PENDING.name()),
                 LocalDateTime.now().minusMinutes(30)
         );
     }
