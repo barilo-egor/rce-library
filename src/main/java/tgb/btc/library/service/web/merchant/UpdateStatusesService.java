@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgb.btc.api.web.INotifier;
 import tgb.btc.library.bean.bot.Deal;
+import tgb.btc.library.constants.enums.web.merchant.crocopay.CrocoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
@@ -14,6 +15,7 @@ import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
+import tgb.btc.library.service.web.merchant.crocopay.CrocoPayMerchantService;
 import tgb.btc.library.service.web.merchant.dashpay.DashPayMerchantService;
 import tgb.btc.library.service.web.merchant.evopay.EvoPayMerchantService;
 import tgb.btc.library.service.web.merchant.nicepay.NicePayMerchantService;
@@ -21,6 +23,7 @@ import tgb.btc.library.service.web.merchant.onlypays.OnlyPaysMerchantService;
 import tgb.btc.library.service.web.merchant.paypoints.PayPointsMerchantService;
 import tgb.btc.library.service.web.merchant.payscrow.PayscrowMerchantService;
 import tgb.btc.library.service.web.merchant.wellbit.WellBitMerchantService;
+import tgb.btc.library.vo.web.merchant.crocopay.GetInvoiceResponse;
 import tgb.btc.library.vo.web.merchant.dashpay.OrdersResponse;
 import tgb.btc.library.vo.web.merchant.evopay.OrderResponse;
 import tgb.btc.library.vo.web.merchant.nicepay.GetOrderResponse;
@@ -56,11 +59,14 @@ public class UpdateStatusesService {
 
     private final WellBitMerchantService wellBitMerchantService;
 
+    private final CrocoPayMerchantService crocoPayMerchantService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
                                  PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
                                  OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService,
-                                 NicePayMerchantService nicePayMerchantService, WellBitMerchantService wellBitMerchantService) {
+                                 NicePayMerchantService nicePayMerchantService, WellBitMerchantService wellBitMerchantService,
+                                 CrocoPayMerchantService crocoPayMerchantService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
@@ -71,6 +77,7 @@ public class UpdateStatusesService {
         this.evoPayMerchantService = evoPayMerchantService;
         this.nicePayMerchantService = nicePayMerchantService;
         this.wellBitMerchantService = wellBitMerchantService;
+        this.crocoPayMerchantService = crocoPayMerchantService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -246,6 +253,33 @@ public class UpdateStatusesService {
                 modifyDealRepository.save(deal);
                 notifier.merchantUpdateStatus(deal.getPid(), "WellBit обновил статус по сделке №" + deal.getPid()
                         + " до \"" + wellBitStatus.getDescription() + "\".");
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    @Async
+    public void updateCrocoPayStatuses() {
+        List<Deal> deals = readDealService.getAllNotFinalWellBitStatuses();
+        if (Objects.isNull(deals) || deals.isEmpty()) {
+            return;
+        }
+        for (Deal deal: deals) {
+            GetInvoiceResponse getInvoiceResponse = crocoPayMerchantService.getInvoice(deal.getMerchantOrderId());
+            CrocoPayStatus status = getInvoiceResponse.getTransaction().getStatus();
+            if (Objects.isNull(status)) {
+                log.warn("Не удалось получить статус для сделки {}", deal.getPid());
+                continue;
+            }
+            if (!CrocoPayStatus.valueOf(deal.getMerchantOrderStatus()).equals(status)) {
+                deal.setMerchantOrderStatus(status.name());
+                modifyDealRepository.save(deal);
+                notifier.merchantUpdateStatus(deal.getPid(), "CrocoPay обновил статус по сделке №" + deal.getPid()
+                        + " до \"" + status.getDescription() + "\".");
             }
             try {
                 Thread.sleep(200);

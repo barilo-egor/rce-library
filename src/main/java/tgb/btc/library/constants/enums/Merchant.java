@@ -6,6 +6,8 @@ import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
+import tgb.btc.library.constants.enums.web.merchant.crocopay.CrocoPayMethod;
+import tgb.btc.library.constants.enums.web.merchant.crocopay.CrocoPayStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.DashPayOrderStatus;
 import tgb.btc.library.constants.enums.web.merchant.dashpay.OrderMethod;
 import tgb.btc.library.constants.enums.web.merchant.evopay.EvoPayPaymentMethod;
@@ -153,6 +155,14 @@ public enum Merchant {
             ((paymentType, name) -> paymentType.setWellBitMethod(WellBitMethod.valueOf(name))),
             (paymentType) -> paymentType.setWellBitMethod(null),
             name -> WellBitStatus.valueOf(name).getDescription()
+    ),
+    CROCO_PAY(VariableType.CROCO_PAY_BOUND, "CrocoPay", false,
+            Arrays.stream(CrocoPayMethod.values()).collect(Collectors.toMap(Enum::name, CrocoPayMethod::getDescription)),
+            paymentType -> Objects.nonNull(paymentType.getCrocoPayMethod()),
+            paymentType -> paymentType.getCrocoPayMethod().getDescription(),
+            ((paymentType, name) -> paymentType.setCrocoPayMethod(CrocoPayMethod.valueOf(name))),
+            (paymentType) -> paymentType.setCrocoPayMethod(null),
+            name -> CrocoPayStatus.valueOf(name).getDescription()
     )
     ;
 

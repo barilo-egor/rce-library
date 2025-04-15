@@ -42,6 +42,7 @@ public enum VariableType {
     HONEY_MONEY_BOUND("Максимальная сумма для HoneyMoney", "honeymoney.bound.amount"),
     PAY_FINITY_BOUND("Максимальная сумма для PayFinity", "payfinity.bound.amount"),
     WELL_BIT_BOUND("Максимальная сумма для WellBit", "wellbit.bound.amount"),
+    CROCO_PAY_BOUND("Максимальная сумма для CrocoPay", "crocopay.bound.amount"),
     MERCHANT_LIST("Список мерчантов", "merchant.list"),
     REVIEW_PUBLISH_MINUTES_INTERVAL("Промежуток в минутах публикации отзывов", "review.publish.minutes.interval"),
     NUMBER_OF_MERCHANT_ATTEMPTS("Количество попыток получения реквизитов мерчанта", "merchant.attempts.number"),
