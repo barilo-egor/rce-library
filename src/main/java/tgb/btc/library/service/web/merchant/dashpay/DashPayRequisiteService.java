@@ -34,22 +34,17 @@ public class DashPayRequisiteService implements IMerchantRequisiteService {
             return null;
         }
         OrderResponse orderResponse;
-        try {
-            orderResponse = dashPayMerchantService.createOrder(deal);
-            Order.TraderRequisites traderRequisites = orderResponse.getData().getOrder().getTraderRequisites();
-            if (Objects.isNull(traderRequisites) || Objects.isNull(traderRequisites.getValue()) || Objects.isNull(traderRequisites.getBank())) {
-                dashPayMerchantService.cancelOrder(orderResponse.getData().getOrder().getId());
-                return null;
-            }
-            String dashPayOrderId = orderResponse.getData().getOrder().getId();
-            deal.setMerchant(getMerchant());
-            deal.setMerchantOrderId(dashPayOrderId);
-            deal.setMerchantOrderStatus(DashPayOrderStatus.NEW.name());
-            modifyDealRepository.save(deal);
-        } catch (Exception e) {
-            log.error("Ошибка при выполнении запроса на создание DashPay ордера.", e);
-            throw new BaseException();
+        orderResponse = dashPayMerchantService.createOrder(deal);
+        Order.TraderRequisites traderRequisites = orderResponse.getData().getOrder().getTraderRequisites();
+        if (Objects.isNull(traderRequisites) || Objects.isNull(traderRequisites.getValue()) || Objects.isNull(traderRequisites.getBank())) {
+            dashPayMerchantService.cancelOrder(orderResponse.getData().getOrder().getId());
+            return null;
         }
+        String dashPayOrderId = orderResponse.getData().getOrder().getId();
+        deal.setMerchant(getMerchant());
+        deal.setMerchantOrderId(dashPayOrderId);
+        deal.setMerchantOrderStatus(DashPayOrderStatus.NEW.name());
+        modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(orderResponse)).build();
     }
 

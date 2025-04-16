@@ -48,8 +48,7 @@ public class PayFinityRequisiteMerchantService implements IMerchantRequisiteServ
             deal.setMerchantOrderStatus(PayFinityStatus.PENDING.name());
             return requisiteVO;
         } catch (Exception e) {
-            log.debug("Ошибка при попытке получения реквизитов от PayFinity: ", e);
-            return null;
+            throw new BaseException(e);
         }
     }
 
