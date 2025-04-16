@@ -20,12 +20,6 @@ public interface ReadUserRepository extends BaseRepository<User> {
     @Query("select pid from User where chatId=:chatId")
     Long getPidByChatId(Long chatId);
 
-    @Query("select step from User where chatId=:chatId")
-    Integer getStepByChatId(Long chatId);
-
-    @Query("select command from User where chatId=:chatId")
-    String getCommandByChatId(Long chatId);
-
     boolean existsByChatId(Long chatId);
 
     @Query("select userRole from User where chatId=:chatId")
@@ -45,9 +39,6 @@ public interface ReadUserRepository extends BaseRepository<User> {
 
     @Query("select chatId from User where userRole in (:roles)")
     List<Long> getChatIdsByRoles(Set<UserRole> roles);
-
-    @Query("select bufferVariable from User where chatId=:chatId")
-    String getBufferVariable(Long chatId);
 
     @Query("select chatId from User where userRole in(:roles) and isActive=true and isBanned=false")
     List<Long> getChatIdsForMailing(List<UserRole> roles);

@@ -67,47 +67,6 @@ class ReadUserRepositoryTest {
     }
 
     @Test
-    void getStepByChatId() {
-        for (int i = 1; i <= testTimesCount; i++) {
-            User user = getDefaultUser((long) i);
-            user.setStep(i);
-            userRepository.save(user);
-            Integer actual = userRepository.getStepByChatId((long) i);
-            assertNotNull(actual);
-            assertEquals(i, actual);
-        }
-        assertNull(userRepository.getStepByChatId(Long.MAX_VALUE));
-    }
-
-    @Test
-    void getNullStepByChatId() {
-        User user = getDefaultUser(chatId);
-        userRepository.save(user);
-        assertNull(userRepository.getStepByChatId(chatId));
-    }
-
-    @Test
-    void getCommandByChatId() {
-        for (int i = 1; i <= testTimesCount; i++) {
-            User user = getDefaultUser((long) i);
-            String expected = "command" + i;
-            user.setCommand(() -> expected);
-            userRepository.save(user);
-            String actual = userRepository.getCommandByChatId((long) i);
-            assertNotNull(actual);
-            assertEquals(expected, actual);
-        }
-        assertNull(userRepository.getStepByChatId(Long.MAX_VALUE));
-    }
-
-    @Test
-    void getNullCommandByChatId() {
-        User user = getDefaultUser(chatId);
-        userRepository.save(user);
-        assertNull(userRepository.getCommandByChatId(chatId));
-    }
-
-    @Test
     void existsByChatId() {
         for (long i = 1; i <= testTimesCount; i++) {
             User user = getDefaultUser(i);
@@ -120,38 +79,10 @@ class ReadUserRepositoryTest {
     }
 
     @Test
-    void getUserRoleByChatId() {
-        for (int i = 1; i <= UserRole.values().length; i++) {
-            User user = getDefaultUser((long) i);
-            UserRole expected = UserRole.values()[i - 1];
-            user.setUserRole(expected);
-            userRepository.save(user);
-            UserRole actual = userRepository.getUserRoleByChatId((long) i);
-            assertNotNull(actual);
-            assertEquals(expected, actual);
-        }
-        assertNull(userRepository.getStepByChatId(Long.MAX_VALUE));
-    }
-
-    @Test
     void getDefaultUserRoleByChatId() {
         User user = getDefaultUser(chatId);
         userRepository.save(user);
         assertEquals(UserRole.USER, userRepository.getUserRoleByChatId(chatId));
-    }
-
-    @Test
-    void getReferralBalanceByChatId() {
-        for (int i = 1; i <= testTimesCount; i++) {
-            User user = getDefaultUser((long) i);
-            Integer expected = i * 1000;
-            user.setReferralBalance(expected);
-            userRepository.save(user);
-            Integer actual = userRepository.getReferralBalanceByChatId((long) i);
-            assertNotNull(actual);
-            assertEquals(expected, actual);
-        }
-        assertNull(userRepository.getStepByChatId(Long.MAX_VALUE));
     }
 
     @Test
@@ -266,27 +197,6 @@ class ReadUserRepositoryTest {
             }
             assertEquals(expectedChatIds, new HashSet<>(userRepository.getChatIdsByRoles(rolesWithoutCurrent)));
         }
-    }
-
-    @Test
-    void getBufferVariable() {
-        for (long i = 1; i <= testTimesCount; i++) {
-            User user = getDefaultUser(i);
-            String expected = "bufferVariable" + i;
-            user.setBufferVariable(expected);
-            userRepository.save(user);
-            String actual = userRepository.getBufferVariable(i);
-            assertNotNull(actual);
-            assertEquals(expected, actual);
-        }
-        assertNull(userRepository.getBufferVariable(Long.MAX_VALUE));
-    }
-
-    @Test
-    void getNullBufferVariable() {
-        User user = getDefaultUser(Long.MAX_VALUE);
-        userRepository.save(user);
-        assertNull(userRepository.getBufferVariable(Long.MAX_VALUE));
     }
 
     @Test

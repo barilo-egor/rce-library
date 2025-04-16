@@ -28,66 +28,6 @@ class ModifyUserRepositoryTest {
     private Long chatId = 12345678L;
 
     @Test
-    void setDefaultValues() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        assertNull(user.getCommand());
-        userRepository.setDefaultValues(chatId);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(User.DEFAULT_STEP, user.getStep());
-        assertEquals("START", user.getCommand());
-    }
-
-    @Test
-    void nextStep() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        userRepository.setDefaultValues(chatId);
-        userRepository.nextStep(chatId);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(User.DEFAULT_STEP + 1, user.getStep());
-    }
-
-    @Test
-    void nextStepWithCommand() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        userRepository.setDefaultValues(chatId);
-        userRepository.nextStep(chatId, "testcommand");
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(User.DEFAULT_STEP + 1, user.getStep());
-        assertEquals("testcommand", user.getCommand());
-    }
-
-    @Test
-    void previousStep() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        userRepository.setDefaultValues(chatId);
-        userRepository.nextStep(chatId, "testcommand");
-        userRepository.nextStep(chatId, "testcommand");
-        userRepository.nextStep(chatId, "testcommand");
-        userRepository.previousStep(chatId);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(User.DEFAULT_STEP + 2, user.getStep());
-        assertEquals("testcommand", user.getCommand());
-    }
-
-    @Test
-    void updateBufferVariable() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getBufferVariable());
-        userRepository.updateBufferVariable(chatId, "variable");
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals("variable", user.getBufferVariable());
-    }
-
-    @Test
     void updateIsActiveByChatId() {
         User user = userRepository.getByChatId(chatId);
         assertTrue(user.getActive());
@@ -118,23 +58,13 @@ class ModifyUserRepositoryTest {
     }
 
     @Test
-    void updateCommandByChatId() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getCommand());
-        userRepository.updateCommandByChatId("BUY_BITCOIN", chatId);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals("BUY_BITCOIN", user.getCommand());
-    }
-
-    @Test
     void updateReferralBalanceByChatId() {
         User user = userRepository.getByChatId(chatId);
         assertEquals(0, user.getReferralBalance());
-        userRepository.updateCommandByChatId("BUY_BITCOIN", chatId);
+        userRepository.updateReferralBalanceByChatId(1000, chatId);
         entityManager.clear();
         user = userRepository.getByChatId(chatId);
-        assertEquals("BUY_BITCOIN", user.getCommand());
+        assertEquals(1000, user.getReferralBalance());
     }
 
     @Test
@@ -155,28 +85,6 @@ class ModifyUserRepositoryTest {
         entityManager.clear();
         user = userRepository.getByChatId(chatId);
         assertEquals(0, new BigDecimal("0.2").compareTo(user.getReferralPercent()));
-    }
-
-    @Test
-    void updateStepAndCommandByChatId() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        assertNull(user.getCommand());
-        userRepository.updateStepAndCommandByChatId(chatId, "command", 6);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(6, user.getStep());
-        assertEquals("command", user.getCommand());
-    }
-
-    @Test
-    void updateStepByChatId() {
-        User user = userRepository.getByChatId(chatId);
-        assertNull(user.getStep());
-        userRepository.updateStepByChatId(chatId, 3);
-        entityManager.clear();
-        user = userRepository.getByChatId(chatId);
-        assertEquals(3, user.getStep());
     }
 
     @Test
