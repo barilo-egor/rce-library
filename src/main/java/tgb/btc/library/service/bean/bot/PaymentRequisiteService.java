@@ -10,14 +10,12 @@ import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
-import tgb.btc.library.constants.enums.properties.VariableType;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
 import tgb.btc.library.repository.BaseRepository;
 import tgb.btc.library.repository.bot.PaymentRequisiteRepository;
 import tgb.btc.library.service.bean.BasePersistService;
-import tgb.btc.library.service.properties.VariablePropertiesReader;
-import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
+import tgb.btc.library.service.web.merchant.MerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 
 import java.util.HashMap;
@@ -32,21 +30,14 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
 
     private final PaymentRequisiteRepository paymentRequisiteRepository;
 
-    private final VariablePropertiesReader variablePropertiesReader;
-
     private final Map<Long, Integer> PAYMENT_REQUISITE_ORDER = new HashMap<>();
 
-    private final Map<Merchant, IMerchantRequisiteService> merchantIMerchantRequisiteServiceMap;
+    private final MerchantRequisiteService merchantRequisiteService;
 
     public PaymentRequisiteService(PaymentRequisiteRepository paymentRequisiteRepository,
-                                   VariablePropertiesReader variablePropertiesReader,
-                                   List<IMerchantRequisiteService> merchantRequisiteServices) {
+                                   MerchantRequisiteService merchantRequisiteService) {
         this.paymentRequisiteRepository = paymentRequisiteRepository;
-        this.variablePropertiesReader = variablePropertiesReader;
-        this.merchantIMerchantRequisiteServiceMap = new HashMap<>();
-        for (IMerchantRequisiteService merchantService : merchantRequisiteServices) {
-            this.merchantIMerchantRequisiteServiceMap.put(merchantService.getMerchant(), merchantService);
-        }
+        this.merchantRequisiteService = merchantRequisiteService;
     }
 
     private Integer getOrder(Long paymentTypePid) {
@@ -125,36 +116,7 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
             return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
-        RequisiteVO requisiteVO = null;
-        List<String> merchants = variablePropertiesReader.getStringList("merchant.list");
-        int attemptsCount = variablePropertiesReader.getInt(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS, 1);
-        int attemptsDelay = variablePropertiesReader.getInt(VariableType.DELAY_MERCHANT_ATTEMPTS, 3);
-        for (int i = 0; i < attemptsCount; i++) {
-            for (String merchantName : merchants) {
-                try {
-                    Merchant merchant = Merchant.valueOf(merchantName);
-                    Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
-                    if (deal.getAmount().longValue() > maxAmount) {
-                        continue;
-                    }
-                    int merchantAttemptsCount = variablePropertiesReader.getInteger(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS.getKey() + "." + merchant.name(), attemptsCount);
-                    if (merchantAttemptsCount < i + 1) {
-                        continue;
-                    }
-                    requisiteVO = merchantIMerchantRequisiteServiceMap.get(merchant).getRequisite(deal);
-                    if (Objects.nonNull(requisiteVO)) break;
-                } catch (Exception e) {
-                    log.debug("Ошибка получения реквизитов мерчанта {}.", merchantName, e);
-                }
-            }
-            if (Objects.nonNull(requisiteVO)) break;
-            try {
-                if (i < attemptsCount - 1) {
-                    Thread.sleep(attemptsDelay * 1000L);
-                }
-            } catch (InterruptedException ignored) {
-            }
-        }
+        RequisiteVO requisiteVO = merchantRequisiteService.getRequisites(deal);
         if (Objects.isNull(requisiteVO)) {
             requisiteVO =  RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
         }
