@@ -38,16 +38,6 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     }
 
     @Override
-    public Integer getStepByChatId(Long chatId) {
-        return readUserRepository.getStepByChatId(chatId);
-    }
-
-    @Override
-    public String getCommandByChatId(Long chatId) {
-        return readUserRepository.getCommandByChatId(chatId);
-    }
-
-    @Override
     public boolean existsByChatId(Long chatId) {
         return readUserRepository.existsByChatId(chatId);
     }
@@ -85,11 +75,6 @@ public class ReadUserService extends BasePersistService<User> implements IReadUs
     @Override
     public List<Long> getChatIdsByRoles(Set<UserRole> roles) {
         return readUserRepository.getChatIdsByRoles(roles);
-    }
-
-    @Override
-    public String getBufferVariable(Long chatId) {
-        return readUserRepository.getBufferVariable(chatId);
     }
 
     @Override

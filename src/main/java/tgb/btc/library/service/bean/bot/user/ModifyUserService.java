@@ -42,31 +42,6 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     }
 
     @Override
-    public void setDefaultValues(Long chatId) {
-        modifyUserRepository.setDefaultValues(chatId);
-    }
-
-    @Override
-    public void nextStep(Long chatId, String command) {
-        modifyUserRepository.nextStep(chatId, command);
-    }
-
-    @Override
-    public void nextStep(Long chatId) {
-        modifyUserRepository.nextStep(chatId);
-    }
-
-    @Override
-    public void previousStep(Long chatId) {
-        modifyUserRepository.previousStep(chatId);
-    }
-
-    @Override
-    public void updateBufferVariable(Long chatId, String bufferVariable) {
-        modifyUserRepository.updateBufferVariable(chatId, bufferVariable);
-    }
-
-    @Override
     public void updateIsActiveByChatId(boolean isActive, Long chatId) {
         modifyUserRepository.updateIsActiveByChatId(isActive, chatId);
     }
@@ -82,11 +57,6 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     }
 
     @Override
-    public void updateCommandByChatId(String command, Long chatId) {
-        modifyUserRepository.updateCommandByChatId(command, chatId);
-    }
-
-    @Override
     public void updateReferralBalanceByChatId(Integer referralBalance, Long chatId) {
         modifyUserRepository.updateReferralBalanceByChatId(referralBalance, chatId);
     }
@@ -99,16 +69,6 @@ public class ModifyUserService extends BasePersistService<User> implements IModi
     @Override
     public void updateReferralPercent(BigDecimal referralPercent, Long chatId) {
         modifyUserRepository.updateReferralPercent(referralPercent, chatId);
-    }
-
-    @Override
-    public void updateStepAndCommandByChatId(Long chatId, String command, Integer step) {
-        modifyUserRepository.updateStepAndCommandByChatId(chatId, command, step);
-    }
-
-    @Override
-    public void updateStepByChatId(Long chatId, Integer step) {
-        modifyUserRepository.updateStepByChatId(chatId, step);
     }
 
     @Override

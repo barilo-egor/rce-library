@@ -16,10 +16,6 @@ public interface IReadUserService extends IBasePersistService<User> {
 
     Long getPidByChatId(Long chatId);
 
-    Integer getStepByChatId(Long chatId);
-
-    String getCommandByChatId(Long chatId);
-
     boolean existsByChatId(Long chatId);
 
     boolean isAdminByChatId(Long chatId);
@@ -35,8 +31,6 @@ public interface IReadUserService extends IBasePersistService<User> {
     List<Long> getAdminsChatIds();
 
     List<Long> getChatIdsByRoles(Set<UserRole> roles);
-
-    String getBufferVariable(Long chatId);
 
     List<Long> getChatIdsForMailing();
 
