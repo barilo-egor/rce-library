@@ -47,7 +47,7 @@ public class MerchantRequisiteService {
                 }
             } catch (IllegalArgumentException ignored) {}
         }
-        log.debug("Список мерчантов для сделки №{}: ", merchantList.stream().map(Merchant::getDisplayName).collect(Collectors.joining(", ")));
+        log.debug("Список мерчантов для сделки №{}: {}", deal.getPid(), merchantList.stream().map(Merchant::getDisplayName).collect(Collectors.joining(", ")));
         int attemptsCount = variablePropertiesReader.getInt(VariableType.NUMBER_OF_MERCHANT_ATTEMPTS, 1);
         int attemptsDelay = variablePropertiesReader.getInt(VariableType.DELAY_MERCHANT_ATTEMPTS, 3);
         log.debug("Количество попыток {}, секунд задержки {} для сделки №{}.", attemptsCount, attemptsDelay, deal.getPid());
