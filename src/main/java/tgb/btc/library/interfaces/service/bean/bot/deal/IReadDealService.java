@@ -8,6 +8,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.bot.DealType;
 import tgb.btc.library.interfaces.service.IBasePersistService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IReadDealService extends IBasePersistService<Deal> {
@@ -52,4 +53,6 @@ public interface IReadDealService extends IBasePersistService<Deal> {
     List<Deal> getAllNotFinalCrocoPayStatuses();
 
     Deal getByMerchantOrderId(String alfaTeamInvoiceId);
+
+    List<Deal> getNewDealsByDateTimeBefore(LocalDateTime dateTime);
 }

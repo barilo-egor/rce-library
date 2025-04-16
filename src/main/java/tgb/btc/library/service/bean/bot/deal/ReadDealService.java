@@ -157,6 +157,11 @@ public class ReadDealService extends BasePersistService<Deal> implements IReadDe
     }
 
     @Override
+    public List<Deal> getNewDealsByDateTimeBefore(LocalDateTime dateTime) {
+        return readDealRepository.getNewDealsByDateTimeBefore(dateTime);
+    }
+
+    @Override
     protected BaseRepository<Deal> getBaseRepository() {
         return readDealRepository;
     }

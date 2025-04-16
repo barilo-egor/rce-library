@@ -38,4 +38,7 @@ public interface ReadDealRepository extends DateDealRepository, DealCountReposit
     List<Deal> getAllNotNewByMerchantAndOrderStatusesAfterDateTime(Merchant merchant, List<String> orderStatuses, LocalDateTime afterDateTime);
 
     Deal getByMerchantOrderId(String merchantOrderId);
+
+    @Query("from Deal where dateTime < :dateTime and dealStatus = 'NEW'")
+    List<Deal> getNewDealsByDateTimeBefore(LocalDateTime dateTime);
 }
