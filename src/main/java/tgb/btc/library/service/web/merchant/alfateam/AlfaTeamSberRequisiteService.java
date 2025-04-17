@@ -7,8 +7,6 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceResponse;
 
-import java.util.Objects;
-
 @Service
 public class AlfaTeamSberRequisiteService extends AlfaTeamRequisiteService implements IMerchantRequisiteService {
 
@@ -21,10 +19,6 @@ public class AlfaTeamSberRequisiteService extends AlfaTeamRequisiteService imple
         return alfaTeamMerchantService.createInvoice(deal, Merchant.ALFA_TEAM_SBER);
     }
 
-    @Override
-    protected boolean hasBinding(Deal deal) {
-        return Objects.isNull(deal.getPaymentType().getAlfaTeamSberPaymentOption());
-    }
 
     @Override
     public Merchant getMerchant() {
