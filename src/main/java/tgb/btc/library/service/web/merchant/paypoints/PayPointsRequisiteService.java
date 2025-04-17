@@ -29,56 +29,51 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         PayPointsMethod payPointsMethod = deal.getPaymentType().getPayPointsMethod();
-        try {
-            Long id;
-            RequisiteVO requisiteVO;
-            switch (payPointsMethod) {
-                case SBP: {
-                    SbpTransactionResponse response = payPointsMerchantService.createSbpTransaction(deal);
-                    if (!response.isOk()) {
-                        log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
-                        return null;
-                    }
-                    requisiteVO = new RequisiteVO();
-                    requisiteVO.setMerchant(Merchant.PAY_POINTS);
-                    requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
-                    id = response.getId();
-                    break;
+        Long id;
+        RequisiteVO requisiteVO;
+        switch (payPointsMethod) {
+            case SBP: {
+                SbpTransactionResponse response = payPointsMerchantService.createSbpTransaction(deal);
+                if (!response.isOk()) {
+                    log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
+                    return null;
                 }
-                case CARD: {
-                    CardTransactionResponse response = payPointsMerchantService.createCardTransaction(deal);
-                    if (!response.isOk()) {
-                        log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
-                        return null;
-                    }
-                    requisiteVO = new RequisiteVO();
-                    requisiteVO.setMerchant(Merchant.PAY_POINTS);
-                    requisiteVO.setRequisite(response.getBankName() + " " + response.getCardNumber());
-                    id = response.getId();
-                    break;
-                }
-                case TRANSGRAN_SBP:
-                    SbpTransactionResponse response = payPointsMerchantService.createTransgranSbpTransaction(deal);
-                    if (!response.isOk()) {
-                        log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
-                        return null;
-                    }
-                    requisiteVO = new RequisiteVO();
-                    requisiteVO.setMerchant(Merchant.PAY_POINTS);
-                    requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
-                    id = response.getId();
-                    break;
-                default: throw new BaseException("Не определен метод");
+                requisiteVO = new RequisiteVO();
+                requisiteVO.setMerchant(Merchant.PAY_POINTS);
+                requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
+                id = response.getId();
+                break;
             }
-            deal.setMerchant(getMerchant());
-            deal.setMerchantOrderId(id.toString());
-            deal.setMerchantOrderStatus(PayPointsStatus.PROCESS.name());
-            modifyDealRepository.save(deal);
-            return requisiteVO;
-        } catch (Exception e) {
-            log.debug("Ошибка при попытке создать транзакцию PayPoints: ", e);
+            case CARD: {
+                CardTransactionResponse response = payPointsMerchantService.createCardTransaction(deal);
+                if (!response.isOk()) {
+                    log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
+                    return null;
+                }
+                requisiteVO = new RequisiteVO();
+                requisiteVO.setMerchant(Merchant.PAY_POINTS);
+                requisiteVO.setRequisite(response.getBankName() + " " + response.getCardNumber());
+                id = response.getId();
+                break;
+            }
+            case TRANSGRAN_SBP:
+                SbpTransactionResponse response = payPointsMerchantService.createTransgranSbpTransaction(deal);
+                if (!response.isOk()) {
+                    log.debug("Ошибка в ответе при попытке создании транзакции: {}", response);
+                    return null;
+                }
+                requisiteVO = new RequisiteVO();
+                requisiteVO.setMerchant(Merchant.PAY_POINTS);
+                requisiteVO.setRequisite(response.getBankName() + " " + response.getPhoneNumber());
+                id = response.getId();
+                break;
+            default: throw new BaseException("Не определен метод");
         }
-        return null;
+        deal.setMerchant(getMerchant());
+        deal.setMerchantOrderId(id.toString());
+        deal.setMerchantOrderStatus(PayPointsStatus.PROCESS.name());
+        modifyDealRepository.save(deal);
+        return requisiteVO;
     }
 
     @Override
