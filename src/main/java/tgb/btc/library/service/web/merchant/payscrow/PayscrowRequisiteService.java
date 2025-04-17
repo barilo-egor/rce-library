@@ -31,7 +31,6 @@ public class PayscrowRequisiteService implements IMerchantRequisiteService {
         try {
             payscrowOrderResponse = payscrowMerchantService.createBuyOrder(deal);
         } catch (Exception e) {
-            log.error("Ошибка при выполнении запроса на создание Payscrow ордера.", e);
             throw new BaseException(e);
         }
         if (!payscrowOrderResponse.getSuccess()) {
