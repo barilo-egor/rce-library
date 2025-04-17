@@ -41,6 +41,9 @@ public class MerchantRequisiteService {
         for (String merchantName : merchants) {
             try {
                 Merchant merchant = Merchant.valueOf(merchantName);
+                if (!merchant.getHasBindPredicate().test(deal.getPaymentType())) {
+                    continue;
+                }
                 Long maxAmount = variablePropertiesReader.getLong(merchant.getMaxAmount().getKey(), 5000L);
                 if (deal.getAmount().longValue() <= maxAmount) {
                     merchantList.add(Merchant.valueOf(merchantName));

@@ -13,8 +13,6 @@ import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.alfateam.CreateInvoiceResponse;
 import tgb.btc.library.vo.web.merchant.alfateam.DealDTO;
 
-import java.util.Objects;
-
 @Service
 @Slf4j
 public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
@@ -31,9 +29,6 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (hasBinding(deal)) {
-            return null;
-        }
         CreateInvoiceResponse invoiceResponse;
         try {
             invoiceResponse = createInvoice(deal);
@@ -50,10 +45,6 @@ public class AlfaTeamRequisiteService implements IMerchantRequisiteService {
         deal.setMerchantOrderStatus(InvoiceStatus.NEW.name());
         modifyDealRepository.save(deal);
         return RequisiteVO.builder().merchant(getMerchant()).requisite(buildRequisite(invoiceResponse)).build();
-    }
-
-    protected boolean hasBinding(Deal deal) {
-        return Objects.isNull(deal.getPaymentType().getAlfaTeamPaymentOption());
     }
 
     protected CreateInvoiceResponse createInvoice(Deal deal) throws Exception {

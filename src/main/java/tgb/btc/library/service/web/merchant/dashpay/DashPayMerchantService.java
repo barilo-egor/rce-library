@@ -58,7 +58,6 @@ public class DashPayMerchantService implements IMerchantService {
     }
 
     public OrderResponse createOrder(Deal deal) {
-        log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
         CreateOrderRequest request = new CreateOrderRequest();
         request.setId(botName + deal.getPid());
         if (DealType.isBuy(deal.getDealType())) {

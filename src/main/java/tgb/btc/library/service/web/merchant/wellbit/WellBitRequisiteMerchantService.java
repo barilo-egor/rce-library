@@ -25,9 +25,6 @@ public class WellBitRequisiteMerchantService implements IMerchantRequisiteServic
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         WellBitMethod wellBitMethod = deal.getPaymentType().getWellBitMethod();
-        if (Objects.isNull(wellBitMethod)) {
-            return null;
-        }
         Order order;
         try {
             order = wellBitMerchantService.createOrder(deal);

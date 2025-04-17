@@ -12,8 +12,6 @@ import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.payfinity.CreateOrderResponse;
 
-import java.util.Objects;
-
 @Service
 @Slf4j
 public class PayFinityRequisiteMerchantService implements IMerchantRequisiteService {
@@ -27,9 +25,6 @@ public class PayFinityRequisiteMerchantService implements IMerchantRequisiteServ
     @Override
     @Transactional
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getPayFinityOrderType())) {
-            return null;
-        }
         try {
             CreateOrderResponse createOrderResponse = payFinityMerchantService.createOrder(deal);
             if (!createOrderResponse.getSuccess()) {

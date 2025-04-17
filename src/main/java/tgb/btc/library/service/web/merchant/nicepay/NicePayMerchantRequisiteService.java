@@ -20,9 +20,6 @@ public class NicePayMerchantRequisiteService implements IMerchantRequisiteServic
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getNicePayMethod())) {
-            return null;
-        }
         CreateOrderResponse createOrderResponse = nicePayMerchantService.createOrder(deal);
         if (!CreateOrderResponse.Status.DETAILS_FOUND.equals(createOrderResponse.getStatus())) {
             return null;

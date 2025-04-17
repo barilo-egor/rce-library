@@ -7,8 +7,6 @@ import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.crocopay.CreateInvoiceResponse;
 
-import java.util.Objects;
-
 @Service
 public class CrocoPayMerchantRequisiteService implements IMerchantRequisiteService {
 
@@ -22,9 +20,6 @@ public class CrocoPayMerchantRequisiteService implements IMerchantRequisiteServi
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getCrocoPayMethod())) {
-            return null;
-        }
         CreateInvoiceResponse createInvoiceResponse = crocoPayMerchantService.createInvoice(deal);
         CreateInvoiceResponse.Response response = createInvoiceResponse.getResponse();
         RequisiteVO vo = new RequisiteVO();
