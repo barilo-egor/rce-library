@@ -28,7 +28,6 @@ import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitMethod;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -40,9 +39,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum Merchant {
-    NONE(null, "none", false, new HashMap<>(), paymentType -> false,
-            paymentType -> null, (paymentType, s) -> {}, (paymentType -> {}),
-            name -> ""),
     PAYSCROW(VariableType.PAYSCROW_BOUND, "Payscrow", true,
             Arrays.stream(PaymentMethodType.values()).collect(Collectors.toMap(Enum::name, PaymentMethodType::getDescription)),
             paymentType -> Objects.nonNull(paymentType.getPayscrowPaymentMethodId()),
