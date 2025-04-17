@@ -9,8 +9,6 @@ import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.evopay.OrderResponse;
 
-import java.util.Objects;
-
 @Service
 public class EvoPayMerchantRequisiteService implements IMerchantRequisiteService {
 
@@ -23,9 +21,6 @@ public class EvoPayMerchantRequisiteService implements IMerchantRequisiteService
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         EvoPayPaymentMethod evoPayPaymentMethod = deal.getPaymentType().getEvoPayPaymentMethod();
-        if (Objects.isNull(evoPayPaymentMethod)) {
-            return null;
-        }
         OrderResponse orderResponse = evoPayMerchantService.createOrder(deal);
         try {
             Thread.sleep(5000);

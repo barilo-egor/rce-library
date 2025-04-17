@@ -13,8 +13,6 @@ import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.paypoints.CardTransactionResponse;
 import tgb.btc.library.vo.web.merchant.paypoints.SbpTransactionResponse;
 
-import java.util.Objects;
-
 @Service
 @Slf4j
 public class PayPointsRequisiteService implements IMerchantRequisiteService {
@@ -31,9 +29,6 @@ public class PayPointsRequisiteService implements IMerchantRequisiteService {
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         PayPointsMethod payPointsMethod = deal.getPaymentType().getPayPointsMethod();
-        if (Objects.isNull(payPointsMethod)) {
-            return null;
-        }
         try {
             Long id;
             RequisiteVO requisiteVO;

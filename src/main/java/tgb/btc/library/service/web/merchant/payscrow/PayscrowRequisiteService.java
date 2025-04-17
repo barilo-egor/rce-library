@@ -11,8 +11,6 @@ import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.payscrow.PayscrowOrderResponse;
 
-import java.util.Objects;
-
 @Service
 @Slf4j
 public class PayscrowRequisiteService implements IMerchantRequisiteService {
@@ -30,9 +28,6 @@ public class PayscrowRequisiteService implements IMerchantRequisiteService {
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         PayscrowOrderResponse payscrowOrderResponse;
-        if (Objects.isNull(deal.getPaymentType().getPayscrowPaymentMethodId())) {
-            return null;
-        }
         try {
             payscrowOrderResponse = payscrowMerchantService.createBuyOrder(deal);
         } catch (Exception e) {

@@ -10,8 +10,6 @@ import tgb.btc.library.service.web.merchant.IMerchantRequisiteService;
 import tgb.btc.library.vo.RequisiteVO;
 import tgb.btc.library.vo.web.merchant.honeymoney.CreateOrderResponse;
 
-import java.util.Objects;
-
 @Service
 public class HoneyMoneyMerchantRequisiteService implements IMerchantRequisiteService {
 
@@ -23,9 +21,6 @@ public class HoneyMoneyMerchantRequisiteService implements IMerchantRequisiteSer
 
     @Override
     public RequisiteVO getRequisite(Deal deal) {
-        if (Objects.isNull(deal.getPaymentType().getHoneyMoneyMethod())) {
-            return null;
-        }
         try {
             HoneyMoneyMethod honeyMoneyMethod = deal.getPaymentType().getHoneyMoneyMethod();
             CreateOrderResponse createOrderResponse = honeyMoneyMerchantService.createRequest(deal);
