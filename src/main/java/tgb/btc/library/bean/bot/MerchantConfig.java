@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.Merchant;
+import tgb.btc.library.constants.enums.bot.CryptoCurrency;
+import tgb.btc.library.constants.enums.bot.DeliveryType;
+import tgb.btc.library.constants.enums.web.merchant.AutoConfirmType;
 
 import java.util.List;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -30,4 +34,16 @@ public class MerchantConfig extends BasePersist {
 
     @Column(unique = true, nullable = false)
     private Integer merchantOrder;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<AutoConfirmConfig> confirmConfigs;
+
+    public Optional<AutoConfirmConfig> getAutoConfirmConfig(CryptoCurrency cryptoCurrency, DeliveryType deliveryType,
+                                                            AutoConfirmType autoConfirmType) {
+        return confirmConfigs.stream()
+                .filter(conf -> cryptoCurrency.equals(conf.getCryptoCurrency())
+                        && deliveryType.equals(conf.getDeliveryType())
+                        && autoConfirmType.equals(conf.getAutoConfirmType()))
+                .findFirst();
+    }
 }
