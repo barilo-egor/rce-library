@@ -15,6 +15,7 @@ import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.InvoiceStatus;
 import tgb.btc.library.constants.enums.web.merchant.alfateam.PaymentOption;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.process.IAutoConfirmDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantService;
@@ -56,6 +57,8 @@ public class AlfaTeamMerchantService implements IMerchantService {
 
     private final Map<Merchant, String> apiKeys;
 
+    private final IAutoConfirmDealService autoConfirmDealService;
+
     public AlfaTeamMerchantService(RestTemplate restTemplate, @Value("${main.url:null}") String mainUrl,
                                    @Value("${alfaTeam.api.notification.token:null}") String alfaTeamNotificationToken,
                                    @Value("${alfaTeam.api.key.base:null}") String apiKey,
@@ -66,11 +69,12 @@ public class AlfaTeamMerchantService implements IMerchantService {
                                    @Value("${alfaTeam.api.secret:null}") String apiSecret,
                                    @Value("${alfaTeam.api.url.main:null}") String apiMainUrl, IReadDealService readDealService,
                                    @Value("${bot.name:null}") String botName,
-                                   INotifier notifier, ModifyDealRepository modifyDealRepository) {
+                                   INotifier notifier, ModifyDealRepository modifyDealRepository, IAutoConfirmDealService autoConfirmDealService) {
         this.mainUrl = mainUrl;
         this.notificationUrl = mainUrl + "/merchant/alfateam";
         this.notificationToken = alfaTeamNotificationToken;
         this.botName = botName;
+        this.autoConfirmDealService = autoConfirmDealService;
         this.apiKeys = new HashMap<>();
         apiKeys.put(Merchant.ALFA_TEAM, apiKey);
         apiKeys.put(Merchant.ALFA_TEAM_TJS, tjsApiKey);
@@ -144,6 +148,9 @@ public class AlfaTeamMerchantService implements IMerchantService {
         InvoiceStatus status = invoiceNotification.getInvoice().getStatus();
         deal.setMerchantOrderStatus(status.name());
         modifyDealRepository.save(deal);
+        if (autoConfirmDealService.match(deal, status.name())) {
+            autoConfirmDealService.autoConfirmDeal(deal);
+        }
         if (!DealStatus.NEW.equals(deal.getDealStatus())) {
             notifier.merchantUpdateStatus(deal.getPid(), "AlfaTeam обновил статус по сделке №" + deal.getPid()
                     + " до \"" + status.getDescription() + "\".");

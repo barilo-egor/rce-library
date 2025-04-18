@@ -92,7 +92,6 @@ public class PayscrowMerchantService implements IMerchantService {
     }
 
     public PayscrowOrderResponse createBuyOrder(Deal deal) {
-        log.debug("Запрос на создание ордера для сделки №{}", deal.getPid());
         PayscrowOrderRequest request = PayscrowOrderRequest.builder()
                 .externalOrderId(botName + deal.getPid().toString())
                 .basePaymentMethodId(deal.getPaymentType().getPayscrowPaymentMethodId())

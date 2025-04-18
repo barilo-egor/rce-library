@@ -13,6 +13,7 @@ import tgb.btc.library.constants.enums.web.merchant.nicepay.NicePayStatus;
 import tgb.btc.library.constants.enums.web.merchant.onlypays.OnlyPaysStatus;
 import tgb.btc.library.constants.enums.web.merchant.paypoints.PayPointsStatus;
 import tgb.btc.library.constants.enums.web.merchant.wellbit.WellBitStatus;
+import tgb.btc.library.interfaces.process.IAutoConfirmDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.crocopay.CrocoPayMerchantService;
@@ -61,12 +62,14 @@ public class UpdateStatusesService {
 
     private final CrocoPayMerchantService crocoPayMerchantService;
 
+    private final IAutoConfirmDealService autoConfirmDealService;
+
     public UpdateStatusesService(IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
                                  INotifier notifier, DashPayMerchantService dashPayMerchantService,
                                  PayscrowMerchantService payscrowMerchantService, PayPointsMerchantService payPointsMerchantService,
                                  OnlyPaysMerchantService onlyPaysMerchantService, EvoPayMerchantService evoPayMerchantService,
                                  NicePayMerchantService nicePayMerchantService, WellBitMerchantService wellBitMerchantService,
-                                 CrocoPayMerchantService crocoPayMerchantService) {
+                                 CrocoPayMerchantService crocoPayMerchantService, IAutoConfirmDealService autoConfirmDealService) {
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
@@ -78,6 +81,7 @@ public class UpdateStatusesService {
         this.nicePayMerchantService = nicePayMerchantService;
         this.wellBitMerchantService = wellBitMerchantService;
         this.crocoPayMerchantService = crocoPayMerchantService;
+        this.autoConfirmDealService = autoConfirmDealService;
     }
 
     @Scheduled(cron = "*/5 * * * * *")
@@ -97,6 +101,9 @@ public class UpdateStatusesService {
                         && !order.getOrderStatus().name().equals(deal.getMerchantOrderStatus())) {
                     deal.setMerchantOrderStatus(order.getOrderStatus().name());
                     modifyDealRepository.save(deal);
+                    if (autoConfirmDealService.match(deal, order.getOrderStatus().name())) {
+                        autoConfirmDealService.autoConfirmDeal(deal);
+                    }
                     notifier.merchantUpdateStatus(deal.getPid(), "Payscrow обновил статус по сделке №" + deal.getPid()
                             + " до \"" + order.getOrderStatus().getDescription() + "\".");
                 }
@@ -122,6 +129,9 @@ public class UpdateStatusesService {
                     if (Objects.nonNull(status) && !Objects.equals(status, DashPayOrderStatus.valueOf(deal.getMerchantOrderStatus()))) {
                         deal.setMerchantOrderStatus(Objects.requireNonNull(DashPayOrderStatus.fromCode(order.getStatus().getCode())).name());
                         modifyDealRepository.save(deal);
+                        if (autoConfirmDealService.match(deal, status.name())) {
+                            autoConfirmDealService.autoConfirmDeal(deal);
+                        }
                         notifier.merchantUpdateStatus(deal.getPid(), "DashPay обновил статус по сделке №" + deal.getPid()
                                 + " до \"" + status.getDescription() + "\".");
                     }
@@ -148,6 +158,9 @@ public class UpdateStatusesService {
             if (!PayPointsStatus.valueOf(deal.getMerchantOrderStatus()).equals(payPointsStatus)) {
                 deal.setMerchantOrderStatus(payPointsStatus.name());
                 modifyDealRepository.save(deal);
+                if (autoConfirmDealService.match(deal, payPointsStatus.name())) {
+                    autoConfirmDealService.autoConfirmDeal(deal);
+                }
                 notifier.merchantUpdateStatus(deal.getPid(), "PayPoints обновил статус по сделке №" + deal.getPid()
                         + " до \"" + payPointsStatus.getDisplayName() + "\".");
             }
@@ -175,6 +188,9 @@ public class UpdateStatusesService {
             if (!OnlyPaysStatus.valueOf(deal.getMerchantOrderStatus()).equals(onlyPaysStatus)) {
                 deal.setMerchantOrderStatus(onlyPaysStatus.name());
                 modifyDealRepository.save(deal);
+                if (autoConfirmDealService.match(deal, onlyPaysStatus.name())) {
+                    autoConfirmDealService.autoConfirmDeal(deal);
+                }
                 notifier.merchantUpdateStatus(deal.getPid(), "OnlyPays обновил статус по сделке №" + deal.getPid()
                         + " до \"" + onlyPaysStatus.getDescription() + "\".");
             }
@@ -200,6 +216,9 @@ public class UpdateStatusesService {
                     if (Objects.nonNull(status) && !Objects.equals(status, EvoPayStatus.valueOf(deal.getMerchantOrderStatus()))) {
                         deal.setMerchantOrderStatus(status.name());
                         modifyDealRepository.save(deal);
+                        if (autoConfirmDealService.match(deal, status.name())) {
+                            autoConfirmDealService.autoConfirmDeal(deal);
+                        }
                         notifier.merchantUpdateStatus(deal.getPid(), "EvoPay обновил статус по сделке №" + deal.getPid()
                                 + " до \"" + status.getDescription() + "\".");
                     }
@@ -225,6 +244,9 @@ public class UpdateStatusesService {
             if (!NicePayStatus.valueOf(deal.getMerchantOrderStatus()).equals(nicePayStatus)) {
                 deal.setMerchantOrderStatus(nicePayStatus.name());
                 modifyDealRepository.save(deal);
+                if (autoConfirmDealService.match(deal, nicePayStatus.name())) {
+                    autoConfirmDealService.autoConfirmDeal(deal);
+                }
                 notifier.merchantUpdateStatus(deal.getPid(), "NicePay обновил статус по сделке №" + deal.getPid()
                         + " до \"" + nicePayStatus.getDescription() + "\".");
             }
@@ -251,6 +273,9 @@ public class UpdateStatusesService {
             if (!WellBitStatus.valueOf(deal.getMerchantOrderStatus()).equals(wellBitStatus)) {
                 deal.setMerchantOrderStatus(wellBitStatus.name());
                 modifyDealRepository.save(deal);
+                if (autoConfirmDealService.match(deal, wellBitStatus.name())) {
+                    autoConfirmDealService.autoConfirmDeal(deal);
+                }
                 notifier.merchantUpdateStatus(deal.getPid(), "WellBit обновил статус по сделке №" + deal.getPid()
                         + " до \"" + wellBitStatus.getDescription() + "\".");
             }
@@ -278,6 +303,9 @@ public class UpdateStatusesService {
             if (!CrocoPayStatus.valueOf(deal.getMerchantOrderStatus()).equals(status)) {
                 deal.setMerchantOrderStatus(status.name());
                 modifyDealRepository.save(deal);
+                if (autoConfirmDealService.match(deal, status.name())) {
+                    autoConfirmDealService.autoConfirmDeal(deal);
+                }
                 notifier.merchantUpdateStatus(deal.getPid(), "CrocoPay обновил статус по сделке №" + deal.getPid()
                         + " до \"" + status.getDescription() + "\".");
             }

@@ -15,6 +15,7 @@ import tgb.btc.library.constants.enums.bot.DealStatus;
 import tgb.btc.library.constants.enums.web.merchant.payfinity.PayFinityOrderType;
 import tgb.btc.library.constants.enums.web.merchant.payfinity.PayFinityStatus;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.process.IAutoConfirmDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantService;
@@ -58,15 +59,18 @@ public class PayFinityMerchantService implements IMerchantService {
 
     private final INotifier notifier;
 
+    private final IAutoConfirmDealService autoConfirmDealService;
+
     public PayFinityMerchantService(@Value("${payFinity.api.url:null}") String url,
                                     @Value("${payFinity.api.key.public:null}") String publicKey,
                                     @Value("${payFinity.api.key.private:null}") String privateKey,
                                     @Value("${payFinity.api.timeout:15}") Integer timeout,
                                     @Value("${bot.name}") String botName,
-                                    @Value("${main.url:null}") String mainUrl,IReadDealService readDealService,
-                                    ModifyDealRepository modifyDealRepository, INotifier notifier) {
+                                    @Value("${main.url:null}") String mainUrl, IReadDealService readDealService,
+                                    ModifyDealRepository modifyDealRepository, INotifier notifier, IAutoConfirmDealService autoConfirmDealService) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
+        this.autoConfirmDealService = autoConfirmDealService;
         this.createTransactionEndUrl = "/api/v1/payment";
         this.createTransactionUrl = url + createTransactionEndUrl;
         this.getTransactionEndUrl = "/api/v1/account/transaction";
@@ -172,6 +176,9 @@ public class PayFinityMerchantService implements IMerchantService {
             PayFinityStatus payFinityStatus = getStatus(trackerId);
             deal.setMerchantOrderStatus(payFinityStatus.name());
             modifyDealRepository.save(deal);
+            if (autoConfirmDealService.match(deal, payFinityStatus.name())) {
+                autoConfirmDealService.autoConfirmDeal(deal);
+            }
             if (!DealStatus.NEW.equals(deal.getDealStatus())) {
                 notifier.merchantUpdateStatus(deal.getPid(), "PayFinity обновил статус по сделке №" + deal.getPid()
                         + " до \"" + payFinityStatus.getDescription() + "\".");

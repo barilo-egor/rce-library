@@ -7,7 +7,6 @@ import org.springframework.util.CollectionUtils;
 import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.bean.bot.PaymentRequisite;
 import tgb.btc.library.bean.bot.PaymentType;
-import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.FiatCurrency;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
@@ -112,11 +111,11 @@ public class PaymentRequisiteService extends BasePersistService<PaymentRequisite
     @Override
     public RequisiteVO getRequisite(Deal deal) {
         if (!FiatCurrency.RUB.equals(deal.getFiatCurrency())) {
-            return RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
+            return RequisiteVO.builder().requisite(getRequisite(deal.getPaymentType())).build();
         }
         RequisiteVO requisiteVO = merchantRequisiteService.getRequisites(deal);
         if (Objects.isNull(requisiteVO)) {
-            requisiteVO =  RequisiteVO.builder().merchant(Merchant.NONE).requisite(getRequisite(deal.getPaymentType())).build();
+            requisiteVO =  RequisiteVO.builder().requisite(getRequisite(deal.getPaymentType())).build();
         }
         return requisiteVO;
     }
