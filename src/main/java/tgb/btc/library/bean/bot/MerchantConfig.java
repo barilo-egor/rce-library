@@ -37,6 +37,10 @@ public class MerchantConfig extends BasePersist {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AutoConfirmConfig> confirmConfigs;
 
+    private Integer delay;
+
+    private Integer attemptsCount;
+
     public Optional<AutoConfirmConfig> getAutoConfirmConfig(CryptoCurrency cryptoCurrency, DeliveryType deliveryType) {
         return confirmConfigs.stream()
                 .filter(conf -> cryptoCurrency.equals(conf.getCryptoCurrency())

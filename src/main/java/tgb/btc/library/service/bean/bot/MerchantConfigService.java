@@ -59,6 +59,8 @@ public class MerchantConfigService implements IMerchantConfigService {
                         .merchant(merchant)
                         .isAutoWithdrawalOn(false)
                         .maxAmount(5000)
+                        .delay(3)
+                        .attemptsCount(5)
                         .merchantOrder(Long.valueOf(repository.count()).intValue() + 1)
                         .build()
         );
