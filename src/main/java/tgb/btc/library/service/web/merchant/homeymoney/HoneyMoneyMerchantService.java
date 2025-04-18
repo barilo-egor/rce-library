@@ -18,6 +18,7 @@ import tgb.btc.library.bean.bot.Deal;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.web.merchant.honeymoney.HoneyMoneyMethod;
 import tgb.btc.library.exception.BaseException;
+import tgb.btc.library.interfaces.process.IAutoConfirmDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.web.merchant.IMerchantService;
@@ -58,6 +59,8 @@ public class HoneyMoneyMerchantService implements IMerchantService {
 
     private final INotifier notifier;
 
+    private final IAutoConfirmDealService autoConfirmDealService;
+
     public HoneyMoneyMerchantService(RestTemplate restTemplate,
                                      @Value("${main.url:null}") String mainUrl,
                                      @Value("${honeyMoney.api.url.main:null}") String baseUrl,
@@ -67,12 +70,13 @@ public class HoneyMoneyMerchantService implements IMerchantService {
                                      @Value("${honeyMoney.api.signKey:null}") String signKey,
                                      @Value("${bot.name}") String botName,
                                      IReadDealService readDealService, ModifyDealRepository modifyDealRepository,
-                                     INotifier notifier) {
+                                     INotifier notifier, IAutoConfirmDealService autoConfirmDealService) {
         this.restTemplate = restTemplate;
         this.tokenRequestUrl = tokenRequestUrl;
         this.readDealService = readDealService;
         this.modifyDealRepository = modifyDealRepository;
         this.notifier = notifier;
+        this.autoConfirmDealService = autoConfirmDealService;
         TokenRequest tokenRequest = new TokenRequest();
         tokenRequest.setClientId(clientId);
         tokenRequest.setClientSecret(secret);
@@ -149,6 +153,9 @@ public class HoneyMoneyMerchantService implements IMerchantService {
         if (Objects.nonNull(deal)) {
             deal.setMerchantOrderStatus(transactionCallback.getStatus().name());
             modifyDealRepository.save(deal);
+            if (autoConfirmDealService.match(deal, transactionCallback.getStatus().name())) {
+                autoConfirmDealService.autoConfirmDeal(deal);
+            }
             notifier.merchantUpdateStatus(deal.getPid(), "HoneyMoney обновил статус по сделке №" + deal.getPid()
                     + " до \"" + transactionCallback.getStatus().getDescription() + "\".");
         }

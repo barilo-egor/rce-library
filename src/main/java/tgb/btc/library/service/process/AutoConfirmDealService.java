@@ -22,6 +22,7 @@ import tgb.btc.library.vo.web.PoolDeal;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -51,7 +52,8 @@ public class AutoConfirmDealService implements IAutoConfirmDealService {
         this.bigDecimalService = bigDecimalService;
     }
 
-    public boolean match(Deal deal) {
+    @Override
+    public boolean match(Deal deal, String status) {
         if (!DealType.isBuy(deal.getDealType())
                 || !CryptoCurrency.CURRENCIES_WITH_AUTO_WITHDRAWAL.contains(deal.getCryptoCurrency())
                 || Objects.isNull(deal.getMerchant())) {
@@ -59,9 +61,15 @@ public class AutoConfirmDealService implements IAutoConfirmDealService {
         }
         Merchant merchant = deal.getMerchant();
         MerchantConfig merchantConfig = merchantConfigService.getMerchantConfig(merchant);
-        return merchantConfig.getAutoConfirmConfig(deal.getCryptoCurrency(), deal.getDeliveryType()).isPresent();
+        Optional<AutoConfirmConfig> optionalAutoConfirmConfig =
+                merchantConfig.getAutoConfirmConfig(deal.getCryptoCurrency(), deal.getDeliveryType());
+        if (optionalAutoConfirmConfig.isEmpty()) {
+            return false;
+        }
+        return merchantConfig.getSuccessStatuses().stream().anyMatch(s -> s.getStatus().equals(status));
     }
 
+    @Override
     public synchronized void autoConfirmDeal(Deal deal) {
         if (DealStatus.CONFIRMED.equals(deal.getDealStatus())) {
             throw new BaseException("Заявка уже подтверждена.");
