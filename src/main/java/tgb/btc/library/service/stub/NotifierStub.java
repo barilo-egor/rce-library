@@ -103,4 +103,9 @@ public class NotifierStub implements INotifier {
     public void merchantUpdateStatus(Long aLong, String s) {
         // stub
     }
+
+    @Override
+    public void notifyAutoConfirmDeal(String s, Long aLong) {
+        // stub
+    }
 }
