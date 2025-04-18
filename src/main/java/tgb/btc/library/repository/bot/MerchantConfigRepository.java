@@ -12,6 +12,8 @@ public interface MerchantConfigRepository extends BaseRepository<MerchantConfig>
 
     List<MerchantConfig> findAllByOrderByMerchantOrder();
 
+    List<MerchantConfig> findAllByIsOnOrderByMerchantOrder(Boolean isOn);
+
     @Query("select max(merchantOrder) from MerchantConfig")
     Integer finMaxMerchantOrder();
 
