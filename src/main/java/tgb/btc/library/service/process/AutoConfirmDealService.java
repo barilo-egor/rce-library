@@ -77,8 +77,8 @@ public class AutoConfirmDealService implements IAutoConfirmDealService {
             modifyDealService.confirm(deal.getPid(), hash);
             new Thread(() -> cryptoWithdrawalService.deleteFromPool(botUsername, deal.getPid())).start();
             notifier.sendAutoWithdrawDeal("бота", "система", deal.getPid());
-            notifier.notifyAutoConfirmDeal("Автоматически подтверждена сделка №<b>" + deal.getPid() + "</b> мерчанта <b>"
-                    + deal.getMerchant().getDisplayName() + "</b>. Тип автоподтверждения: <b>"
+            notifier.notifyAutoConfirmDeal("Автоматически подтверждена и выведена сделка №<b>" + deal.getPid() + "</b> мерчанта <b>"
+                    + deal.getMerchant().getDisplayName() + "</b>."
                     + autoConfirmConfig.getAutoConfirmType().getDescription() + "</b>.", deal.getPid());
             log.debug("Сделка {} автоматически выведена и отправлена в группу запросов.", deal.getPid());
         } else {
@@ -92,6 +92,8 @@ public class AutoConfirmDealService implements IAutoConfirmDealService {
                     .deliveryType(deal.getDeliveryType())
                     .build());
             modifyDealService.updateDealStatusByPid(DealStatus.AWAITING_WITHDRAWAL, deal.getPid());
+            notifier.notifyAdmins("Сделка №<b>" + deal.getPid() + "</b> мерчанта <b>" + deal.getMerchant().getDisplayName()
+                    + "</b> была автоматически добавлена в пул.");
             log.debug("Сделка {} добавлена в пул.", deal.getPid());
         }
     }
