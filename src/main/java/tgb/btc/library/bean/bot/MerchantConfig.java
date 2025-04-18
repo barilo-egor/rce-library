@@ -23,7 +23,7 @@ public class MerchantConfig extends BasePersist {
 
     private Boolean isAutoWithdrawalOn;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<MerchantSuccessStatus> successStatuses;
 
     private Integer maxAmount;
