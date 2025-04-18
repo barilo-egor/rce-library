@@ -14,8 +14,6 @@ import tgb.btc.library.constants.enums.bot.*;
 import tgb.btc.library.constants.enums.strings.BotMessageConst;
 import tgb.btc.library.exception.BaseException;
 import tgb.btc.library.interfaces.enums.MessageImage;
-import tgb.btc.library.interfaces.service.bean.bot.IPaymentRequisiteService;
-import tgb.btc.library.interfaces.service.bean.bot.ISecurePaymentDetailsService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IModifyDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.IReadDealService;
 import tgb.btc.library.interfaces.service.bean.bot.deal.read.IDealUserService;
@@ -29,7 +27,6 @@ import tgb.btc.library.repository.bot.deal.ModifyDealRepository;
 import tgb.btc.library.service.bean.BasePersistService;
 import tgb.btc.library.service.process.BanningUserService;
 import tgb.btc.library.service.schedule.DealDeleteScheduler;
-import tgb.btc.library.service.web.merchant.IMerchantService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -52,13 +49,9 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
 
     private IReadDealService readDealService;
 
-    private IPaymentRequisiteService paymentRequisiteService;
-
     private INotifier notifier;
 
     private IReviewPriseProcessService reviewPriseProcessService;
-
-    private ISecurePaymentDetailsService securePaymentDetailsService;
 
     private DealDeleteScheduler dealDeleteScheduler;
 
@@ -67,13 +60,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     private ILotteryService lotteryService;
 
     private IMessageImageService messageImageService;
-
-    private List<IMerchantService> merchantServices;
-
-    @Autowired
-    public void setMerchantServices(List<IMerchantService> merchantServices) {
-        this.merchantServices = merchantServices;
-    }
 
     @Autowired
     public void setMessageImageService(IMessageImageService messageImageService) {
@@ -95,11 +81,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
         this.dealDeleteScheduler = dealDeleteScheduler;
     }
 
-    @Autowired
-    public void setSecurePaymentDetailsService(ISecurePaymentDetailsService securePaymentDetailsService) {
-        this.securePaymentDetailsService = securePaymentDetailsService;
-    }
-
     @Autowired(required = false)
     public void setReviewPriseService(IReviewPriseProcessService reviewPriseService) {
         this.reviewPriseProcessService = reviewPriseService;
@@ -108,11 +89,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     @Autowired(required = false)
     public void setNotifier(INotifier notifier) {
         this.notifier = notifier;
-    }
-
-    @Autowired
-    public void setPaymentRequisiteService(IPaymentRequisiteService paymentRequisiteService) {
-        this.paymentRequisiteService = paymentRequisiteService;
     }
 
     @Autowired
@@ -170,13 +146,6 @@ public class ModifyDealService extends BasePersistService<Deal> implements IModi
     @Override
     public void deleteById(Long dealPid) {
         Deal deal = findById(dealPid);
-        try {
-            merchantServices.stream()
-                    .filter(service -> service.getMerchant().equals(deal.getMerchant()))
-                    .findFirst()
-                    .ifPresent(merchantService -> merchantService.cancelOrder(deal.getMerchantOrderId()));
-        } catch (Exception ignored) {
-        }
         delete(deal);
     }
 
