@@ -12,6 +12,8 @@ public interface IMerchantConfigService {
 
     List<MerchantConfig> findAllSortedByMerchantOrder();
 
+    List<MerchantConfig> findAllByIsOnOrderByMerchantOrder(Boolean isOn);
+
     void changeOrder(Merchant merchant, boolean isUp);
 
     List<MerchantConfig> findAllByIsOn(boolean isOn);

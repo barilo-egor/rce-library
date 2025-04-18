@@ -52,6 +52,11 @@ public class MerchantConfigService implements IMerchantConfigService {
         return repository.findAllByOrderByMerchantOrder();
     }
 
+    @Override
+    public List<MerchantConfig> findAllByIsOnOrderByMerchantOrder(Boolean isOn) {
+        return repository.findAllByIsOnOrderByMerchantOrder(isOn);
+    }
+
     private MerchantConfig create(Merchant merchant) {
         return repository.save(
                 MerchantConfig.builder()
