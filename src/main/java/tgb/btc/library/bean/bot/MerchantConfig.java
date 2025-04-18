@@ -6,7 +6,6 @@ import tgb.btc.library.bean.BasePersist;
 import tgb.btc.library.constants.enums.Merchant;
 import tgb.btc.library.constants.enums.bot.CryptoCurrency;
 import tgb.btc.library.constants.enums.bot.DeliveryType;
-import tgb.btc.library.constants.enums.web.merchant.AutoConfirmType;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,12 +37,12 @@ public class MerchantConfig extends BasePersist {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AutoConfirmConfig> confirmConfigs;
 
-    public Optional<AutoConfirmConfig> getAutoConfirmConfig(CryptoCurrency cryptoCurrency, DeliveryType deliveryType,
-                                                            AutoConfirmType autoConfirmType) {
+    public Optional<AutoConfirmConfig> getAutoConfirmConfig(CryptoCurrency cryptoCurrency, DeliveryType deliveryType) {
         return confirmConfigs.stream()
                 .filter(conf -> cryptoCurrency.equals(conf.getCryptoCurrency())
-                        && deliveryType.equals(conf.getDeliveryType())
-                        && autoConfirmType.equals(conf.getAutoConfirmType()))
+                        && deliveryType.equals(conf.getDeliveryType()))
                 .findFirst();
     }
+
+
 }

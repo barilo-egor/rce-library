@@ -47,6 +47,8 @@ public enum CryptoCurrency implements ObjectNodeConvertable<CryptoCurrency> {
         this.message = message;
     }
 
+    public static final List<CryptoCurrency> CURRENCIES_WITH_AUTO_WITHDRAWAL = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
+
     public static final List<CryptoCurrency> ELECTRUM_CURRENCIES = List.of(CryptoCurrency.BITCOIN, CryptoCurrency.LITECOIN);
 
     public Double getDefaultCheckValue() {
